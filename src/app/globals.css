@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 220 15% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 12%;
+    --primary: 0 72% 51%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 15% 18%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 42%;
+    --accent: 220 14% 94%;
+    --accent-foreground: 220 15% 18%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 0 72% 51%;
+    --radius: 0.625rem;
+    --surface: 0 0% 100%;
+    --surface-raised: 40 20% 98%;
+  }
+
+  .dark {
+    --background: 225 15% 8%;
+    --foreground: 210 15% 92%;
+    --card: 225 15% 11%;
+    --card-foreground: 210 15% 92%;
+    --popover: 225 15% 11%;
+    --popover-foreground: 210 15% 92%;
+    --primary: 0 72% 55%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 225 12% 16%;
+    --secondary-foreground: 210 15% 92%;
+    --muted: 225 12% 16%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 225 12% 18%;
+    --accent-foreground: 210 15% 92%;
+    --destructive: 0 62% 35%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 225 10% 18%;
+    --input: 225 10% 18%;
+    --ring: 0 72% 55%;
+    --surface: 225 15% 11%;
+    --surface-raised: 225 12% 14%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ===== Prose styles for article content ===== */
+.prose {
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-links: hsl(var(--primary));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-counters: hsl(var(--muted-foreground));
+  --tw-prose-bullets: hsl(var(--muted-foreground));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-quote-borders: hsl(var(--border));
+  --tw-prose-captions: hsl(var(--muted-foreground));
+  --tw-prose-code: hsl(var(--foreground));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border));
+}
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.prose a:hover {
+  text-decoration: none;
+}
+
+/* ===== Breaking news ticker ===== */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 25s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Faster on mobile */
+@media (max-width: 640px) {
+  .animate-ticker {
+    animation: ticker 18s linear infinite;
+  }
+}
+
+/* ===== Theme toggle animation ===== */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.theme-toggle-spin {
+  animation: spin-slow 0.5s ease-in-out;
+}
+
+/* ===== Smooth theme transitions ===== */
+html.transitioning,
+html.transitioning *,
+html.transitioning *::before,
+html.transitioning *::after {
+  transition: all 0.3s ease-in-out !important;
+  transition-delay: 0s !important;
+}
+
+/* ===== Subtle card hover effects ===== */
+@layer components {
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .card-hover:hover {
+    @apply shadow-lg -translate-y-0.5;
+  }
+
+  .dark .card-hover:hover {
+    @apply shadow-2xl shadow-black/30;
+  }
+}
+
+/* ===== Scrollbar styling for dark mode ===== */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: hsl(225 15% 8%);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(225 10% 25%);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(225 10% 35%);
+}
