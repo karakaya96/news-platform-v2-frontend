@@ -40,7 +40,7 @@ interface RichTextEditorProps {
 export function RichTextEditor({
   value,
   onChange,
-  placeholder = 'Start writing...',
+  placeholder = 'Yazmaya başlayın...',
   className,
 }: RichTextEditorProps) {
   const editor = useEditor({
@@ -80,7 +80,7 @@ export function RichTextEditor({
   }
 
   const addImage = () => {
-    const url = window.prompt('Enter image URL:');
+    const url = window.prompt('Görsel URL'si girin:');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }
@@ -88,7 +88,7 @@ export function RichTextEditor({
 
   const addLink = () => {
     const previousUrl = editor.getAttributes('link').href;
-    const url = window.prompt('Enter URL:', previousUrl);
+    const url = window.prompt('URL girin:', previousUrl);
     if (url === null) return;
     if (url === '') {
       editor.chain().focus().extendMarkRange('link').unsetLink().run();
@@ -129,13 +129,13 @@ export function RichTextEditor({
       <div className="flex flex-wrap items-center gap-0.5 border-b bg-slate-50 p-1.5">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
-          title="Undo"
+          title="Geri Al"
         >
           <Undo className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().redo().run()}
-          title="Redo"
+          title="İleri Al"
         >
           <Redo className="h-4 w-4" />
         </ToolbarButton>
@@ -145,21 +145,21 @@ export function RichTextEditor({
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
-          title="Bold"
+          title="Kalın"
         >
           <Bold className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={editor.isActive('italic')}
-          title="Italic"
+          title="İtalik"
         >
           <Italic className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           isActive={editor.isActive('underline')}
-          title="Underline"
+          title="Altı Çizili"
         >
           <UnderlineIcon className="h-4 w-4" />
         </ToolbarButton>
@@ -171,7 +171,7 @@ export function RichTextEditor({
             editor.chain().focus().toggleHeading({ level: 1 }).run()
           }
           isActive={editor.isActive('heading', { level: 1 })}
-          title="Heading 1"
+          title="Başlık 1"
         >
           <Heading1 className="h-4 w-4" />
         </ToolbarButton>
@@ -180,7 +180,7 @@ export function RichTextEditor({
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
           isActive={editor.isActive('heading', { level: 2 })}
-          title="Heading 2"
+          title="Başlık 2"
         >
           <Heading2 className="h-4 w-4" />
         </ToolbarButton>
@@ -189,7 +189,7 @@ export function RichTextEditor({
             editor.chain().focus().toggleHeading({ level: 3 }).run()
           }
           isActive={editor.isActive('heading', { level: 3 })}
-          title="Heading 3"
+          title="Başlık 3"
         >
           <Heading3 className="h-4 w-4" />
         </ToolbarButton>
@@ -199,14 +199,14 @@ export function RichTextEditor({
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
-          title="Bullet List"
+          title="Madde Listesi"
         >
           <List className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           isActive={editor.isActive('orderedList')}
-          title="Ordered List"
+          title="Numaralı Liste"
         >
           <ListOrdered className="h-4 w-4" />
         </ToolbarButton>
@@ -216,28 +216,28 @@ export function RichTextEditor({
         <ToolbarButton
           onClick={() => editor.chain().focus().setTextAlign('left').run()}
           isActive={editor.isActive({ textAlign: 'left' })}
-          title="Align Left"
+          title="Sola Hizala"
         >
           <AlignLeft className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().setTextAlign('center').run()}
           isActive={editor.isActive({ textAlign: 'center' })}
-          title="Align Center"
+          title="Ortala"
         >
           <AlignCenter className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().setTextAlign('right').run()}
           isActive={editor.isActive({ textAlign: 'right' })}
-          title="Align Right"
+          title="Sağa Hizala"
         >
           <AlignRight className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().setTextAlign('justify').run()}
           isActive={editor.isActive({ textAlign: 'justify' })}
-          title="Justify"
+          title="İki Yana Yasla"
         >
           <AlignJustify className="h-4 w-4" />
         </ToolbarButton>
@@ -247,24 +247,24 @@ export function RichTextEditor({
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           isActive={editor.isActive('blockquote')}
-          title="Blockquote"
+          title="Alıntı"
         >
           <Quote className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleCodeBlock().run()}
           isActive={editor.isActive('codeBlock')}
-          title="Code Block"
+          title="Kod Bloğu"
         >
           <Code className="h-4 w-4" />
         </ToolbarButton>
 
         <div className="w-px h-6 bg-slate-300 mx-1" />
 
-        <ToolbarButton onClick={addLink} title="Add Link">
+        <ToolbarButton onClick={addLink} title="Bağlantı Ekle">
           <LinkIcon className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={addImage} title="Add Image">
+        <ToolbarButton onClick={addImage} title="Görsel Ekle">
           <ImageIcon className="h-4 w-4" />
         </ToolbarButton>
       </div>

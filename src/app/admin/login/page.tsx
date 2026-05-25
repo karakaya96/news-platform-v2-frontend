@@ -34,10 +34,10 @@ export default function LoginPage() {
         setApiAuthToken(res.data.token);
         router.push('/admin/dashboard');
       } else {
-        setError(res.error || 'Invalid credentials');
+        setError(res.error || 'Geçersiz kimlik bilgileri');
       }
     } catch (err) {
-      setError('An error occurred. Please try again.');
+      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setLoading(false);
     }
@@ -53,9 +53,9 @@ export default function LoginPage() {
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl">Hoş Geldiniz</CardTitle>
             <CardDescription>
-              Sign in to the NewsHaberGlobal admin panel
+              NewsHaberGlobal yönetim paneline giriş yapın
             </CardDescription>
           </div>
         </CardHeader>
@@ -68,11 +68,11 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-posta</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@example.com"
+                placeholder="admin@ornek.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -81,7 +81,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -94,7 +94,7 @@ export default function LoginPage() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign In
+              Giriş Yap
             </Button>
           </form>
         </CardContent>

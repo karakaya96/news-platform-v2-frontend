@@ -144,7 +144,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                 <Label htmlFor="slug">Slug (URL) *</Label>
                 <Input
                   id="slug"
-                  placeholder="article-slug"
+                  placeholder="haber-slug"
                   {...register('slug')}
                   className={cn(errors.slug && 'border-red-500')}
                 />

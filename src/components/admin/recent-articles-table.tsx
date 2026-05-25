@@ -21,7 +21,7 @@ export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
   if (articles.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        No articles yet. Create your first article!
+        Henüz haber yok. İlk haberinizi oluşturun!
       </div>
     );
   }
@@ -32,16 +32,16 @@ export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
         <thead>
           <tr className="border-b text-left">
             <th className="pb-3 text-sm font-medium text-muted-foreground">
-              Title
+              Başlık
             </th>
             <th className="pb-3 text-sm font-medium text-muted-foreground hidden sm:table-cell">
-              Status
+              Durum
             </th>
             <th className="pb-3 text-sm font-medium text-muted-foreground hidden md:table-cell">
-              Date
+              Tarih
             </th>
             <th className="pb-3 text-sm font-medium text-muted-foreground text-right">
-              Actions
+              İşlemler
             </th>
           </tr>
         </thead>

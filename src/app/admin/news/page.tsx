@@ -129,7 +129,6 @@ export default function NewsListPage() {
         <Link href="/admin/news/new">
           <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 rounded-xl px-5">
 <Plus className="mr-2 h-4 w-4" /> Yeni Haber
-            Yeni Haber
           </Button>
         </Link>
       </div>
@@ -266,7 +265,7 @@ export default function NewsListPage() {
                           className={`${statusColors[article.status] || ''} text-xs font-medium rounded-full px-2.5 py-0.5`}
                         >
                           <span className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${statusDots[article.status] || 'bg-slate-400'}`} />
-                          {article.status}
+                          {article.status === "published" ? "Yayında" : article.status === "draft" ? "Taslak" : article.status === "archived" ? "Arşiv" : article.status}
                         </Badge>
                       </td>
                       <td className="px-6 py-4 hidden lg:table-cell">
