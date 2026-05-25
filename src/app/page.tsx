@@ -44,7 +44,7 @@ export default async function HomePage() {
     getCategories(),
   ]);
 
-  const categorySections = categories.slice(0, 3);
+  const categorySections = categories;
   const categoryArticles = await Promise.all(
     categorySections.map((cat) => getCategoryNews(cat.slug))
   );

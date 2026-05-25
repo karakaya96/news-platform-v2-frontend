@@ -32,7 +32,7 @@ export default function HomePageClient({ featured, breaking, latest, categories,
 
   const heroArticle = featured[heroIndex];
   const otherFeatured = featured.filter((_, i) => i !== heroIndex);
-  const categorySections = categories.slice(0, 3);
+  const categorySections = categories;
 
   return (
     <div className='container mx-auto px-4 py-8'>

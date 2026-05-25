@@ -1,8 +1,13 @@
 import Link from 'next/link';
-import { SITE_NAME, SOCIAL_LINKS, NAVIGATION } from '@/lib/constants';
+import { SITE_NAME, SOCIAL_LINKS, CATEGORY_TRANSLATIONS } from '@/lib/constants';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+
+  const footerCategories = Object.entries(CATEGORY_TRANSLATIONS).map(([slug, info]) => ({
+    slug,
+    name: info.name,
+  }));
 
   return (
     <footer className='border-t bg-muted/30'>
@@ -20,15 +25,15 @@ export function Footer() {
           <div className='space-y-4'>
             <h4 className='text-sm font-semibold text-foreground'>Hızlı Bağlantılar</h4>
             <nav className='flex flex-col space-y-2.5'>
-              {NAVIGATION.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className='text-sm text-muted-foreground hover:text-primary transition-colors'
-                >
-                  {item.name}
-                </Link>
-              ))}
+              <Link href='/' className='text-sm text-muted-foreground hover:text-primary transition-colors'>
+                Ana Sayfa
+              </Link>
+              <Link href='/categories' className='text-sm text-muted-foreground hover:text-primary transition-colors'>
+                Kategoriler
+              </Link>
+              <Link href='/search' className='text-sm text-muted-foreground hover:text-primary transition-colors'>
+                Arama
+              </Link>
             </nav>
           </div>
 
@@ -36,14 +41,7 @@ export function Footer() {
           <div className='space-y-4'>
             <h4 className='text-sm font-semibold text-foreground'>Kategoriler</h4>
             <nav className='flex flex-col space-y-2.5'>
-              {[
-                { name: 'Teknoloji', slug: 'technology' },
-                { name: 'Siyaset', slug: 'politics' },
-                { name: 'Ekonomi', slug: 'economy' },
-                { name: 'Spor', slug: 'sports' },
-                { name: 'Bilim', slug: 'science' },
-                { name: 'Sağlık', slug: 'health' },
-              ].map((category) => (
+              {footerCategories.map((category) => (
                 <Link
                   key={category.slug}
                   href={`/categories/${category.slug}`}
