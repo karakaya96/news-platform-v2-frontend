@@ -51,10 +51,7 @@ export default function HomePageClient({ featured, breaking, latest, categories,
           {otherFeatured.length > 0 && (
             <div className='mt-6'>
               <div className='mb-4'>
-                <h2 className='text-lg font-bold text-slate-900 dark:text-slate-100 mb-3'>
-                  Öne Çıkan Haberler
-                </h2>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center gap-2 mb-3'>
                   <span className='text-sm text-slate-500 dark:text-slate-400'>
                     {heroIndex + 1} / {featured.length}
                   </span>
@@ -73,6 +70,9 @@ export default function HomePageClient({ featured, breaking, latest, categories,
                     ))}
                   </div>
                 </div>
+                <h2 className='text-lg font-bold text-slate-900 dark:text-slate-100'>
+                  Öne Çıkan Haberler
+                </h2>
               </div>
               <div className='flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent'>
                 {otherFeatured.map((article) => (
