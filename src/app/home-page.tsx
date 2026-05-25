@@ -49,24 +49,24 @@ export default function HomePageClient({ featured, breaking, latest, categories,
 
           {/* Diğer featured haberler - Yatay scroll */}
           {otherFeatured.length > 0 && (
-            <div className='mt-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-lg font-bold text-slate-900 dark:text-slate-100'>
-                  Öne Çıkan Haberler
+            <div className='mt-8'>
+              <div className='flex items-center justify-between mb-5'>
+                <h2 className='text-xl font-bold text-slate-900 dark:text-slate-100'>
+                  📌 Öne Çıkan Haberler
                 </h2>
-                <div className='flex items-center gap-2'>
-                  <span className='text-sm text-slate-500 dark:text-slate-400'>
+                <div className='flex items-center gap-3'>
+                  <span className='text-sm font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full'>
                     {heroIndex + 1} / {featured.length}
                   </span>
-                  <div className='flex gap-1'>
+                  <div className='flex gap-1.5'>
                     {featured.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => setHeroIndex(i)}
-                        className={`h-1.5 rounded-full transition-all ${
+                        className={`h-2 rounded-full transition-all duration-300 ${
                           i === heroIndex
-                            ? 'w-6 bg-blue-500'
-                            : 'w-1.5 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400'
+                            ? 'w-8 bg-blue-600 shadow-md shadow-blue-500/30'
+                            : 'w-2 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400'
                         }`}
                         aria-label={`Haber ${i + 1}`}
                       />
@@ -74,14 +74,14 @@ export default function HomePageClient({ featured, breaking, latest, categories,
                   </div>
                 </div>
               </div>
-              <div className='flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent'>
+              <div className='flex gap-5 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent'>
                 {otherFeatured.map((article) => (
                   <Link
                     key={article.id}
                     href={`/news/${article.slug}`}
-                    className='group flex-shrink-0 w-[300px] sm:w-[340px]'
+                    className='group flex-shrink-0 w-[320px] sm:w-[360px]'
                   >
-                    <div className='relative aspect-[16/10] overflow-hidden rounded-xl bg-muted'>
+                    <div className='relative aspect-[16/10] overflow-hidden rounded-xl bg-muted shadow-lg ring-1 ring-black/5 dark:ring-white/10'>
                       {article.image_url ? (
                         <img
                           src={article.image_url}
@@ -93,19 +93,19 @@ export default function HomePageClient({ featured, breaking, latest, categories,
                           <span className='text-slate-500 text-sm'>Görsel yok</span>
                         </div>
                       )}
-                      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent' />
+                      <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
                       <div className='absolute bottom-0 left-0 right-0 p-4'>
                         {article.category_name && (
-                          <span className='inline-block px-2 py-0.5 mb-2 text-xs font-semibold bg-white/20 text-white rounded-full backdrop-blur-sm'>
+                          <span className='inline-block px-2.5 py-0.5 mb-2 text-[10px] font-bold tracking-wider uppercase bg-blue-600/90 text-white rounded-md backdrop-blur-sm'>
                             {translateCategoryName(article.category_slug || '', article.category_name)}
                           </span>
                         )}
-                        <h3 className='text-base font-bold text-white line-clamp-2 leading-snug'>
+                        <h3 className='text-base font-bold text-white line-clamp-2 leading-snug group-hover:text-blue-300 transition-colors'>
                           {article.title}
                         </h3>
-                        <div className='flex items-center text-gray-300 text-xs mt-2'>
+                        <div className='flex items-center text-gray-400 text-xs mt-2'>
                           {article.author_name && (
-                            <span className='mr-3'>yazan: {article.author_name}</span>
+                            <span className='mr-2'>✍️ {article.author_name}</span>
                           )}
                           <time dateTime={article.published_at || undefined}>
                             {formatDate(article.published_at)}
