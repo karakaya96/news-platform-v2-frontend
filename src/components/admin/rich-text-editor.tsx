@@ -80,7 +80,7 @@ export function RichTextEditor({
   }
 
   const addImage = () => {
-    const url = window.prompt('Görsel URL'si girin:');
+    const url = window.prompt("Görsel URL'si girin:");
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }
