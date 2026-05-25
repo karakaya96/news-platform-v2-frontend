@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { News, PaginatedNews } from '@/types';
+import { translateCategoryName } from '@/lib/constants';
 
 const statusColors: Record<string, string> = {
   published: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800',
@@ -253,7 +254,7 @@ export default function NewsListPage() {
                       <td className="px-6 py-4 hidden md:table-cell">
                         {article.category_name ? (
                           <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            {article.category_name}
+                            {translateCategoryName(article.category_slug ?? '', article.category_name)}
                           </span>
                         ) : (
                           <span className="text-slate-400 dark:text-slate-500">—</span>
