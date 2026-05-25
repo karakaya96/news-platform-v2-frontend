@@ -16,6 +16,10 @@ export const metadata: Metadata = {
     locale: 'tr_TR',
     siteName: 'NewsPlatform',
   },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({
