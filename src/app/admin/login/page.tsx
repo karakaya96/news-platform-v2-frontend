@@ -55,7 +55,7 @@ export default function LoginPage() {
           <div>
             <CardTitle className="text-2xl">Welcome Back</CardTitle>
             <CardDescription>
-              Sign in to the NewsPlatform admin panel
+              Sign in to the NewsHaberGlobal admin panel
             </CardDescription>
           </div>
         </CardHeader>

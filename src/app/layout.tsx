@@ -6,15 +6,15 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'NewsPlatform - Güvenilir Haber Kaynağınız',
-    template: '%s | NewsPlatform',
+    default: 'NewsHaberGlobal - Güvenilir Haber Kaynağınız',
+    template: '%s | NewsHaberGlobal',
   },
   description: 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.',
   keywords: ['haber', 'son dakika', 'analiz', 'haberler'],
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
-    siteName: 'NewsPlatform',
+    siteName: 'NewsHaberGlobal',
   },
   icons: {
     icon: '/favicon.png',

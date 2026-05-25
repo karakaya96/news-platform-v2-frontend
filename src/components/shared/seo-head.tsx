@@ -19,7 +19,7 @@ export function generateMetadata({
   publishedTime,
   author,
 }: SeoHeadProps) {
-  const siteName = 'NewsPlatform';
+  const siteName = 'NewsHaberGlobal';
   const fullTitle = `${title} | ${siteName}`;
 
   return {

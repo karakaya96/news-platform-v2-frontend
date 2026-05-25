@@ -54,7 +54,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             </div>
             <div>
               <span className="text-lg font-bold text-white tracking-tight">
-                NewsPlatform
+                NewsHaberGlobal
               </span>
               <span className="block text-[10px] font-medium text-indigo-400 uppercase tracking-widest">
                 Yönetim Paneli
@@ -130,7 +130,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         <div className="border-t border-white/10 p-4">
           <div className="rounded-xl bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-white/5 p-3">
             <p className="text-xs text-slate-400 dark:text-slate-300">
-              NewsPlatform v1.0
+              NewsHaberGlobal v1.0
             </p>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
               Powered by Cloudflare

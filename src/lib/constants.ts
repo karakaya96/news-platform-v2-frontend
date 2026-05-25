@@ -1,4 +1,4 @@
-export const SITE_NAME = 'NewsPlatform';
+export const SITE_NAME = 'NewsHaberGlobal';
 export const SITE_DESCRIPTION = 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 

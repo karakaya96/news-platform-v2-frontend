@@ -99,7 +99,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             } : undefined,
             publisher: {
               '@type': 'Organization',
-              name: SITE_NAME || 'NewsPlatform',
+              name: SITE_NAME || 'NewsHaberGlobal',
             },
             mainEntityOfPage: {
               '@type': 'WebPage',
