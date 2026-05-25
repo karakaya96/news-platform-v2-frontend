@@ -16,14 +16,14 @@ export const NAVIGATION = [
 ];
 
 export const CATEGORY_COLORS: Record<string, string> = {
-  technology: 'bg-blue-500',
-  politics: 'bg-red-500',
-  business: 'bg-green-500',
-  sports: 'bg-orange-500',
-  entertainment: 'bg-purple-500',
-  science: 'bg-teal-500',
-  health: 'bg-pink-500',
-  world: 'bg-indigo-500',
+  technology: '#3b82f6',
+  'world-news': '#6366f1',
+  economy: '#10b981',
+  sports: '#f97316',
+  science: '#14b8a6',
+  health: '#ec4899',
+  entertainment: '#a855f7',
+  politics: '#ef4444',
 };
 
 export const CATEGORY_TRANSLATIONS: Record<string, { name: string; description: string }> = {

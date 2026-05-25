@@ -42,7 +42,6 @@ export default async function CategoriesPage() {
       ) : (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'>
           {categories.map((category) => {
-            const colorClass = CATEGORY_COLORS[category.slug] || 'bg-gray-500';
             const Icon = getCategoryIcon(category.slug);
             return (
               <Link
@@ -50,7 +49,10 @@ export default async function CategoriesPage() {
                 href={`/categories/${category.slug}`}
                 className='group block p-6 rounded-xl border bg-card card-hover'
               >
-                <div className={`w-12 h-12 rounded-xl ${colorClass} flex items-center justify-center mb-4 shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:-rotate-3`}>
+                <div
+                  className='w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-md transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:-rotate-3'
+                  style={{ backgroundColor: CATEGORY_COLORS[category.slug] || '#6b7280' }}
+                >
                   <Icon className='h-6 w-6 text-white' />
                 </div>
                 <h2 className='text-base font-semibold mb-1.5 group-hover:text-primary transition-colors'>
