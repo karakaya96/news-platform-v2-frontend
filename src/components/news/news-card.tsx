@@ -14,13 +14,18 @@ export function NewsCard({ article }: NewsCardProps) {
     <Link href={`/news/${article.slug}`} className='group block'>
       <div className='rounded-xl border bg-card overflow-hidden card-hover'>
         {/* Image */}
-        <div className='relative aspect-[16/10] overflow-hidden'>
-          <Image
-            src={article.image_url || '/placeholder.jpg'}
-            alt={article.title}
-            fill
-            className='object-cover transition-transform duration-500 group-hover:scale-110'
-          />
+        <div className='relative aspect-[16/10] overflow-hidden bg-muted'>
+          {article.image_url ? (
+            <img
+              src={article.image_url}
+              alt={article.title}
+              className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+            />
+          ) : (
+            <div className='w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200'>
+              <span className='text-slate-400 text-sm'>Görsel yok</span>
+            </div>
+          )}
           <div className='absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
         </div>
         

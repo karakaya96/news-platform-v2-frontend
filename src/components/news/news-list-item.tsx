@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import type { News } from '@/types';
 import { formatRelativeDate } from '@/lib/utils';
 import { translateCategoryName } from '@/lib/constants';
@@ -14,13 +13,18 @@ export function NewsListItem({ article, showImage = true }: NewsListItemProps) {
   return (
     <Link href={`/news/${article.slug}`} className='group flex gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors'>
       {showImage && (
-        <div className='relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg'>
-          <Image
-            src={article.image_url || '/placeholder.jpg'}
-            alt={article.title}
-            fill
-            className='object-cover'
-          />
+        <div className='relative w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg bg-muted'>
+          {article.image_url ? (
+            <img
+              src={article.image_url}
+              alt={article.title}
+              className='w-full h-full object-cover'
+            />
+          ) : (
+            <div className='w-full h-full flex items-center justify-center bg-slate-100'>
+              <span className='text-slate-400 text-xs'>—</span>
+            </div>
+          )}
         </div>
       )}
       <div className='flex-1 min-w-0'>

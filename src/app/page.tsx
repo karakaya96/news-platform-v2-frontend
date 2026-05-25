@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import { FeaturedArticle } from '@/components/news/featured-article';
 import { NewsGrid } from '@/components/news/news-grid';
 import { TrendingWidget } from '@/components/news/trending-widget';
@@ -94,13 +93,18 @@ export default async function HomePage() {
                     href={`/news/${article.slug}`}
                     className='group flex-shrink-0 w-[300px] sm:w-[340px]'
                   >
-                    <div className='relative aspect-[16/10] overflow-hidden rounded-xl'>
-                      <Image
-                        src={article.image_url || '/placeholder.jpg'}
-                        alt={article.title}
-                        fill
-                        className='object-cover transition-transform duration-500 group-hover:scale-110'
-                      />
+                    <div className='relative aspect-[16/10] overflow-hidden rounded-xl bg-muted'>
+                      {article.image_url ? (
+                        <img
+                          src={article.image_url}
+                          alt={article.title}
+                          className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+                        />
+                      ) : (
+                        <div className='w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800'>
+                          <span className='text-slate-500 text-sm'>Görsel yok</span>
+                        </div>
+                      )}
                       <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent' />
                       <div className='absolute bottom-0 left-0 right-0 p-4'>
                         {article.category_name && (

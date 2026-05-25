@@ -151,13 +151,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Featured Image */}
       {article.image_url && (
-        <div className='relative aspect-[16/9] mb-8 rounded-xl overflow-hidden'>
-          <Image
+        <div className='relative aspect-[16/9] mb-8 rounded-xl overflow-hidden bg-muted'>
+          <img
             src={article.image_url}
             alt={article.title}
-            fill
-            className='object-cover'
-            priority
+            className='w-full h-full object-cover'
           />
         </div>
       )}
