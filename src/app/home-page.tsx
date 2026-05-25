@@ -50,8 +50,8 @@ export default function HomePageClient({ featured, breaking, latest, categories,
           {/* Diğer featured haberler - Yatay scroll */}
           {otherFeatured.length > 0 && (
             <div className='mt-6'>
-              <div className='flex items-center justify-between mb-4'>
-                <h2 className='text-lg font-bold text-slate-900 dark:text-slate-100'>
+              <div className='mb-4'>
+                <h2 className='text-lg font-bold text-slate-900 dark:text-slate-100 mb-3'>
                   Öne Çıkan Haberler
                 </h2>
                 <div className='flex items-center gap-2'>
