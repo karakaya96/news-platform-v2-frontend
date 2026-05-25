@@ -240,12 +240,12 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                     setValue('status', val as 'draft' | 'published')
                   }
                 >
-<SelectTrigger>
-              <SelectValue placeholder="Kategori seçin" />
-            </SelectTrigger>
-                  <SelectContent>
-<SelectItem value="draft">Taslak</SelectItem>
-              <SelectItem value="published">Yayında</SelectItem>
+                  <SelectTrigger className="dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
+                    <SelectValue placeholder="Durum seçin" />
+                  </SelectTrigger>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
+                    <SelectItem value="draft" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Taslak</SelectItem>
+                    <SelectItem value="published" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Yayında</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -254,8 +254,8 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                 className={cn(
                   'flex items-center justify-between p-3 rounded-xl border-2 transition-all cursor-pointer',
                   isFeatured
-                    ? 'border-amber-300 bg-amber-50'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-amber-300 bg-amber-50 dark:border-amber-500 dark:bg-amber-950/50'
+                    : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500'
                 )}
                 onClick={() => setValue('is_featured', !isFeatured)}
               >
@@ -263,20 +263,20 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   <div
                     className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                      isFeatured ? 'bg-amber-200 text-amber-700' : 'bg-slate-100 text-slate-400'
+                      isFeatured ? 'bg-amber-200 text-amber-700 dark:bg-amber-700 dark:text-amber-100' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'
                     )}
                   >
                     <Star className="h-4 w-4" />
                   </div>
                   <div>
-                    <Label className="cursor-pointer font-medium text-sm">Öne Çıkan</Label>
-                    <p className="text-[11px] text-slate-500">Ana sayfada öne çıkar</p>
+                    <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">Öne Çıkan</Label>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Ana sayfada öne çıkar</p>
                   </div>
                 </div>
                 <div
                   className={cn(
                     'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-                    isFeatured ? 'bg-amber-500' : 'bg-slate-300'
+                    isFeatured ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-600'
                   )}
                 >
                   <span
@@ -292,8 +292,8 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                 className={cn(
                   'flex items-center justify-between p-3 rounded-xl border-2 transition-all cursor-pointer',
                   isBreaking
-                    ? 'border-red-300 bg-red-50'
-                    : 'border-slate-200 bg-white hover:border-slate-300'
+                    ? 'border-red-300 bg-red-50 dark:border-red-500 dark:bg-red-950/50'
+                    : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500'
                 )}
                 onClick={() => setValue('is_breaking', !isBreaking)}
               >
@@ -301,20 +301,20 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   <div
                     className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                      isBreaking ? 'bg-red-200 text-red-700' : 'bg-slate-100 text-slate-400'
+                      isBreaking ? 'bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-100' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'
                     )}
                   >
                     <Zap className="h-4 w-4" />
                   </div>
                   <div>
-                    <Label className="cursor-pointer font-medium text-sm">Son Dakika Haberi</Label>
-                    <p className="text-[11px] text-slate-500">Son dakika banner'ı</p>
+                    <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">Son Dakika Haberi</Label>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Son dakika banner&apos;ı</p>
                   </div>
                 </div>
                 <div
                   className={cn(
                     'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-                    isBreaking ? 'bg-red-500' : 'bg-slate-300'
+                    isBreaking ? 'bg-red-500' : 'bg-slate-300 dark:bg-slate-600'
                   )}
                 >
                   <span
@@ -362,13 +362,13 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   onValueChange={(val) => setValue('category_id', val)}
                 >
                   <SelectTrigger
-                    className={cn(errors.category_id && 'border-red-500')}
+                    className={cn(errors.category_id && 'border-red-500', 'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100')}
                   >
                     <SelectValue placeholder="Kategori seçin" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
                     {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={String(cat.id)}>
+                      <SelectItem key={cat.id} value={String(cat.id)} className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">
                         {translateCategoryName(cat.slug, cat.name)}
                       </SelectItem>
                     ))}
