@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RichTextEditor } from '@/components/admin/rich-text-editor';
 import { ChevronDown, ChevronUp, Loader2, Eye, Star, Zap } from 'lucide-react';
 import type { News, Category } from '@/types';
+import { translateCategoryName } from '@/lib/constants';
 
 const newsSchema = z.object({
   title: z.string().min(1, 'Başlık zorunludur').max(200),
@@ -334,7 +335,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   {isSubmitting && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {article ? 'Güncelle' : 'Oluştur'} Haber
+                  {article ? 'Güncelle' : 'Oluştur'}
                 </Button>
                 <Button
                   type="button"
@@ -368,7 +369,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   <SelectContent>
                     {categories.map((cat) => (
                       <SelectItem key={cat.id} value={String(cat.id)}>
-                        {cat.name}
+                        {translateCategoryName(cat.slug, cat.name)}
                       </SelectItem>
                     ))}
                   </SelectContent>

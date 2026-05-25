@@ -25,6 +25,7 @@ import {
 import { toast } from 'sonner';
 import { formatDate } from '@/lib/utils';
 import type { News } from '@/types';
+import { translateCategoryName } from '@/lib/constants';
 
 interface DashboardStats {
   totalNews: number;
@@ -228,7 +229,7 @@ export default function DashboardPage() {
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-white shadow-sm"
                   style={{ backgroundColor: cat.color || '#6366f1' }}
                 >
-                  {cat.name}
+                  {translateCategoryName(cat.slug, cat.name)}
                   <span className="bg-white/30 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                     {cat.article_count}
                   </span>

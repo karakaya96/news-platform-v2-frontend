@@ -17,6 +17,7 @@ import {
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Category } from '@/types';
+import { translateCategoryName, translateCategoryDescription } from '@/lib/constants';
 
 export default function KategorilerPage() {
   const [categories, setKategoriler] = useState<Category[]>([]);
@@ -130,10 +131,10 @@ export default function KategorilerPage() {
                         />
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-sm dark:text-slate-100">{category.name}</p>
+                        <p className="font-medium text-sm dark:text-slate-100">{translateCategoryName(category.slug, category.name)}</p>
                         {category.description && (
                           <p className="text-xs text-muted-foreground dark:text-slate-400 truncate max-w-[300px]">
-                            {category.description}
+                            {translateCategoryDescription(category.slug, category.description)}
                           </p>
                         )}
                       </td>
