@@ -23,20 +23,33 @@ interface ArticlePageProps {
 }
 
 async function getArticle(slug: string): Promise<News | null> {
-  const res = await api.get<News>(`/api/news/${slug}`);
-  return res.data || null;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
+  const res = await fetch(`${apiUrl}/api/news/${slug}`, { cache: 'no-store' });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.data || null;
 }
 
 async function getRelatedArticles(categorySlug: string): Promise<News[]> {
-  const res = await api.get<News[]>(`/api/news?category=${categorySlug}&limit=4`);
-  return res.data || [];
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
+  const res = await fetch(`${apiUrl}/api/news?category=${categorySlug}&limit=4`, { cache: 'no-store' });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.data || [];
 }
 
 async function getComments(newsId: number) {
   try {
-    const res = await api.get<any[]>(`/api/comments/${newsId}`);
-    const comments = res.data || [];
-    return { comments, count: comments.length };
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
+    const res = await fetch(`${apiUrl}/api/comments/${newsId}`, {
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    if (!res.ok) return { comments: [], count: 0 };
+    const data = await res.json();
+    const comments = data.data || [];
+    const approved = comments.filter((c: any) => c.status === 'approved');
+    return { comments: approved, count: approved.length };
   } catch {
     return { comments: [], count: 0 };
   }
