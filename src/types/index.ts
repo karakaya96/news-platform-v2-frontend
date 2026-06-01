@@ -124,3 +124,26 @@ export interface CreateCategoryRequest {
 }
 
 export interface UpdateCategoryRequest extends Partial<CreateCategoryRequest> {}
+
+export interface CommentItem {
+  id: number;
+  news_id: number;
+  parent_id: number | null;
+  author_name: string;
+  author_email: string;
+  content: string;
+  status: 'pending' | 'approved' | 'rejected' | 'spam';
+  ip_address: string | null;
+  created_at: string;
+  updated_at: string;
+  news_title?: string;
+  news_slug?: string;
+  reply_count?: number;
+}
+
+export interface CommentStats {
+  pending: number;
+  approved: number;
+  rejected: number;
+  spam: number;
+}

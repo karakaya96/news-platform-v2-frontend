@@ -12,6 +12,7 @@ import { formatDate } from '@/lib/utils';
 import { CategoryBadge } from '@/components/news/category-badge';
 import { ShareButtons } from '@/components/news/share-buttons';
 import { RelatedArticles } from '@/components/news/related-articles';
+import { CommentsSection } from '@/components/news/comments-section';
 import { ArticleContent } from '@/components/news/article-content';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -29,6 +30,16 @@ async function getArticle(slug: string): Promise<News | null> {
 async function getRelatedArticles(categorySlug: string): Promise<News[]> {
   const res = await api.get<News[]>(`/api/news?category=${categorySlug}&limit=4`);
   return res.data || [];
+}
+
+async function getComments(newsId: number) {
+  try {
+    const res = await api.get<any[]>(`/api/comments/${newsId}`);
+    const comments = res.data || [];
+    return { comments, count: comments.length };
+  } catch {
+    return { comments: [], count: 0 };
+  }
 }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
@@ -75,9 +86,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const related = article.category_slug
-    ? await getRelatedArticles(article.category_slug)
-    : [];
+  const [related, commentsData] = await Promise.all([
+    article.category_slug ? getRelatedArticles(article.category_slug) : Promise.resolve([]),
+    getComments(article.id),
+  ]);
 
   return (
     <article className='container mx-auto px-4 py-8'>
@@ -207,6 +219,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <div className='max-w-6xl mx-auto'>
         <RelatedArticles articles={related} />
       </div>
+
+      {/* Comments Section */}
+      <CommentsSection
+        newsId={article.id}
+        initialComments={commentsData.comments}
+        initialCount={commentsData.count}
+      />
     </article>
   );
 }

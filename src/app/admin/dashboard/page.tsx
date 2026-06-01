@@ -21,6 +21,7 @@ import {
   Calendar,
   Activity,
   Clock,
+  MessageCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDate } from '@/lib/utils';
@@ -32,6 +33,7 @@ interface DashboardStats {
   totalCategories: number;
   publishedCount: number;
   draftCount: number;
+  pendingComments?: number;
   recentNews: News[];
   categoryDistribution?: { id: number; name: string; slug: string; color: string; article_count: number }[];
 }
@@ -163,6 +165,15 @@ export default function DashboardPage() {
       gradient: 'from-violet-500 via-purple-600 to-fuchsia-600',
       iconBg: 'bg-white/20',
       subtitle: 'Aktif kategori',
+    },
+    {
+      title: 'Bekleyen Yorumlar',
+      value: stats?.pendingComments ?? 0,
+      icon: MessageCircle,
+      gradient: 'from-rose-500 via-pink-600 to-red-600',
+      iconBg: 'bg-white/20',
+      subtitle: 'Onay bekliyor',
+      href: '/admin/comments',
     },
   ];
 

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Newspaper,
   FolderOpen,
+  MessageCircle,
   X,
   NewspaperIcon,
   ExternalLink,
@@ -24,6 +25,7 @@ const navigation = [
   { name: 'Gösterge Paneli', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Haberler', href: '/admin/news', icon: Newspaper },
   { name: 'Kategoriler', href: '/admin/categories', icon: FolderOpen },
+  { name: 'Yorumlar', href: '/admin/comments', icon: MessageCircle },
 ];
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
