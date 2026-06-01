@@ -34,6 +34,7 @@ interface DashboardStats {
   publishedCount: number;
   draftCount: number;
   pendingComments?: number;
+  activeSubscriptions?: number;
   recentNews: News[];
   categoryDistribution?: { id: number; name: string; slug: string; color: string; article_count: number }[];
 }

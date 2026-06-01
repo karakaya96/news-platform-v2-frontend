@@ -13,6 +13,7 @@ export const NAVIGATION = [
   { name: 'Ana Sayfa', href: '/' },
   { name: 'Kategoriler', href: '/categories' },
   { name: 'Arama', href: '/search' },
+  { name: 'Bildirim Al', href: '/subscribe' },
 ];
 
 export const CATEGORY_COLORS: Record<string, string> = {

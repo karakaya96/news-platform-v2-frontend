@@ -14,6 +14,7 @@ const pageTitles: Record<string, string> = {
   '/admin/categories': 'Kategoriler',
   '/admin/categories/new': 'Yeni Kategori',
   '/admin/comments': 'Yorumlar',
+  '/admin/notifications': 'Bildirimler',
 };
 
 function getPageTitle(pathname: string): string {

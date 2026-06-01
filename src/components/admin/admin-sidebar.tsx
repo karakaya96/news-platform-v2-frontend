@@ -10,6 +10,7 @@ import {
   Newspaper,
   FolderOpen,
   MessageCircle,
+  Bell,
   X,
   NewspaperIcon,
   ExternalLink,
@@ -26,6 +27,7 @@ const navigation = [
   { name: 'Haberler', href: '/admin/news', icon: Newspaper },
   { name: 'Kategoriler', href: '/admin/categories', icon: FolderOpen },
   { name: 'Yorumlar', href: '/admin/comments', icon: MessageCircle },
+  { name: 'Bildirimler', href: '/admin/notifications', icon: Bell },
 ];
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
