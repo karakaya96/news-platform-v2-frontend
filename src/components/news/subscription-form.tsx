@@ -263,6 +263,9 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
             Abone Ol
           </button>
         </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+          📬 Abone olduğunuzda onay e-postası gönderilecektir. Spam klasörünüzü kontrol etmeyi unutmayın.
+        </p>
       </div>
 
       {/* Message */}
