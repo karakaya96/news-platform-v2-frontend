@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Calendar, Eye, User, ArrowLeft } from 'lucide-react';
 import api from '@/lib/api';
 import type { News } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import { CategoryBadge } from '@/components/news/category-badge';
 import { ShareButtons } from '@/components/news/share-buttons';
 import { RelatedArticles } from '@/components/news/related-articles';
@@ -166,7 +166,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           )}
           <div className='flex items-center gap-1'>
             <Calendar className='h-4 w-4' />
-            <time dateTime={article.published_at || undefined}>{formatDate(article.published_at || '')}</time>
+            <time dateTime={article.published_at || undefined}>{formatDateWithTime(article.published_at || '')}</time>
           </div>
           <div className='flex items-center gap-1'>
             <Eye className='h-4 w-4' />

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -279,7 +279,7 @@ export default function NotificationsPage() {
                       </Badge>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                      {formatDate(sub.created_at)}
+                      {formatDateWithTime(sub.created_at)}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -360,7 +360,7 @@ export default function NotificationsPage() {
                     <Badge variant="outline" className="rounded-full text-xs">
                       {notif.type === 'browser' ? 'Tarayıcı' : 'E-posta'}
                     </Badge>
-                    <p className="text-xs text-slate-400 mt-1">{formatDate(notif.created_at)}</p>
+                    <p className="text-xs text-slate-400 mt-1">{formatDateWithTime(notif.created_at)}</p>
                   </div>
                   <Button
                     variant="ghost"

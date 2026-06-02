@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { News } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import { translateCategoryName } from '@/lib/constants';
 
 interface FeaturedArticleProps {
@@ -41,7 +41,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
                 <span className='mr-3'>yazan: {article.author_name}</span>
               )}
               <time dateTime={article.published_at || undefined}>
-                {formatDate(article.published_at)}
+                {formatDateWithTime(article.published_at)}
               </time>
             </div>
           </div>
@@ -82,7 +82,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
               <span className='mr-3 sm:mr-4'>yazan: {article.author_name}</span>
             )}
             <time dateTime={article.published_at || undefined}>
-              {formatDate(article.published_at)}
+              {formatDateWithTime(article.published_at)}
             </time>
           </div>
         </div>

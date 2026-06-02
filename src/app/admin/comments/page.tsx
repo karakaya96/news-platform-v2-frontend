@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -284,7 +284,7 @@ export default function CommentsPage() {
                         </span>
                         <span className="text-xs text-slate-400 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatDate(comment.created_at)}
+                          {formatDateWithTime(comment.created_at)}
                         </span>
                         <Badge
                           variant="outline"

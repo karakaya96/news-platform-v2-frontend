@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import { Edit, Eye } from 'lucide-react';
 import type { News } from '@/types';
 
@@ -66,7 +66,7 @@ export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
               </td>
               <td className="py-3 pr-4 hidden md:table-cell">
                 <span className="text-sm text-muted-foreground">
-                  {formatDate(article.published_at || article.updated_at)}
+                  {formatDateWithTime(article.published_at || article.updated_at)}
                 </span>
               </td>
               <td className="py-3 text-right">

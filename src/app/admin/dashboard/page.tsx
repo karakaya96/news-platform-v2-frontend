@@ -24,7 +24,7 @@ import {
   MessageCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
 import { translateCategoryName } from '@/lib/constants';
 
@@ -280,7 +280,7 @@ export default function DashboardPage() {
                       </Badge>
                       <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {formatDate(article.published_at || article.created_at)}
+                        {formatDateWithTime(article.published_at || article.created_at)}
                       </span>
                       {article.author_name && (
                         <span className="text-xs text-slate-400 dark:text-slate-500">yazan: {article.author_name}</span>
@@ -376,7 +376,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
                       <span className="text-sm text-slate-500 dark:text-slate-400">
-                        {formatDate(
+                        {formatDateWithTime(
                           article.published_at || article.created_at
                         )}
                       </span>

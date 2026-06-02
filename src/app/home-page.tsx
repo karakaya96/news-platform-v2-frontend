@@ -8,7 +8,7 @@ import { TrendingWidget } from '@/components/news/trending-widget';
 import { BreakingTicker } from '@/components/news/breaking-ticker';
 import type { News, Category } from '@/types';
 import { ARTICLE_LIMITS, translateCategoryName } from '@/lib/constants';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 
 interface HomePageClientProps {
   featured: News[];
@@ -108,7 +108,7 @@ export default function HomePageClient({ featured, breaking, latest, categories,
                             <span className='mr-3'>yazan: {article.author_name}</span>
                           )}
                           <time dateTime={article.published_at || undefined}>
-                            {formatDate(article.published_at)}
+                            {formatDateWithTime(article.published_at)}
                           </time>
                         </div>
                       </div>

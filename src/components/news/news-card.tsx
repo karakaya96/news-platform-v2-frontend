@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { News } from '@/types';
-import { formatDate } from '@/lib/utils';
+import { formatDateWithTime } from '@/lib/utils';
 import { CategoryBadge } from './category-badge';
 
 interface NewsCardProps {
@@ -45,7 +45,7 @@ export function NewsCard({ article }: NewsCardProps) {
               <span className='mr-3 font-medium'>{article.author_name}</span>
             )}
             <time dateTime={article.published_at || undefined}>
-              {formatDate(article.published_at)}
+              {formatDateWithTime(article.published_at)}
             </time>
           </div>
         </div>

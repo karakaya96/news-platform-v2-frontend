@@ -15,6 +15,21 @@ export function formatDate(dateString: string | null | undefined): string {
   });
 }
 
+export function formatDateWithTime(dateString: string | null | undefined): string {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const day = date.toLocaleDateString('tr-TR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const time = date.toLocaleTimeString('tr-TR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${day} ${time}`;
+}
+
 export function formatRelativeDate(dateString: string | null | undefined): string {
   if (!dateString) return '';
   const date = new Date(dateString);
