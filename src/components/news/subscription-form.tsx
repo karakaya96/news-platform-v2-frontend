@@ -101,7 +101,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
 
       if (data.success) {
         setSubscribed(true);
-        setMessage({ type: 'success', text: '🔔 Bildirim aboneliği başarıyla oluşturuldu!' });
+        setMessage({ type: 'success', text: data.data?.message || '🔔 Bildirim aboneliği başarıyla oluşturuldu!' });
       } else {
         setMessage({ type: 'error', text: data.error || 'Abone olunamadı' });
       }
@@ -135,7 +135,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
       const data = await res.json();
 
       if (data.success) {
-        setMessage({ type: 'success', text: '📧 E-posta aboneliği başarıyla oluşturuldu!' });
+        setMessage({ type: 'success', text: data.data?.message || '📧 E-posta aboneliği başarıyla oluşturuldu!' });
         setEmail('');
         setSelectedCategories([]);
       } else {
