@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { NewsCard } from '@/components/news/news-card';
 import { NewsGridSkeleton } from '@/components/shared/loading-skeleton';
 import type { News, Category } from '@/types';
+import { translateCategoryName } from '@/lib/constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
@@ -212,7 +213,7 @@ function SearchContent() {
               <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}
                 className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
                 <option value="">Tümü</option>
-                {categories.map(cat => (<option key={cat.id} value={cat.slug}>{cat.name}</option>))}
+                {categories.map(cat => (<option key={cat.id} value={cat.slug}>{translateCategoryName(cat.slug, cat.name)}</option>))}
               </select>
             </div>
             <div className="space-y-2">
