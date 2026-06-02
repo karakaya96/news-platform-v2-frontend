@@ -1,7 +1,19 @@
 import { MetadataRoute } from 'next';
-import api from '@/lib/api';
 import type { News, Category } from '@/types';
 import { SITE_URL } from '@/lib/constants';
+
+const API_URL = 'https://news-v2-api.karakaya-mk96.workers.dev';
+
+async function fetchJSON<T>(path: string): Promise<T | null> {
+  try {
+    const res = await fetch(`${API_URL}${path}`);
+    if (!res.ok) return null;
+    const data = await res.json() as Record<string, unknown>;
+    return data.data as T;
+  } catch {
+    return null;
+  }
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages = [
@@ -25,31 +37,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  try {
-    // Fetch articles
-    const articlesRes = await api.get<News[]>('/api/news?limit=1000');
-    const articles = articlesRes.data || [];
-    
-    const articlePages = articles.map((article) => ({
-      url: `${SITE_URL}/news/${article.slug}`,
-      lastModified: new Date(article.updated_at),
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    }));
+  // Fetch articles
+  const articles = await fetchJSON<News[]>('/api/news?limit=1000') || [];
+  const articlePages = articles.map((article) => ({
+    url: `${SITE_URL}/news/${article.slug}`,
+    lastModified: new Date(article.updated_at),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }));
 
-    // Fetch categories
-    const categoriesRes = await api.get<Category[]>('/api/categories');
-    const categories = categoriesRes.data || [];
-    
-    const categoryPages = categories.map((category) => ({
-      url: `${SITE_URL}/categories/${category.slug}`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.6,
-    }));
+  // Fetch categories
+  const categories = await fetchJSON<Category[]>('/api/categories') || [];
+  const categoryPages = categories.map((category) => ({
+    url: `${SITE_URL}/categories/${category.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.6,
+  }));
 
-    return [...staticPages, ...articlePages, ...categoryPages];
-  } catch {
-    return staticPages;
-  }
+  return [...staticPages, ...articlePages, ...categoryPages];
 }

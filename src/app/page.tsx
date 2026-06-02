@@ -3,7 +3,6 @@ import api from '@/lib/api';
 import type { News, Category } from '@/types';
 import HomePageClient from './home-page';
 
-export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ async function getBreakingNews(): Promise<News[]> {
 }
 
 async function getLatestNews(): Promise<News[]> {
-  const res = await api.get<News[]>('/api/news', { revalidate: 30 });
+  const res = await api.get<News[]>('/api/news');
   return res.data || [];
 }
 

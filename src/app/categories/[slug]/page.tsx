@@ -1,6 +1,5 @@
-export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 5;
 
 import React from 'react';
 import type { Metadata } from 'next';

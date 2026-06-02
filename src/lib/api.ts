@@ -1,6 +1,8 @@
-import type { ApiResponse } from '@/types';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
+// api.ts — works in both SSR and Client
+// Uses native fetch; no Next.js cache on client side, no-store only when called from browser
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _env = typeof globalThis !== 'undefined' ? (globalThis as any).process?.env ?? {} : {};
+const BASE_URL = _env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
 let authToken: string | null = null;
 
@@ -12,26 +14,28 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
-interface FetchOptions extends RequestInit {
-  revalidate?: number;
-  tags?: string[];
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 async function fetchApi<T>(
   endpoint: string,
-  options: FetchOptions = {}
+  options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  const { revalidate, tags, ...fetchOptions } = options;
-
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    // Disable all caching layers (browser + CDN + Vercel Edge)
-    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
-    'Pragma': 'no-cache',
-    ...options.headers,
+    ...(options.headers as Record<string, string>),
   };
 
-  // Try to get auth token from module variable or localStorage
+  // Auth token: only accessible in browser (client-side)
   let token = authToken;
   if (!token && typeof window !== 'undefined') {
     try {
@@ -42,33 +46,22 @@ async function fetchApi<T>(
   }
 
   if (token) {
-    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
+  const url = `${BASE_URL}${endpoint}`;
+
   try {
-    const url = `${BASE_URL}${endpoint}`;
-
-    // Always bypass all caches for public API requests
-    const cacheOptions: Record<string, unknown> = {
-      cache: 'no-store',
-    };
-
-    // Only use Next.js revalidate for explicitly tagged requests
-    if (revalidate !== undefined && revalidate > 0) {
-      cacheOptions.next = { revalidate, tags };
-    }
-
     const response = await fetch(url, {
-      ...fetchOptions,
+      ...options,
       headers,
-      ...cacheOptions,
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        error: errorData.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`,
+        error: (errorData as Record<string, string>).message || (errorData as Record<string, string>).error || `HTTP ${response.status}: ${response.statusText}`,
       };
     }
 
@@ -84,25 +77,12 @@ async function fetchApi<T>(
 }
 
 export const api = {
-  get: <T>(endpoint: string, options?: FetchOptions) =>
-    fetchApi<T>(endpoint, { ...options, method: 'GET' }),
-
-  post: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
-    fetchApi<T>(endpoint, {
-      ...options,
-      method: 'POST',
-      body: JSON.stringify(body),
-    }),
-
-  put: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
-    fetchApi<T>(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: JSON.stringify(body),
-    }),
-
-  delete: <T>(endpoint: string, options?: FetchOptions) =>
-    fetchApi<T>(endpoint, { ...options, method: 'DELETE' }),
+  get: <T>(endpoint: string) => fetchApi<T>(endpoint, { method: 'GET' }),
+  post: <T>(endpoint: string, body: unknown) =>
+    fetchApi<T>(endpoint, { method: 'POST', body: JSON.stringify(body) }),
+  put: <T>(endpoint: string, body: unknown) =>
+    fetchApi<T>(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
+  delete: <T>(endpoint: string) => fetchApi<T>(endpoint, { method: 'DELETE' }),
 };
 
 export default api;
