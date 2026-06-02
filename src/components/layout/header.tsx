@@ -57,14 +57,17 @@ export function Header() {
   };
 
   const handleSearch = (e?: React.FormEvent) => {
-    e?.preventDefault();
+    if (e) e.preventDefault();
     if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+      setShowSuggestions(false);
+      setSearchQuery('');
       router.push(`/news/${suggestions[selectedIndex].slug}`);
     } else if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowSuggestions(false);
+      const q = searchQuery.trim();
+      setSearchQuery('');
+      router.push(`/search?q=${encodeURIComponent(q)}`);
     }
-    setShowSuggestions(false);
-    setSearchQuery('');
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -151,17 +154,20 @@ export function Header() {
                   ))}
                   <div className="border-t px-4 py-2 bg-muted/30">
                     <button
+                      type="button"
                       className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
-                      onMouseDown={(e) => {
+                      onClick={(e) => {
                         e.preventDefault();
-                        handleSearch();
+                        e.stopPropagation();
+                        setShowSuggestions(false);
+                        router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                       }}
                     >
                       <Search className="h-3 w-3" /> Tüm sonuçları gör
                     </button>
                   </div>
-                </div>
-              )}
+                  </div>
+                )}
             </form>
             <ThemeToggle />
           </div>
