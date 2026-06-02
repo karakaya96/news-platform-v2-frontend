@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Bell, BellOff, Mail, Loader2, Check } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, BellOff, Mail, Loader2, Check, X } from 'lucide-react';
 
 interface SubscriptionFormProps {
   categories: { slug: string; name: string; color: string }[];
@@ -13,13 +13,13 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [permission, setPermission] = useState<NotificationPermission>('default');
-  const [subscribed, setSubscribed] = useState(false);
+  const [browserSubscribed, setBrowserSubscribed] = useState(false);
   const [vapidKey, setVapidKey] = useState<string | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
+  // Check existing browser subscription on mount
   useEffect(() => {
-    // Check notification permission
     if ('Notification' in window) {
       setPermission(Notification.permission);
     }
@@ -33,6 +33,15 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
         }
       })
       .catch(() => {});
+
+    // Check if already subscribed in browser
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.pushManager.getSubscription().then((subscription) => {
+          setBrowserSubscribed(!!subscription);
+        });
+      });
+    }
   }, [apiUrl]);
 
   const urlBase64ToUint8Array = (base64String: string) => {
@@ -56,11 +65,9 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
     setMessage(null);
 
     try {
-      // Register service worker
       const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
       await navigator.serviceWorker.ready;
 
-      // Request permission
       const permissionResult = await Notification.requestPermission();
       setPermission(permissionResult);
 
@@ -69,7 +76,6 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
         return;
       }
 
-      // Subscribe to push
       let subscription = await registration.pushManager.getSubscription();
 
       if (!subscription) {
@@ -77,14 +83,12 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
           setMessage({ type: 'error', text: 'Bildirim sistemi yapılandırılmamış' });
           return;
         }
-
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(vapidKey),
         });
       }
 
-      // Send to server
       const res = await fetch(`${apiUrl}/api/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -100,12 +104,48 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
       const data = await res.json();
 
       if (data.success) {
-        setSubscribed(true);
+        setBrowserSubscribed(true);
         setMessage({ type: 'success', text: data.data?.message || '🔔 Bildirim aboneliği başarıyla oluşturuldu!' });
       } else {
         setMessage({ type: 'error', text: data.error || 'Abone olunamadı' });
       }
-    } catch (err) {
+    } catch {
+      setMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleBrowserUnsubscribe = async () => {
+    if (!('serviceWorker' in navigator)) return;
+
+    setSubmitting(true);
+    setMessage(null);
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.getSubscription();
+
+      if (subscription) {
+        const endpoint = subscription.endpoint;
+        // Unsubscribe from browser
+        await subscription.unsubscribe();
+        setBrowserSubscribed(false);
+        setPermission('default');
+
+        // Remove from server
+        await fetch(`${apiUrl}/api/subscribe/unsubscribe`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpoint }),
+        });
+
+        setMessage({ type: 'success', text: '🔕 Tarayıcı bildirimi iptal edildi' });
+      } else {
+        setBrowserSubscribed(false);
+        setMessage({ type: 'success', text: '🔕 Tarayıcı bildirimi iptal edildi' });
+      }
+    } catch {
       setMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
     } finally {
       setSubmitting(false);
@@ -191,37 +231,59 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
       {/* Browser Push Notification */}
       {permission !== 'denied' && (
         <div className="mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
-          <button
-            onClick={handleBrowserSubscribe}
-            disabled={submitting || subscribed}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {subscribed ? (
-              <>
-                <Check className="w-4 h-4" />
-                Bildirimler Açık
-              </>
-            ) : submitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                İşlem Yapılıyor...
-              </>
-            ) : (
-              <>
-                <Bell className="w-4 h-4" />
-                Anlık Bildirim Al
-              </>
-            )}
-          </button>
-          {permission === 'default' && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
-              Tarayıcınızdan bildirim izni istenecek
-            </p>
-          )}
-          {permission === 'granted' && !subscribed && (
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 text-center">
-              ✓ Bildirim izni zaten verilmiş
-            </p>
+          {browserSubscribed ? (
+            <>
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 mb-3">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <p className="text-xs text-emerald-700 dark:text-emerald-400">
+                  Tarayıcı bildirimi aktif — yeni haberlerden anında haberdar olacaksınız
+                </p>
+              </div>
+              <button
+                onClick={handleBrowserUnsubscribe}
+                disabled={submitting}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-950 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200 dark:border-slate-600 hover:border-red-200 dark:hover:border-red-800"
+              >
+                {submitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    <X className="w-4 h-4" />
+                    Bildirimi İptal Et
+                  </>
+                )}
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleBrowserSubscribe}
+                disabled={submitting}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    İşlem Yapılıyor...
+                  </>
+                ) : (
+                  <>
+                    <Bell className="w-4 h-4" />
+                    Anlık Bildirim Al
+                  </>
+                )}
+              </button>
+              {permission === 'granted' && (
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 text-center">
+                  ✓ Bildirim izni verilmiş — abone olmak için tıklayın
+                </p>
+              )}
+              {permission === 'default' && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
+                  Tarayıcınızdan bildirim izni istenecek
+                </p>
+              )}
+            </>
           )}
         </div>
       )}
