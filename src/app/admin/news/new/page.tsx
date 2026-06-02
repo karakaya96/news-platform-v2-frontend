@@ -17,7 +17,7 @@ export default function NewArticlePage() {
     excerpt?: string;
     content: string;
     image_url?: string;
-    status: 'draft' | 'published';
+    status: 'draft' | 'published' | 'archived';
     is_featured: boolean;
     is_breaking: boolean;
     seo_title?: string;

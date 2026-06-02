@@ -77,7 +77,7 @@ export default function NewsListPage() {
       const params = new URLSearchParams();
       params.set('page', String(page));
       params.set('limit', '20');
-      if (status !== 'all') params.set('status', status);
+      if (status) params.set('status', status);
       if (search) params.set('search', search);
 
       const res = await api.get<News[]>(`/api/news?${params.toString()}`);

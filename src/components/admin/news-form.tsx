@@ -29,7 +29,7 @@ const newsSchema = z.object({
   category_id: z.string().min(1, 'Kategori zorunludur'),
   excerpt: z.string().max(500).optional(),
   image_url: z.string().url('Geçerli bir URL giriniz').optional().or(z.literal('')),
-  status: z.enum(['draft', 'published']),
+  status: z.enum(['draft', 'published', 'archived']),
   is_featured: z.boolean(),
   is_breaking: z.boolean(),
   seo_title: z.string().max(70).optional(),
@@ -73,7 +73,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
       category_id: String(article?.category_id || ''),
       excerpt: article?.excerpt || '',
       image_url: article?.image_url || '',
-      status: article?.status === 'published' ? 'published' : 'draft',
+      status: (article?.status === 'published' || article?.status === 'archived') ? article.status : 'draft',
       is_featured: Boolean(article?.is_featured),
       is_breaking: Boolean(article?.is_breaking),
       seo_title: article?.seo_title || '',
@@ -246,6 +246,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
                     <SelectItem value="draft" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Taslak</SelectItem>
                     <SelectItem value="published" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Yayında</SelectItem>
+                    <SelectItem value="archived" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Arşiv</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
