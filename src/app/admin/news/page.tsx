@@ -1,5 +1,8 @@
 'use client';
 
+// Force dynamic rendering — this page uses client-side auth and API calls
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
