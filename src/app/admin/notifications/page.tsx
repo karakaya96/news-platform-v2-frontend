@@ -96,6 +96,21 @@ export default function NotificationsPage() {
     }
   };
 
+  const handleDeleteNotification = async (id: number) => {
+    if (!confirm('Bu bildirimi silmek istediğinizden emin misiniz?')) return;
+    try {
+      const res = await api.delete(`/api/subscribe/admin/notifications/${id}`);
+      if (res.success) {
+        toast.success('Bildirim silindi');
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+      } else {
+        toast.error(res.error || 'Silme başarısız');
+      }
+    } catch {
+      toast.error('Silme başarısız');
+    }
+  };
+
   const filteredSubs = subscriptions.filter((s) => {
     if (typeFilter !== 'all' && s.type !== typeFilter) return false;
     if (statusFilter === 'active' && s.is_active !== 1) return false;
@@ -346,6 +361,14 @@ export default function NotificationsPage() {
                     </Badge>
                     <p className="text-xs text-slate-400 mt-1">{formatDate(notif.created_at)}</p>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-2 text-xs text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg flex-shrink-0"
+                    onClick={() => handleDeleteNotification(notif.id)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
                 </div>
               ))}
             </div>
