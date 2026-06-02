@@ -73,7 +73,7 @@ export default function EditCategoryPage() {
   useEffect(() => {
     async function loadCategory() {
       try {
-        const res = await api.get<Category>(`/api/categories/${id}`);
+        const res = await api.get<Category>(`/api/categories/id/${id}`);
         if (res.success && res.data) {
           const cat = res.data;
           setCategory(cat);
