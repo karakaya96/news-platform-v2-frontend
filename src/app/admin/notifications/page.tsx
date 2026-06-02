@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { formatDateWithTime } from '@/lib/utils';
