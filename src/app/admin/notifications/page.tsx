@@ -43,6 +43,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -68,10 +69,11 @@ export default function NotificationsPage() {
   }, [fetchData]);
 
   const handleDeleteSubscription = async (id: number) => {
+    if (!confirm('Bu aboneliği kalıcı olarak silmek istediğinizden emin misiniz?')) return;
     try {
       const res = await api.delete(`/api/subscribe/admin/${id}`);
       if (res.success) {
-        toast.success('Abonelik silindi');
+        toast.success('Abonelik kalıcı olarak silindi');
         setSubscriptions((prev) => prev.filter((s) => s.id !== id));
       }
     } catch {
@@ -79,9 +81,27 @@ export default function NotificationsPage() {
     }
   };
 
-  const filteredSubs = typeFilter === 'all' 
-    ? subscriptions 
-    : subscriptions.filter((s) => s.type === typeFilter);
+  const handleToggleActive = async (id: number, currentStatus: number) => {
+    const action = currentStatus === 1 ? 'deactivate' : 'activate';
+    try {
+      const res = await api.post(`/api/subscribe/admin/${id}/${action}`);
+      if (res.success) {
+        toast.success(currentStatus === 1 ? 'Abonelik deaktif edildi' : 'Abonelik aktif edildi');
+        setSubscriptions((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, is_active: currentStatus === 1 ? 0 : 1 } : s))
+        );
+      }
+    } catch {
+      toast.error('İşlem başarısız');
+    }
+  };
+
+  const filteredSubs = subscriptions.filter((s) => {
+    if (typeFilter !== 'all' && s.type !== typeFilter) return false;
+    if (statusFilter === 'active' && s.is_active !== 1) return false;
+    if (statusFilter === 'inactive' && s.is_active !== 0) return false;
+    return true;
+  });
 
   if (loading) {
     return (
@@ -179,6 +199,18 @@ export default function NotificationsPage() {
                   {type === 'all' ? 'Tümü' : type === 'browser' ? 'Tarayıcı' : 'E-posta'}
                 </Button>
               ))}
+              <div className="w-px bg-slate-200 dark:bg-slate-700 mx-1" />
+              {['all', 'active', 'inactive'].map((status) => (
+                <Button
+                  key={status}
+                  size="sm"
+                  variant={statusFilter === status ? 'default' : 'outline'}
+                  onClick={() => setStatusFilter(status)}
+                  className="rounded-xl text-xs"
+                >
+                  {status === 'all' ? 'Tüm Durumlar' : status === 'active' ? 'Aktif' : 'Deaktif'}
+                </Button>
+              ))}
             </div>
           </div>
         </CardHeader>
@@ -196,6 +228,7 @@ export default function NotificationsPage() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Tip</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">E-posta</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Kategoriler</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Durum</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Tarih</th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">İşlem</th>
                   </tr>
@@ -224,10 +257,37 @@ export default function NotificationsPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                        {formatDate(sub.created_at)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3">
+                      <Badge variant={sub.is_active ? 'default' : 'secondary'} className="rounded-full text-xs">
+                        {sub.is_active ? 'Aktif' : 'Deaktif'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                      {formatDate(sub.created_at)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {sub.is_active ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 rounded-lg"
+                            onClick={() => handleToggleActive(sub.id, sub.is_active)}
+                          >
+                            <BellOff className="h-3 w-3 mr-1" />
+                            Deaktif Et
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg"
+                            onClick={() => handleToggleActive(sub.id, sub.is_active)}
+                          >
+                            <Bell className="h-3 w-3 mr-1" />
+                            Aktif Et
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -237,7 +297,8 @@ export default function NotificationsPage() {
                           <Trash2 className="h-3 w-3 mr-1" />
                           Sil
                         </Button>
-                      </td>
+                      </div>
+                    </td>
                     </tr>
                   ))}
                 </tbody>
