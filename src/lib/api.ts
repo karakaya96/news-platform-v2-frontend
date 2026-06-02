@@ -25,6 +25,9 @@ async function fetchApi<T>(
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    // Disable all caching layers (browser + CDN + Vercel Edge)
+    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+    'Pragma': 'no-cache',
     ...options.headers,
   };
 
@@ -45,21 +48,14 @@ async function fetchApi<T>(
   try {
     const url = `${BASE_URL}${endpoint}`;
 
-    // Don't use Next.js caching for admin operations (mutations or when auth is needed)
-    const isAdmin = endpoint.startsWith('/api/');
-    const cacheOptions: Record<string, unknown> = {};
-    if (revalidate !== undefined || tags !== undefined) {
-      cacheOptions.next = {
-        revalidate: revalidate ?? 60,
-        tags: tags,
-      };
-    } else if (!isAdmin || token) {
-      cacheOptions.cache = 'no-store';
-    } else {
-      cacheOptions.next = {
-        revalidate: revalidate ?? 60,
-        tags: tags,
-      };
+    // Always bypass all caches for public API requests
+    const cacheOptions: Record<string, unknown> = {
+      cache: 'no-store',
+    };
+
+    // Only use Next.js revalidate for explicitly tagged requests
+    if (revalidate !== undefined && revalidate > 0) {
+      cacheOptions.next = { revalidate, tags };
     }
 
     const response = await fetch(url, {
