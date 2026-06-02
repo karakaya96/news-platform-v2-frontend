@@ -3,6 +3,7 @@ export const runtime = 'edge';
 import type { Metadata } from 'next';
 import api from '@/lib/api';
 import { SubscriptionForm } from '@/components/news/subscription-form';
+import { UnsubscribeHandler } from '@/components/news/unsubscribe-handler';
 import { CATEGORY_TRANSLATIONS, SITE_NAME } from '@/lib/constants';
 
 export const metadata: Metadata = {
@@ -37,6 +38,7 @@ export default async function SubscribePage() {
         </p>
       </div>
 
+      <UnsubscribeHandler />
       <SubscriptionForm
         categories={categories.map((c: any) => ({
           slug: c.slug,
