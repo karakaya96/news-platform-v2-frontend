@@ -84,7 +84,7 @@ export default function NotificationsPage() {
   const handleToggleActive = async (id: number, currentStatus: number) => {
     const action = currentStatus === 1 ? 'deactivate' : 'activate';
     try {
-      const res = await api.post(`/api/subscribe/admin/${id}/${action}`);
+      const res = await api.post(`/api/subscribe/admin/${id}/${action}`, {});
       if (res.success) {
         toast.success(currentStatus === 1 ? 'Abonelik deaktif edildi' : 'Abonelik aktif edildi');
         setSubscriptions((prev) =>
