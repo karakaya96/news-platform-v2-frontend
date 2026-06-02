@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Bell, BellOff, Mail, MailOpen, Trash2, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { translateCategoryName } from '@/lib/constants';
 import { toast } from 'sonner';
 
 interface SubscriptionStats {
@@ -266,7 +267,7 @@ export default function NotificationsPage() {
                           ) : (
                             sub.categories.map((cat) => (
                               <span key={cat} className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-600 dark:text-slate-300">
-                                {cat}
+                                {translateCategoryName(cat, cat)}
                               </span>
                             ))
                           )}
