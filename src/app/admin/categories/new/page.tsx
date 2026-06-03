@@ -72,6 +72,7 @@ export default function NewCategoryPage() {
       slug: '',
       description: '',
       color: '#3b82f6',
+      sort_order: 0,
     },
   });
 
