@@ -25,6 +25,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
   health: '#ec4899',
   entertainment: '#a855f7',
   politics: '#ef4444',
+  gundem: '#f59e0b',
 };
 
 export const CATEGORY_TRANSLATIONS: Record<string, { name: string; description: string }> = {
@@ -36,6 +37,7 @@ export const CATEGORY_TRANSLATIONS: Record<string, { name: string; description: 
   health: { name: 'Sağlık', description: 'Sağlık, tıp ve kamu sağlığı haberleri' },
   entertainment: { name: 'Eğlence', description: 'Kültür, sinema, müzik ve ünlüler' },
   politics: { name: 'Siyaset', description: 'Devlet, politika ve siyasi analizler' },
+  gundem: { name: 'Gündem', description: 'Gündem haberleri ve son dakika gelişmeleri' },
 };
 
 export function translateCategoryName(slug: string, fallback: string): string {

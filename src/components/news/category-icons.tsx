@@ -74,6 +74,15 @@ const PoliticsIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+const GundemIcon = ({ className }: IconProps) => (
+  <svg className={className} viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+    <path d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z' />
+    <line x1='4' y1='22' x2='4' y2='15' />
+    <circle cx='4' cy='4' r='2' />
+    <path d='M9 17l2 2 4-4' />
+  </svg>
+);
+
 export const CATEGORY_ICONS: Record<string, React.FC<IconProps>> = {
   technology: TechnologyIcon,
   'world-news': WorldNewsIcon,
@@ -83,6 +92,7 @@ export const CATEGORY_ICONS: Record<string, React.FC<IconProps>> = {
   health: HealthIcon,
   entertainment: EntertainmentIcon,
   politics: PoliticsIcon,
+  gundem: GundemIcon,
 };
 
 export function getCategoryIcon(slug: string): React.FC<IconProps> {

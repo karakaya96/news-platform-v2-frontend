@@ -6,6 +6,9 @@ import type { Category } from '@/types';
 import { CATEGORY_COLORS, translateCategoryName, translateCategoryDescription } from '@/lib/constants';
 import { getCategoryIcon } from '@/components/news/category-icons';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Kategoriler',
   description: 'Kategorilere göre haberlere göz atın.',
