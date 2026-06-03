@@ -68,7 +68,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm sm:prose max-w-none min-h-[300px] p-4 focus:outline-none',
+          'prose prose-sm sm:prose max-w-none min-h-[300px] p-4 focus:outline-none dark:prose-invert',
       },
     },
   });
@@ -113,8 +113,8 @@ export function RichTextEditor({
       variant="ghost"
       size="icon"
       className={cn(
-        'h-8 w-8',
-        isActive && 'bg-slate-200 text-slate-900'
+        'h-8 w-8 text-slate-700 dark:text-slate-300',
+        isActive && 'bg-slate-200 text-slate-900 dark:bg-slate-600 dark:text-slate-100'
       )}
       onClick={onClick}
       title={title}
@@ -126,7 +126,7 @@ export function RichTextEditor({
   return (
     <div className={cn('border rounded-lg overflow-hidden', className)}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 border-b bg-slate-50 p-1.5">
+      <div className="flex flex-wrap items-center gap-0.5 border-b bg-slate-50 dark:bg-slate-800 p-1.5">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
           title="Geri Al"
@@ -270,7 +270,7 @@ export function RichTextEditor({
       </div>
 
       {/* Editor */}
-      <EditorContent editor={editor} className="bg-white" />
+      <EditorContent editor={editor} className="bg-white dark:bg-slate-900" />
     </div>
   );
 }

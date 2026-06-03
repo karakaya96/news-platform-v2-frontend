@@ -423,7 +423,7 @@ placeholder="https://ornek.com/gorsel.jpg"
       {/* Preview Modal */}
       {showPreview && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
             <div className="flex items-center justify-between p-4 border-b">
               <h3 className="font-semibold">Önizleme</h3>
               <Button
@@ -435,7 +435,7 @@ placeholder="https://ornek.com/gorsel.jpg"
               </Button>
             </div>
             <div className="p-6">
-              <h1 className="text-3xl font-bold mb-4">{title}</h1>
+              <h1 className="text-3xl font-bold mb-4 dark:text-slate-100">{title}</h1>
               {imageUrl && (
                 <img
                   src={imageUrl}
@@ -444,7 +444,7 @@ placeholder="https://ornek.com/gorsel.jpg"
                 />
               )}
               <div
-                className="prose max-w-none"
+                className="prose max-w-none dark:prose-invert"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             </div>
