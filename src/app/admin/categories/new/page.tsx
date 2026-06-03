@@ -22,13 +22,19 @@ const categorySchema = z.object({
   slug: z.string().min(1, 'Slug zorunludur').max(100),
   description: z.string().max(500).optional(),
   color: z.string().optional(),
+  sort_order: z.number().int().default(0),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
 
 function slugify(text: string): string {
+  const turkishMap: Record<string, string> = {
+    'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
+    'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u',
+  };
   return text
     .toLowerCase()
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => turkishMap[c] || c)
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_]+/g, '-')
     .replace(/^-+|-+$/g, '');
@@ -92,6 +98,7 @@ export default function NewCategoryPage() {
         slug: data.slug,
         description: data.description || '',
         color: data.color || '#3b82f6',
+        sort_order: data.sort_order ?? 0,
       });
 
       if (res.success) {
@@ -150,6 +157,16 @@ export default function NewCategoryPage() {
                 placeholder="Kategorinin kısa açıklaması..."
                 rows={3}
                 {...register('description')}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sort_order">Sıralama</Label>
+              <Input
+                id="sort_order"
+                type="number"
+                placeholder="0"
+                {...register('sort_order', { valueAsNumber: true })}
               />
             </div>
 
