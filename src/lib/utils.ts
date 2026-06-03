@@ -12,6 +12,7 @@ export function formatDate(dateString: string | null | undefined): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Europe/Istanbul',
   });
 }
 
@@ -22,10 +23,12 @@ export function formatDateWithTime(dateString: string | null | undefined): strin
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Europe/Istanbul',
   });
   const time = date.toLocaleTimeString('tr-TR', {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'Europe/Istanbul',
   });
   return `${day} ${time}`;
 }
@@ -34,6 +37,8 @@ export function formatRelativeDate(dateString: string | null | undefined): strin
   if (!dateString) return '';
   const date = new Date(dateString);
   const now = new Date();
+  // Use Istanbul timezone for both dates to get accurate relative time
+  const istanbulOffset = 3 * 60 * 60 * 1000; // UTC+3
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) return 'Az önce';
