@@ -141,7 +141,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                           )}
                           <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
                             <Clock className="h-2.5 w-2.5" />
-                            {article.published_at ? new Date(article.published_at).toLocaleDateString('tr-TR') : 'Tarih yok'}
+                            {article.published_at ? new Date(article.published_at).toLocaleDateString('tr-TR', { timeZone: 'Europe/Istanbul' }) : 'Tarih yok'}
                           </span>
                         </div>
                       </div>
