@@ -24,6 +24,8 @@ import {
   Activity,
   Clock,
   MessageCircle,
+  Archive,
+  Bell,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDateWithTime } from '@/lib/utils';
@@ -35,8 +37,11 @@ interface DashboardStats {
   totalCategories: number;
   publishedCount: number;
   draftCount: number;
+  archivedCount: number;
   pendingComments?: number;
   activeSubscriptions?: number;
+  browserSubscriptions?: number;
+  emailSubscriptions?: number;
   recentNews: News[];
   categoryDistribution?: { id: number; name: string; slug: string; color: string; article_count: number }[];
 }
@@ -113,8 +118,8 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {Array.from({ length: 7 }).map((_, i) => (
             <Card key={i} className="border-0 shadow-md rounded-2xl">
               <CardContent className="p-6">
                 <Skeleton className="h-4 w-24 mb-3" />
@@ -162,6 +167,14 @@ export default function DashboardPage() {
       subtitle: 'Yayınlanmayı bekliyor',
     },
     {
+      title: 'Arşiv',
+      value: stats?.archivedCount ?? 0,
+      icon: Archive,
+      gradient: 'from-slate-500 via-slate-600 to-gray-600',
+      iconBg: 'bg-white/20',
+      subtitle: 'Arşivlenmiş haber',
+    },
+    {
       title: 'Kategoriler',
       value: stats?.totalCategories ?? 0,
       icon: FolderOpen,
@@ -178,12 +191,21 @@ export default function DashboardPage() {
       subtitle: 'Onay bekliyor',
       href: '/admin/comments',
     },
+    {
+      title: 'Aktif Aboneler',
+      value: stats?.activeSubscriptions ?? 0,
+      icon: Bell,
+      gradient: 'from-blue-500 via-blue-600 to-cyan-600',
+      iconBg: 'bg-white/20',
+      subtitle: `${stats?.browserSubscriptions ?? 0} tarayıcı, ${stats?.emailSubscriptions ?? 0} e-posta`,
+      href: '/admin/notifications',
+    },
   ];
 
   return (
     <div className="space-y-8">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {statCards.map((card, index) => (
           <div
             key={index}
