@@ -77,10 +77,10 @@ export default function NewsListPage() {
   // Filters
   const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
   const [status, setStatus] = useState(searchParams.get('status') || 'all');
-  const [category, setCategory] = useState(searchParams.get('category') || '');
+  const [category, setCategory] = useState(searchParams.get('category') || 'all');
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [featured, setFeatured] = useState(searchParams.get('featured') || '');
-  const [breaking, setBreaking] = useState(searchParams.get('breaking') || '');
+  const [featured, setFeatured] = useState(searchParams.get('featured') || 'all');
+  const [breaking, setBreaking] = useState(searchParams.get('breaking') || 'all');
   const [dateFrom, setDateFrom] = useState(searchParams.get('dateFrom') || '');
   const [dateTo, setDateTo] = useState(searchParams.get('dateTo') || '');
   const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'newest');
@@ -105,10 +105,10 @@ export default function NewsListPage() {
       params.set('page', String(page));
       params.set('limit', '20');
       if (status) params.set('status', status);
-      if (category) params.set('category', category);
+      if (category && category !== 'all') params.set('category', category);
       if (search) params.set('search', search);
-      if (featured) params.set('featured', featured);
-      if (breaking) params.set('breaking', breaking);
+      if (featured && featured !== 'all') params.set('featured', featured);
+      if (breaking && breaking !== 'all') params.set('breaking', breaking);
       if (dateFrom) params.set('dateFrom', dateFrom);
       if (dateTo) params.set('dateTo', dateTo);
       if (sortBy) params.set('sortBy', sortBy);
@@ -172,7 +172,7 @@ export default function NewsListPage() {
     setPage(1);
   };
 
-  const activeFilterCount = [category, featured, breaking, dateFrom, dateTo].filter(Boolean).length;
+  const activeFilterCount = [category !== 'all' && category, featured !== 'all' && featured, breaking !== 'all' && breaking, dateFrom, dateTo].filter(Boolean).length;
 
   // Pagination helpers
   const getPageNumbers = (): (number | '...')[] => {
@@ -261,7 +261,7 @@ export default function NewsListPage() {
                 <SelectValue placeholder="Tüm Kategoriler" />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="">Tüm Kategoriler</SelectItem>
+                <SelectItem value="all">Tüm Kategoriler</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.slug} value={cat.slug}>
                     {translateCategoryName(cat.slug, cat.name)}
@@ -278,7 +278,7 @@ export default function NewsListPage() {
                 <SelectValue placeholder="Öne Çıkan" />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="">Tümü</SelectItem>
+                <SelectItem value="all">Tümü</SelectItem>
                 <SelectItem value="1">Öne Çıkan</SelectItem>
                 <SelectItem value="0">Öne Çıkan Değil</SelectItem>
               </SelectContent>
@@ -292,7 +292,7 @@ export default function NewsListPage() {
                 <SelectValue placeholder="Son Dakika" />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="">Tümü</SelectItem>
+                <SelectItem value="all">Tümü</SelectItem>
                 <SelectItem value="1">Son Dakika</SelectItem>
                 <SelectItem value="0">Son Dakika Değil</SelectItem>
               </SelectContent>
