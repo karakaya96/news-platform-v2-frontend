@@ -3,7 +3,7 @@ export const SITE_DESCRIPTION = 'Son dakika haberleri, analizler ve derinlemesin
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newshaberglobal.vercel.app';
 export const SITE_LOGO_URL = `${SITE_URL}/favicon.png`;
 export const SITE_LANGUAGE = 'tr';
-export const GOOGLE_SITE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'BdderFGFwmNoekb0M33cR23m4_2x7zNbHLjwcaJ_WTY';
+export const GOOGLE_SITE_VERIFICATION = 'BdderFGFwmNoekb0M33cR23m4_2x7zNbHLjwcaJ_WTY';
 
 export const SOCIAL_LINKS = {
   twitter: 'https://twitter.com/newshaberglobal',
