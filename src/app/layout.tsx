@@ -3,7 +3,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import Script from 'next/script';
-import { SITE_NAME, SITE_DESCRIPTION, SITE_URL, SITE_LOGO_URL } from '@/lib/constants';
+import { GOOGLE_SITE_VERIFICATION, SITE_NAME, SITE_DESCRIPTION, SITE_URL, SITE_LOGO_URL } from '@/lib/constants';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -76,6 +76,9 @@ export const metadata: Metadata = {
     apple: '/favicon.png',
   },
   metadataBase: new URL(SITE_URL),
+  verification: {
+    google: GOOGLE_SITE_VERIFICATION,
+  },
 };
 
 export default function RootLayout({
