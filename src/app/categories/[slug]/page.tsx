@@ -9,7 +9,7 @@ import type { News, Category } from '@/types';
 import { NewsGrid } from '@/components/news/news-grid';
 import { Pagination } from '@/components/shared/pagination';
 import { NewsGridSkeleton } from '@/components/shared/loading-skeleton';
-import { translateCategoryName, translateCategoryDescription } from '@/lib/constants';
+import { translateCategoryName, translateCategoryDescription, SITE_URL, SITE_NAME, SITE_LOGO_URL } from '@/lib/constants';
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -40,6 +40,23 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   return {
     title: translateCategoryName(slug, category.name),
     description: translateCategoryDescription(slug, category.description || `${category.name} kategorisindeki son haberler.`),
+    openGraph: {
+      title: translateCategoryName(slug, category.name),
+      description: translateCategoryDescription(slug, category.description || `${category.name} kategorisindeki son haberler.`),
+      type: 'website',
+      url: `${SITE_URL}/categories/${slug}`,
+      siteName: SITE_NAME,
+      images: [{ url: SITE_LOGO_URL, width: 512, height: 512, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: translateCategoryName(slug, category.name),
+      description: translateCategoryDescription(slug, category.description || `${category.name} kategorisindeki son haberler.`),
+      images: [SITE_LOGO_URL],
+    },
+    alternates: {
+      canonical: `${SITE_URL}/categories/${slug}`,
+    },
   };
 }
 

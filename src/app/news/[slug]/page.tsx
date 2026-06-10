@@ -17,7 +17,7 @@ import { CommentsSection } from '@/components/news/comments-section';
 import { ArticleContent } from '@/components/news/article-content';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { SITE_URL, SITE_NAME } from '@/lib/constants';
+import { SITE_URL, SITE_NAME, SITE_LOGO_URL } from '@/lib/constants';
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -115,22 +115,40 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             '@context': 'https://schema.org',
             '@type': 'NewsArticle',
             headline: article.title,
-            description: article.seo_description || article.excerpt,
-            image: article.image_url || undefined,
+            description: article.seo_description || article.excerpt || undefined,
+            articleSection: article.category_name || undefined,
+            keywords: article.tags?.map((t: any) => t.name) || article.seo_keywords?.split(',').map((k: string) => k.trim()) || undefined,
+            wordCount: article.content ? article.content.replace(/<[^>]*>/g, '').split(/\s+/).length : undefined,
+            image: article.image_url
+              ? (article.image_alt
+                  ? [{ '@type': 'ImageObject', url: article.image_url, caption: article.image_alt, width: 1200, height: 630 }]
+                  : [{ '@type': 'ImageObject', url: article.image_url, width: 1200, height: 630 }])
+              : undefined,
             datePublished: article.published_at || undefined,
             dateModified: article.updated_at || article.published_at || undefined,
-            author: article.author_name ? {
-              '@type': 'Person',
-              name: article.author_name,
-            } : undefined,
+            author: article.author_name
+              ? {
+                  '@type': 'Person',
+                  name: article.author_name,
+                }
+              : undefined,
             publisher: {
               '@type': 'Organization',
-              name: SITE_NAME || 'NewsHaberGlobal',
+              name: SITE_NAME,
+              url: SITE_URL,
+              logo: {
+                '@type': 'ImageObject',
+                url: SITE_LOGO_URL,
+                width: 512,
+                height: 512,
+              },
             },
             mainEntityOfPage: {
               '@type': 'WebPage',
               '@id': `${SITE_URL}/news/${article.slug}`,
             },
+            isAccessibleForFree: true,
+            inLanguage: 'tr',
           }),
         }}
       />

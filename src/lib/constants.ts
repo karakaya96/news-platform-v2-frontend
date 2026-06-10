@@ -1,12 +1,14 @@
 export const SITE_NAME = 'NewsHaberGlobal';
 export const SITE_DESCRIPTION = 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.';
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newshaberglobal.vercel.app';
+export const SITE_LOGO_URL = `${SITE_URL}/favicon.png`;
+export const SITE_LANGUAGE = 'tr';
 
 export const SOCIAL_LINKS = {
-  twitter: 'https://twitter.com/newsplatform',
-  facebook: 'https://facebook.com/newsplatform',
-  linkedin: 'https://linkedin.com/company/newsplatform',
-  youtube: 'https://youtube.com/@newsplatform',
+  twitter: 'https://twitter.com/newshaberglobal',
+  facebook: 'https://facebook.com/newshaberglobal',
+  linkedin: 'https://linkedin.com/company/newshaberglobal',
+  youtube: 'https://youtube.com/@newshaberglobal',
 };
 
 export const NAVIGATION = [

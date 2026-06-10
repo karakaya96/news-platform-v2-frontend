@@ -3,15 +3,32 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import api from '@/lib/api';
 import type { Category } from '@/types';
-import { CATEGORY_COLORS, translateCategoryName, translateCategoryDescription } from '@/lib/constants';
+import { CATEGORY_COLORS, translateCategoryName, translateCategoryDescription, SITE_URL, SITE_NAME, SITE_LOGO_URL } from '@/lib/constants';
 import { getCategoryIcon } from '@/components/news/category-icons';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Kategoriler',
-  description: 'Kategorilere göre haberlere göz atın.',
+  title: `Kategoriler | ${SITE_NAME}`,
+  description: 'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
+  openGraph: {
+    title: `Kategoriler | ${SITE_NAME}`,
+    description: 'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
+    type: 'website',
+    url: `${SITE_URL}/categories`,
+    siteName: SITE_NAME,
+    images: [{ url: SITE_LOGO_URL, width: 512, height: 512, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `Kategoriler | ${SITE_NAME}`,
+    description: 'Tüm haber kategorilerini keşfedin.',
+    images: [SITE_LOGO_URL],
+  },
+  alternates: {
+    canonical: `${SITE_URL}/categories`,
+  },
 };
 
 async function getCategories(): Promise<Category[]> {
