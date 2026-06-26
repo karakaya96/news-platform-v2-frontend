@@ -88,6 +88,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='tr' suppressHydrationWarning>
+      <head>
+        <meta httpEquiv='Content-Security-Policy' content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://news-v2-api.karakaya-mk96.workers.dev; frame-src 'self' https://www.youtube.com https://www.dailymotion.com https://player.vimeo.com https://www.bloomberg.com; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;" />
+        <meta httpEquiv='X-Content-Type-Options' content='nosniff' />
+        <meta httpEquiv='X-Frame-Options' content='SAMEORIGIN' />
+        <meta httpEquiv='X-XSS-Protection' content='1; mode=block' />
+        <meta httpEquiv='Referrer-Policy' content='strict-origin-when-cross-origin' />
+        <meta httpEquiv='Permissions-Policy' content='camera=(), microphone=(), geolocation=()' />
+      </head>
       <body className='min-h-screen bg-background font-sans antialiased'>
         <Script
           id="organization-schema"
