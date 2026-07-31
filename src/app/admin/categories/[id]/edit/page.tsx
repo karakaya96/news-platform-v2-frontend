@@ -4,21 +4,21 @@ export const dynamic = 'force-dynamic';
 
 export const runtime = 'edge';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import type { Category } from '@/types';
 
 const categorySchema = z.object({
@@ -26,15 +26,25 @@ const categorySchema = z.object({
   slug: z.string().min(1, 'Slug zorunludur').max(100),
   description: z.string().max(500).optional(),
   color: z.string().optional(),
-  sort_order: z.number().int().default(0),
+  sortOrder: z.number().int().default(0),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
 
-function slugify(text: string): string {
+function _slugify(text: string): string {
   const turkishMap: Record<string, string> = {
-    'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
-    'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u',
+    ç: 'c',
+    ğ: 'g',
+    ı: 'i',
+    ö: 'o',
+    ş: 's',
+    ü: 'u',
+    Ç: 'c',
+    Ğ: 'g',
+    İ: 'i',
+    Ö: 'o',
+    Ş: 's',
+    Ü: 'u',
   };
   return text
     .toLowerCase()
@@ -45,9 +55,18 @@ function slugify(text: string): string {
 }
 
 const presetColors = [
-  '#3b82f6', '#ef4444', '#10b981', '#f59e0b',
-  '#8b5cf6', '#ec4899', '#06b6d4', '#f97316',
-  '#6366f1', '#14b8a6', '#84cc16', '#64748b',
+  '#3b82f6',
+  '#ef4444',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#f97316',
+  '#6366f1',
+  '#14b8a6',
+  '#84cc16',
+  '#64748b',
 ];
 
 export default function EditCategoryPage() {
@@ -90,7 +109,7 @@ export default function EditCategoryPage() {
             slug: cat.slug,
             description: cat.description || '',
             color: cat.color || '#3b82f6',
-            sort_order: cat.sort_order ?? 0,
+            sortOrder: cat.sortOrder ?? 0,
           });
         } else {
           toast.error('Kategori bulunamadı');
@@ -114,7 +133,7 @@ export default function EditCategoryPage() {
         slug: data.slug,
         description: data.description || '',
         color: data.color || '#3b82f6',
-        sort_order: data.sort_order ?? 0,
+        sortOrder: data.sortOrder ?? 0,
       });
 
       if (res.success) {
@@ -166,9 +185,7 @@ export default function EditCategoryPage() {
                 {...register('name')}
                 className={cn(errors.name && 'border-red-500')}
               />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -179,9 +196,7 @@ export default function EditCategoryPage() {
                 {...register('slug')}
                 className={cn(errors.slug && 'border-red-500')}
               />
-              {errors.slug && (
-                <p className="text-sm text-red-500">{errors.slug.message}</p>
-              )}
+              {errors.slug && <p className="text-sm text-red-500">{errors.slug.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -195,12 +210,12 @@ export default function EditCategoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sort_order">Sıralama</Label>
+              <Label htmlFor="sortOrder">Sıralama</Label>
               <Input
-                id="sort_order"
+                id="sortOrder"
                 type="number"
                 placeholder="0"
-                {...register('sort_order', { valueAsNumber: true })}
+                {...register('sortOrder', { valueAsNumber: true })}
               />
             </div>
 
@@ -213,11 +228,7 @@ export default function EditCategoryPage() {
                   onChange={(e) => setValue('color', e.target.value)}
                   className="h-10 w-10 rounded cursor-pointer border-0"
                 />
-                <Input
-                  {...register('color')}
-                  placeholder="#3b82f6"
-                  className="w-32"
-                />
+                <Input {...register('color')} placeholder="#3b82f6" className="w-32" />
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {presetColors.map((c) => (
@@ -239,16 +250,10 @@ export default function EditCategoryPage() {
 
         <div className="flex gap-3">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Kategoriyi Güncelle
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push('/admin/categories')}
-          >
+          <Button type="button" variant="outline" onClick={() => router.push('/admin/categories')}>
             İptal
           </Button>
         </div>

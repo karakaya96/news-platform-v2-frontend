@@ -5,9 +5,22 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+function parseDate(dateString: string): Date {
+  if (!dateString) return new Date(NaN);
+
+  // Handle SQLite datetime format: '2026-06-27 15:04:13' (no T, no Z)
+  // Convert to ISO format: '2026-06-27T15:04:13'
+  const isoString = dateString.includes('T')
+    ? dateString
+    : dateString.replace(' ', 'T');
+
+  return new Date(isoString);
+}
+
 export function formatDate(dateString: string | null | undefined): string {
   if (!dateString) return '';
-  const date = new Date(dateString);
+  const date = parseDate(dateString);
+  if (Number.isNaN(date.getTime())) return '';
   return date.toLocaleDateString('tr-TR', {
     year: 'numeric',
     month: 'long',
@@ -18,7 +31,8 @@ export function formatDate(dateString: string | null | undefined): string {
 
 export function formatDateWithTime(dateString: string | null | undefined): string {
   if (!dateString) return '';
-  const date = new Date(dateString);
+  const date = parseDate(dateString);
+  if (Number.isNaN(date.getTime())) return '';
   const day = date.toLocaleDateString('tr-TR', {
     year: 'numeric',
     month: 'long',
@@ -35,10 +49,9 @@ export function formatDateWithTime(dateString: string | null | undefined): strin
 
 export function formatRelativeDate(dateString: string | null | undefined): string {
   if (!dateString) return '';
-  const date = new Date(dateString);
+  const date = parseDate(dateString);
+  if (Number.isNaN(date.getTime())) return '';
   const now = new Date();
-  // Use Istanbul timezone for both dates to get accurate relative time
-  const istanbulOffset = 3 * 60 * 60 * 1000; // UTC+3
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) return 'Az önce';
@@ -54,5 +67,5 @@ export function stripHtml(html: string): string {
 
 export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trim() + '...';
+  return `${text.slice(0, maxLength).trim()}...`;
 }

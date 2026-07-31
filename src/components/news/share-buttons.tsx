@@ -1,7 +1,7 @@
 'use client';
 
+import { Check, Facebook, Link2, Linkedin, Twitter } from 'lucide-react';
 import React from 'react';
-import { Twitter, Facebook, Linkedin, Link2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ShareButtonsProps {
@@ -44,36 +44,22 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
   };
 
   return (
-    <div className='flex items-center gap-2'>
-      <span className='text-sm font-medium text-muted-foreground'>Paylaş:</span>
+    <div className="flex items-center gap-2">
+      <span className="text-sm font-medium text-muted-foreground">Paylaş:</span>
       {shareLinks.map((link) => (
-        <Button
-          key={link.name}
-          variant='outline'
-          size='icon'
-          asChild
-        >
+        <Button key={link.name} variant="outline" size="icon" asChild>
           <a
             href={link.href}
-            target='_blank'
-            rel='noopener noreferrer'
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label={`Share on ${link.name}`}
           >
-            <link.icon className='h-4 w-4' />
+            <link.icon className="h-4 w-4" />
           </a>
         </Button>
       ))}
-      <Button
-        variant='outline'
-        size='icon'
-        onClick={handleCopyLink}
-        aria-label='Copy link'
-      >
-        {copied ? (
-          <Check className='h-4 w-4 text-green-500' />
-        ) : (
-          <Link2 className='h-4 w-4' />
-        )}
+      <Button variant="outline" size="icon" onClick={handleCopyLink} aria-label="Copy link">
+        {copied ? <Check className="h-4 w-4 text-green-500" /> : <Link2 className="h-4 w-4" />}
       </Button>
     </div>
   );

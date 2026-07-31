@@ -5,9 +5,9 @@ export interface User {
   email: string;
   name: string;
   role: 'admin' | 'editor';
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
+  avatarUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Category {
@@ -16,10 +16,10 @@ export interface Category {
   slug: string;
   description: string | null;
   color: string;
-  sort_order: number;
-  created_at: string;
+  sortOrder: number;
+  createdAt: string;
   // Computed (from joins)
-  article_count?: number;
+  articleCount?: number;
 }
 
 export interface Tag {
@@ -34,26 +34,27 @@ export interface News {
   slug: string;
   excerpt: string | null;
   content: string;
-  image_url: string | null;
-  image_alt: string | null;
-  category_id: number;
-  author_id: number;
+  imageUrl: string | null;
+  imageAlt: string | null;
+  categoryId: number;
+  authorId: number;
   status: 'draft' | 'published' | 'archived';
-  is_featured: number;  // SQLite boolean (0/1)
-  is_breaking: number;  // SQLite boolean (0/1)
-  view_count: number;
-  seo_title: string | null;
-  seo_description: string | null;
-  seo_keywords: string | null;
-  published_at: string | null;
-  created_at: string;
-  updated_at: string;
+  isFeatured: number; // SQLite boolean (0/1)
+  isBreaking: number; // SQLite boolean (0/1)
+  viewCount: number;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
   // Joined fields
-  category_name?: string;
-  category_slug?: string;
-  category_color?: string;
-  author_name?: string;
+  categoryName?: string;
+  categorySlug?: string;
+  categoryColor?: string;
+  authorName?: string;
   tags?: Tag[];
+  related?: News[];
 }
 
 export interface DashboardStats {
@@ -101,16 +102,16 @@ export interface CreateNewsRequest {
   slug?: string;
   excerpt?: string;
   content: string;
-  image_url?: string;
-  image_alt?: string;
-  category_id: number;
+  imageUrl?: string;
+  imageAlt?: string;
+  categoryId: number;
   status?: 'draft' | 'published' | 'archived';
-  is_featured?: boolean;
-  is_breaking?: boolean;
-  seo_title?: string;
-  seo_description?: string;
-  seo_keywords?: string;
-  tag_ids?: number[];
+  isFeatured?: boolean;
+  isBreaking?: boolean;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
+  tagIds?: number[];
 }
 
 export interface UpdateNewsRequest extends Partial<CreateNewsRequest> {}
@@ -120,25 +121,27 @@ export interface CreateCategoryRequest {
   slug?: string;
   description?: string;
   color?: string;
-  sort_order?: number;
+  sortOrder?: number;
 }
 
 export interface UpdateCategoryRequest extends Partial<CreateCategoryRequest> {}
 
 export interface CommentItem {
   id: number;
-  news_id: number;
-  parent_id: number | null;
-  author_name: string;
-  author_email: string;
+  newsId: number;
+  parentId: number | null;
+  authorName: string;
+  authorEmail: string;
   content: string;
   status: 'pending' | 'approved' | 'rejected' | 'spam';
   ip_address: string | null;
-  created_at: string;
-  updated_at: string;
-  news_title?: string;
-  news_slug?: string;
-  reply_count?: number;
+  createdAt: string;
+  updatedAt: string;
+  newsTitle?: string;
+  newsSlug?: string;
+  replyCount?: number;
+  // For nested replies
+  replies?: CommentItem[];
 }
 
 export interface CommentStats {

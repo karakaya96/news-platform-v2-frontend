@@ -2,11 +2,11 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
-import { NewsForm } from '@/components/admin/news-form';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { NewsForm } from '@/components/admin/news-form';
+import { api } from '@/lib/api';
 
 export default function NewArticlePage() {
   const router = useRouter();
@@ -15,15 +15,15 @@ export default function NewArticlePage() {
   const handleSubmit = async (data: {
     title: string;
     slug: string;
-    category_id: string;
+    categoryId: string;
     excerpt?: string;
     content: string;
-    image_url?: string;
+    imageUrl?: string;
     status: 'draft' | 'published' | 'archived';
-    is_featured: boolean;
-    is_breaking: boolean;
-    seo_title?: string;
-    seo_description?: string;
+    isFeatured: boolean;
+    isBreaking: boolean;
+    seoTitle?: string;
+    seoDescription?: string;
   }) => {
     if (!data.content) {
       toast.error('İçerik zorunludur');
@@ -37,13 +37,13 @@ export default function NewArticlePage() {
         slug: data.slug,
         content: data.content,
         excerpt: data.excerpt || '',
-        category_id: parseInt(data.category_id, 10),
-        image_url: data.image_url || '',
+        categoryId: Number.parseInt(data.categoryId, 10),
+        imageUrl: data.imageUrl || '',
         status: data.status,
-        is_featured: data.is_featured,
-        is_breaking: data.is_breaking,
-        seo_title: data.seo_title || '',
-        seo_description: data.seo_description || '',
+        isFeatured: data.isFeatured,
+        isBreaking: data.isBreaking,
+        seoTitle: data.seoTitle || '',
+        seoDescription: data.seoDescription || '',
       });
 
       if (res.success) {

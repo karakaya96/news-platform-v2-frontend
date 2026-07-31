@@ -1,16 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { CommentItem } from '@/types';
+import type { CommentItem } from '@/types';
 
 interface Comment {
   id: number;
-  news_id: number;
-  parent_id: number | null;
-  author_name: string;
+  newsId: number;
+  parentId: number | null;
+  authorName: string;
   content: string;
-  created_at: string;
-  reply_count?: number;
+  createdAt: string;
+  replyCount?: number;
+  replies?: Comment[];
 }
 
 interface CommentsSectionProps {
@@ -20,8 +21,8 @@ interface CommentsSectionProps {
 }
 
 export function CommentsSection({ newsId, initialComments, initialCount }: CommentsSectionProps) {
-  const [comments, setComments] = useState<Comment[]>(initialComments);
-  const [count, setCount] = useState(initialCount);
+  const [comments, _setComments] = useState<Comment[]>(initialComments);
+  const [count, _setCount] = useState(initialCount);
   const [authorName, setAuthorName] = useState('');
   const [authorEmail, setAuthorEmail] = useState('');
   const [content, setContent] = useState('');
@@ -57,10 +58,10 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            author_name: authorName.trim(),
-            author_email: authorEmail.trim(),
+            authorName: authorName.trim(),
+            authorEmail: authorEmail.trim(),
             content: content.trim(),
-            parent_id: parentId,
+            parentId: parentId,
           }),
         }
       );
@@ -86,7 +87,10 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
     setParentId(commentId);
     setReplyingTo(commentId);
     setContent(`@${authorName} `);
-    window.scrollTo({ top: document.getElementById('comment-form')?.offsetTop ?? 0, behavior: 'smooth' });
+    window.scrollTo({
+      top: document.getElementById('comment-form')?.offsetTop ?? 0,
+      behavior: 'smooth',
+    });
   };
 
   const formatDate = (dateStr: string) => {
@@ -106,12 +110,12 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
   };
 
   const buildNestedComments = (comments: Comment[]): Comment[] => {
-    const topLevel = comments.filter((c) => !c.parent_id);
-    const replies = comments.filter((c) => c.parent_id);
-    
+    const topLevel = comments.filter((c) => !c.parentId);
+    const replies = comments.filter((c) => c.parentId);
+
     return topLevel.map((c) => ({
       ...c,
-      replies: replies.filter((r) => r.parent_id === c.id),
+      replies: replies.filter((r) => r.parentId === c.id),
     }));
   };
 
@@ -122,8 +126,18 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
       {/* Section Header */}
       <div className="flex items-center gap-3 mb-8">
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900">
-          <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          <svg
+            className="w-5 h-5 text-indigo-600 dark:text-indigo-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
           </svg>
         </div>
         <div>
@@ -155,7 +169,10 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <label htmlFor="authorName" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label
+              htmlFor="authorName"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            >
               Adınız <span className="text-red-500">*</span>
             </label>
             <input
@@ -169,7 +186,10 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
             />
           </div>
           <div>
-            <label htmlFor="authorEmail" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label
+              htmlFor="authorEmail"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            >
               E-posta <span className="text-red-500">*</span>
             </label>
             <input
@@ -185,7 +205,10 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
         </div>
 
         <div className="mb-4">
-          <label htmlFor="content" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+          <label
+            htmlFor="content"
+            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+          >
             Yorumunuz <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -227,8 +250,18 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
       {/* Comments List */}
       {nestedComments.length === 0 ? (
         <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/30 rounded-2xl">
-          <svg className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          <svg
+            className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-slate-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
           </svg>
           <p className="text-slate-500 dark:text-slate-400 font-medium">Henüz yorum yapılmamış</p>
           <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">İlk yorumu siz yapın!</p>
@@ -236,25 +269,27 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
       ) : (
         <div className="space-y-4">
           {nestedComments.map((comment) => (
-            <div key={comment.id} className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+            <div
+              key={comment.id}
+              className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm"
+            >
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm">
-                  {comment.author_name.charAt(0).toUpperCase()}
+                  {comment.authorName.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                      {comment.author_name}
+                      {comment.authorName}
                     </span>
-                    <span className="text-xs text-slate-400">
-                      {formatDate(comment.created_at)}
-                    </span>
+                    <span className="text-xs text-slate-400">{formatDate(comment.createdAt)}</span>
                   </div>
                   <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
                     {comment.content}
                   </p>
                   <button
-                    onClick={() => handleReply(comment.id, comment.author_name)}
+                    type="button"
+                    onClick={() => handleReply(comment.id, comment.authorName)}
                     className="mt-2 text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition-colors"
                   >
                     Yanıtla
@@ -263,20 +298,20 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
               </div>
 
               {/* Nested Replies */}
-              {'replies' in comment && (comment as any).replies?.length > 0 && (
+              {comment.replies && comment.replies.length > 0 && (
                 <div className="ml-8 mt-4 pl-4 border-l-2 border-indigo-100 dark:border-indigo-900 space-y-4">
-                  {(comment as any).replies.map((reply: Comment) => (
+                  {comment.replies.map((reply: Comment) => (
                     <div key={reply.id} className="flex items-start gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold text-xs">
-                        {reply.author_name.charAt(0).toUpperCase()}
+                        {reply.authorName.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                            {reply.author_name}
+                            {reply.authorName}
                           </span>
                           <span className="text-xs text-slate-400">
-                            {formatDate(reply.created_at)}
+                            {formatDate(reply.createdAt)}
                           </span>
                         </div>
                         <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">

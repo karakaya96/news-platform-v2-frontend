@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import {
+  Bell,
+  ExternalLink,
+  FolderOpen,
+  LayoutDashboard,
+  MessageCircle,
+  Newspaper,
+  NewspaperIcon,
+  Sparkles,
+  X,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  LayoutDashboard,
-  Newspaper,
-  FolderOpen,
-  MessageCircle,
-  Bell,
-  X,
-  NewspaperIcon,
-  ExternalLink,
-  Sparkles,
-} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AdminSidebarProps {
   isOpen: boolean;
@@ -57,9 +56,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               <NewspaperIcon className="h-5 w-5 text-white" />
             </div>
             <div>
-              <span className="text-lg font-bold text-white tracking-tight">
-                NewsHaberGlobal
-              </span>
+              <span className="text-lg font-bold text-white tracking-tight">NewsHaberGlobal</span>
               <span className="block text-[10px] font-medium text-indigo-400 uppercase tracking-widest">
                 Yönetim Paneli
               </span>
@@ -83,8 +80,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           {navigation.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href !== '/admin/dashboard' &&
-                pathname.startsWith(item.href));
+              (item.href !== '/admin/dashboard' && pathname.startsWith(item.href));
             return (
               <Link
                 key={item.name}
@@ -100,17 +96,13 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 <div
                   className={cn(
                     'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                    isActive
-                      ? 'bg-white/20'
-                      : 'bg-white/5 group-hover:bg-white/10'
+                    isActive ? 'bg-white/20' : 'bg-white/5 group-hover:bg-white/10'
                   )}
                 >
                   <item.icon className="h-4 w-4 flex-shrink-0" />
                 </div>
                 {item.name}
-                {isActive && (
-                  <Sparkles className="ml-auto h-3.5 w-3.5 text-white/60" />
-                )}
+                {isActive && <Sparkles className="ml-auto h-3.5 w-3.5 text-white/60" />}
               </Link>
             );
           })}
@@ -133,9 +125,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         {/* Footer */}
         <div className="border-t border-white/10 p-4">
           <div className="rounded-xl bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-white/5 p-3">
-            <p className="text-xs text-slate-400 dark:text-slate-300">
-              NewsHaberGlobal v1.0
-            </p>
+            <p className="text-xs text-slate-400 dark:text-slate-300">NewsHaberGlobal v1.0</p>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
               Powered by Cloudflare
             </p>

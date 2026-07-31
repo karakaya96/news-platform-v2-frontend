@@ -1,14 +1,14 @@
-import { SITE_URL, SITE_NAME, SITE_LANGUAGE } from '@/lib/constants';
+import { SITE_LANGUAGE, SITE_NAME, SITE_URL } from '@/lib/constants';
 
 const API_URL = 'https://news-v2-api.karakaya-mk96.workers.dev';
 
 interface NewsArticle {
   slug: string;
   title: string;
-  published_at: string;
-  updated_at?: string;
-  category_name?: string;
-  image_url?: string;
+  publishedAt: string;
+  updatedAt?: string;
+  categoryName?: string;
+  imageUrl?: string;
   keywords?: string;
 }
 
@@ -25,7 +25,7 @@ async function fetchRecentNews(): Promise<NewsArticle[]> {
     // Filter: only last 48 hours
     const cutoff = Date.now() - 48 * 60 * 60 * 1000;
     return articles.filter((a) => {
-      const pubDate = a.published_at ? new Date(a.published_at).getTime() : 0;
+      const pubDate = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
       return pubDate >= cutoff;
     });
   } catch {
@@ -58,20 +58,20 @@ ${articles
         <news:name>${escapeXml(SITE_NAME)}</news:name>
         <news:language>${SITE_LANGUAGE}</news:language>
       </news:publication>
-      <news:publication_date>${article.published_at ? new Date(article.published_at).toISOString() : ''}</news:publication_date>
+      <news:publication_date>${article.publishedAt ? new Date(article.publishedAt).toISOString() : ''}</news:publication_date>
       <news:title>${escapeXml(article.title)}</news:title>
       ${article.keywords ? `<news:keywords>${escapeXml(article.keywords)}</news:keywords>` : ''}
-      ${article.category_name ? `<news:genres>${escapeXml(article.category_name)}</news:genres>` : ''}
+      ${article.categoryName ? `<news:genres>${escapeXml(article.categoryName)}</news:genres>` : ''}
     </news:news>
     ${
-      article.image_url
+      article.imageUrl
         ? `<image:image>
-      <image:loc>${escapeXml(article.image_url)}</image:loc>
+      <image:loc>${escapeXml(article.imageUrl)}</image:loc>
       <image:title>${escapeXml(article.title)}</image:title>
     </image:image>`
         : ''
     }
-    <lastmod>${article.updated_at ? new Date(article.updated_at).toISOString() : article.published_at ? new Date(article.published_at).toISOString() : new Date().toISOString()}</lastmod>
+    <lastmod>${article.updatedAt ? new Date(article.updatedAt).toISOString() : article.publishedAt ? new Date(article.publishedAt).toISOString() : new Date().toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>`

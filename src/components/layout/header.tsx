@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import { Menu, Search, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Menu, X, Search } from 'lucide-react';
+import type React from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { NAVIGATION, SITE_NAME } from '@/lib/constants';
@@ -74,10 +75,10 @@ export function Header() {
     if (!showSuggestions || suggestions.length === 0) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex(prev => Math.min(prev + 1, suggestions.length - 1));
+      setSelectedIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex(prev => Math.max(prev - 1, -1));
+      setSelectedIndex((prev) => Math.max(prev - 1, -1));
     } else if (e.key === 'Enter' && selectedIndex >= 0) {
       e.preventDefault();
       router.push(`/news/${suggestions[selectedIndex].slug}`);
@@ -89,23 +90,23 @@ export function Header() {
   };
 
   return (
-    <header className='sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60'>
-      <div className='container mx-auto px-4'>
-        <div className='flex h-16 items-center justify-between'>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href='/' className='flex items-center space-x-2 group'>
-            <span className='text-2xl font-bold text-primary group-hover:opacity-80 transition-opacity'>
+          <Link href="/" className="flex items-center space-x-2 group">
+            <span className="text-2xl font-bold text-primary group-hover:opacity-80 transition-opacity">
               {SITE_NAME}
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className='hidden md:flex items-center space-x-1'>
+          <nav className="hidden md:flex items-center space-x-1">
             {NAVIGATION.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className='px-3 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent'
+                className="px-3 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent"
               >
                 {item.name}
               </Link>
@@ -113,14 +114,14 @@ export function Header() {
           </nav>
 
           {/* Right side: Search + Theme Toggle */}
-          <div className='hidden md:flex items-center space-x-2'>
-            <form onSubmit={handleSearch} className='relative'>
-              <div className='relative'>
-                <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+          <div className="hidden md:flex items-center space-x-2">
+            <form onSubmit={handleSearch} className="relative">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  type='search'
-                  placeholder='Haber ara...'
-                  className='w-56 pl-9 bg-muted/50 border-transparent focus:border-border focus:bg-background'
+                  type="search"
+                  placeholder="Haber ara..."
+                  className="w-56 pl-9 bg-muted/50 border-transparent focus:border-border focus:bg-background"
                   value={searchQuery}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -132,7 +133,7 @@ export function Header() {
               {showSuggestions && suggestions.length > 0 && (
                 <div
                   ref={suggestionsRef}
-                  className='absolute top-full right-0 mt-1 w-80 bg-popover border rounded-lg shadow-lg z-50 overflow-hidden'
+                  className="absolute top-full right-0 mt-1 w-80 bg-popover border rounded-lg shadow-lg z-50 overflow-hidden"
                 >
                   {suggestions.map((s, i) => (
                     <button
@@ -166,47 +167,43 @@ export function Header() {
                       <Search className="h-3 w-3" /> Tüm sonuçları gör
                     </button>
                   </div>
-                  </div>
-                )}
+                </div>
+              )}
             </form>
             <ThemeToggle />
           </div>
 
           {/* Mobile: Theme Toggle + Menu Button */}
-          <div className='flex items-center space-x-1 md:hidden'>
+          <div className="flex items-center space-x-1 md:hidden">
             <ThemeToggle />
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X className='h-5 w-5' /> : <Menu className='h-5 w-5' />}
+            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className='md:hidden border-t py-4 space-y-4'>
-            <nav className='flex flex-col space-y-1'>
+          <div className="md:hidden border-t py-4 space-y-4">
+            <nav className="flex flex-col space-y-1">
               {NAVIGATION.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className='px-3 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent'
+                  className="px-3 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
             </nav>
-            <form onSubmit={handleSearch} className='flex items-center space-x-2'>
-              <div className='relative flex-1'>
-                <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+            <form onSubmit={handleSearch} className="flex items-center space-x-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  type='search'
-                  placeholder='Haber ara...'
-                  className='w-full pl-9 bg-muted/50'
+                  type="search"
+                  placeholder="Haber ara..."
+                  className="w-full pl-9 bg-muted/50"
                   value={searchQuery}
                   onChange={(e) => handleInputChange(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -214,8 +211,8 @@ export function Header() {
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 />
               </div>
-              <Button type='submit' size='icon' variant='ghost'>
-                <Search className='h-4 w-4' />
+              <Button type="submit" size="icon" variant="ghost">
+                <Search className="h-4 w-4" />
               </Button>
             </form>
             {/* Mobile suggestions */}

@@ -1,7 +1,9 @@
 // api.ts — works in both SSR and Client
 // Uses native fetch; no Next.js cache on client side, no-store only when called from browser
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _env = typeof globalThis !== 'undefined' ? (globalThis as any).process?.env ?? {} : {};
+const _env =
+  typeof globalThis !== 'undefined'
+    ? ((globalThis as { process?: { env?: Record<string, string> } }).process?.env ?? {})
+    : {};
 const BASE_URL = _env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
 let authToken: string | null = null;
@@ -26,10 +28,7 @@ export interface ApiResponse<T = unknown> {
   };
 }
 
-async function fetchApi<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<ApiResponse<T>> {
+async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -46,7 +45,7 @@ async function fetchApi<T>(
   }
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const url = `${BASE_URL}${endpoint}`;
@@ -61,7 +60,10 @@ async function fetchApi<T>(
       const errorData = await response.json().catch(() => ({}));
       return {
         success: false,
-        error: (errorData as Record<string, string>).message || (errorData as Record<string, string>).error || `HTTP ${response.status}: ${response.statusText}`,
+        error:
+          (errorData as Record<string, string>).message ||
+          (errorData as Record<string, string>).error ||
+          `HTTP ${response.status}: ${response.statusText}`,
       };
     }
 

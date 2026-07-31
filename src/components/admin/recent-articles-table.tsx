@@ -1,10 +1,10 @@
 'use client';
 
+import { Edit, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateWithTime } from '@/lib/utils';
-import { Edit, Eye } from 'lucide-react';
 import type { News } from '@/types';
 
 interface RecentArticlesTableProps {
@@ -31,42 +31,31 @@ export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b text-left">
-            <th className="pb-3 text-sm font-medium text-muted-foreground">
-              Başlık
-            </th>
+            <th className="pb-3 text-sm font-medium text-muted-foreground">Başlık</th>
             <th className="pb-3 text-sm font-medium text-muted-foreground hidden sm:table-cell">
               Durum
             </th>
             <th className="pb-3 text-sm font-medium text-muted-foreground hidden md:table-cell">
               Tarih
             </th>
-            <th className="pb-3 text-sm font-medium text-muted-foreground text-right">
-              İşlemler
-            </th>
+            <th className="pb-3 text-sm font-medium text-muted-foreground text-right">İşlemler</th>
           </tr>
         </thead>
         <tbody>
           {articles.map((article) => (
             <tr key={article.id} className="border-b last:border-0">
               <td className="py-3 pr-4">
-                <p className="font-medium text-sm truncate max-w-[300px]">
-                  {article.title}
-                </p>
-                <p className="text-xs text-muted-foreground sm:hidden">
-                  {article.status}
-                </p>
+                <p className="font-medium text-sm truncate max-w-[300px]">{article.title}</p>
+                <p className="text-xs text-muted-foreground sm:hidden">{article.status}</p>
               </td>
               <td className="py-3 pr-4 hidden sm:table-cell">
-                <Badge
-                  variant="secondary"
-                  className={statusColors[article.status] || ''}
-                >
+                <Badge variant="secondary" className={statusColors[article.status] || ''}>
                   {article.status}
                 </Badge>
               </td>
               <td className="py-3 pr-4 hidden md:table-cell">
                 <span className="text-sm text-muted-foreground">
-                  {formatDateWithTime(article.published_at || article.updated_at)}
+                  {formatDateWithTime(article.publishedAt || article.updatedAt)}
                 </span>
               </td>
               <td className="py-3 text-right">

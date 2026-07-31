@@ -2,24 +2,24 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState, useCallback } from 'react';
+import { Edit, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { api } from '@/lib/api';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/lib/api';
+import { translateCategoryDescription, translateCategoryName } from '@/lib/constants';
 import type { Category } from '@/types';
-import { translateCategoryName, translateCategoryDescription } from '@/lib/constants';
 
 export default function KategorilerPage() {
   const [categories, setKategoriler] = useState<Category[]>([]);
@@ -71,9 +71,7 @@ export default function KategorilerPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold dark:text-slate-100">Kategoriler</h2>
-          <p className="text-muted-foreground dark:text-slate-400">
-            {categories.length} kategori
-          </p>
+          <p className="text-muted-foreground dark:text-slate-400">{categories.length} kategori</p>
         </div>
         <Link href="/admin/categories/new">
           <Button className="dark:bg-primary dark:text-primary-foreground">
@@ -88,8 +86,8 @@ export default function KategorilerPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-6 space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+              {Array.from({ length: 5 }).map((_, _i) => (
+                <Skeleton key={`skeleton-cat-${Math.random()}`} className="h-12 w-full" />
               ))}
             </div>
           ) : categories.length === 0 ? (
@@ -133,7 +131,9 @@ export default function KategorilerPage() {
                         />
                       </td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-sm dark:text-slate-100">{translateCategoryName(category.slug, category.name)}</p>
+                        <p className="font-medium text-sm dark:text-slate-100">
+                          {translateCategoryName(category.slug, category.name)}
+                        </p>
                         {category.description && (
                           <p className="text-xs text-muted-foreground dark:text-slate-400 truncate max-w-[300px]">
                             {translateCategoryDescription(category.slug, category.description)}
@@ -147,7 +147,7 @@ export default function KategorilerPage() {
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
                         <span className="text-sm text-muted-foreground dark:text-slate-400">
-                          {category.article_count ?? 0}
+                          {category.articleCount ?? 0}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -186,18 +186,19 @@ export default function KategorilerPage() {
           <DialogHeader>
             <DialogTitle className="dark:text-slate-100">Kategoriyi Sil</DialogTitle>
             <DialogDescription className="dark:text-slate-400">
-              Bu kategoriyi silmek istediğinizden emin misiniz? Bu kategorideki haberler silinmeyecek ancak kategorisiz kalacak.
+              Bu kategoriyi silmek istediğinizden emin misiniz? Bu kategorideki haberler
+              silinmeyecek ancak kategorisiz kalacak.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)} className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteId(null)}
+              className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
+            >
               İptal
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
+            <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
               {deleting ? 'Siliniyor...' : 'Sil'}
             </Button>
           </DialogFooter>

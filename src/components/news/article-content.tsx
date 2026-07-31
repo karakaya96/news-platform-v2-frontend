@@ -1,4 +1,4 @@
-import React from 'react';
+"use client";
 
 interface ArticleContentProps {
   content: string;
@@ -7,7 +7,7 @@ interface ArticleContentProps {
 export function ArticleContent({ content }: ArticleContentProps) {
   return (
     <>
-      <style>{`
+      <style>{` 
         .article-content-wrapper .video-embed {
           position: relative !important;
           margin: 24px 0 !important;
@@ -45,7 +45,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
         }
       `}</style>
       <div
-        className='article-content-wrapper prose prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg'
+        className="article-content-wrapper prose prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
         dangerouslySetInnerHTML={{ __html: content }}
       />
     </>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Bell, BellOff, Mail, Loader2, Check, X } from 'lucide-react';
+import { Bell, BellOff, Check, Loader2, Mail, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface SubscriptionFormProps {
   categories: { slug: string; name: string; color: string }[];
@@ -95,8 +95,16 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
         body: JSON.stringify({
           type: 'browser',
           endpoint: subscription.endpoint,
-          p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')!))),
-          auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')!))),
+          p256dh: btoa(
+            String.fromCharCode(
+              ...new Uint8Array(subscription.getKey('p256dh') ?? new ArrayBuffer(0))
+            )
+          ),
+          auth: btoa(
+            String.fromCharCode(
+              ...new Uint8Array(subscription.getKey('auth') ?? new ArrayBuffer(0))
+            )
+          ),
           categories: selectedCategories.length > 0 ? selectedCategories : [],
         }),
       });
@@ -105,7 +113,10 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
 
       if (data.success) {
         setBrowserSubscribed(true);
-        setMessage({ type: 'success', text: data.data?.message || '🔔 Bildirim aboneliği başarıyla oluşturuldu!' });
+        setMessage({
+          type: 'success',
+          text: data.data?.message || '🔔 Bildirim aboneliği başarıyla oluşturuldu!',
+        });
       } else {
         setMessage({ type: 'error', text: data.error || 'Abone olunamadı' });
       }
@@ -175,7 +186,10 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
       const data = await res.json();
 
       if (data.success) {
-        setMessage({ type: 'success', text: data.data?.message || '📧 E-posta aboneliği başarıyla oluşturuldu!' });
+        setMessage({
+          type: 'success',
+          text: data.data?.message || '📧 E-posta aboneliği başarıyla oluşturuldu!',
+        });
         setEmail('');
         setSelectedCategories([]);
       } else {
@@ -201,8 +215,12 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
           <Bell className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Bildirim Aboneliği</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Yeni haberlerden haberdar olun</p>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            Bildirim Aboneliği
+          </h3>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Yeni haberlerden haberdar olun
+          </p>
         </div>
       </div>
 
@@ -214,6 +232,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
+              type="button"
               key={cat.slug}
               onClick={() => toggleCategory(cat.slug)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
@@ -240,6 +259,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
                 </p>
               </div>
               <button
+                type="button"
                 onClick={handleBrowserUnsubscribe}
                 disabled={submitting}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 hover:bg-red-50 dark:hover:bg-red-950 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200 dark:border-slate-600 hover:border-red-200 dark:hover:border-red-800"
@@ -257,6 +277,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
           ) : (
             <>
               <button
+                type="button"
                 onClick={handleBrowserSubscribe}
                 disabled={submitting}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -313,6 +334,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
             className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors"
           />
           <button
+            type="button"
             onClick={handleEmailSubscribe}
             disabled={submitting}
             className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -326,7 +348,8 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
           </button>
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-          📬 Abone olduğunuzda onay e-postası gönderilecektir. Spam klasörünüzü kontrol etmeyi unutmayın.
+          📬 Abone olduğunuzda onay e-postası gönderilecektir. Spam klasörünüzü kontrol etmeyi
+          unutmayın.
         </p>
       </div>
 

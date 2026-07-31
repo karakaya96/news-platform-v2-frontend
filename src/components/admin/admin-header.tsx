@@ -1,20 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { Bell, Clock, FileText, LogOut, Menu, Star, User, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getUser, removeToken } from '@/lib/auth';
-import { setAuthToken, api } from '@/lib/api';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Menu,
-  LogOut,
-  User,
-  Bell,
-  FileText,
-  Star,
-  Zap,
-  Clock,
-} from 'lucide-react';
+import { api, setAuthToken } from '@/lib/api';
+import { getUser, removeToken } from '@/lib/auth';
 import type { News } from '@/types';
 
 interface AdminHeaderProps {
@@ -81,7 +72,9 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           <Menu className="h-5 w-5" />
         </Button>
         <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">{title}</h1>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            {title}
+          </h1>
         </div>
       </div>
 
@@ -106,7 +99,9 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           {showNotifications && (
             <div className="absolute right-0 top-full mt-2 w-80 rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Son Yayınlanan Haberler</h3>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Son Yayınlanan Haberler
+                </h3>
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length > 0 ? (
@@ -127,13 +122,13 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                           {article.title}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          {article.is_featured === 1 && (
+                          {article.isFeatured === 1 && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
                               <Star className="h-2.5 w-2.5" />
                               Öne Çıkan
                             </span>
                           )}
-                          {article.is_breaking === 1 && (
+                          {article.isBreaking === 1 && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
                               <Zap className="h-2.5 w-2.5" />
                               Son Dakika
@@ -141,7 +136,11 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                           )}
                           <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
                             <Clock className="h-2.5 w-2.5" />
-                            {article.published_at ? new Date(article.published_at).toLocaleDateString('tr-TR', { timeZone: 'Europe/Istanbul' }) : 'Tarih yok'}
+                            {article.publishedAt
+                              ? new Date(article.publishedAt).toLocaleDateString('tr-TR', {
+                                  timeZone: 'Europe/Istanbul',
+                                })
+                              : 'Tarih yok'}
                           </span>
                         </div>
                       </div>

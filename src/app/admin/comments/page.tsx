@@ -2,14 +2,32 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState, useCallback } from 'react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Mail,
+  MessageCircle,
+  Trash2,
+  XCircle,
+} from 'lucide-react';
 import Link from 'next/link';
-import { api } from '@/lib/api';
-import { formatDateWithTime } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Select,
   SelectContent,
@@ -17,34 +35,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  CheckCircle2,
-  XCircle,
-  Trash2,
-  MessageCircle,
-  ExternalLink,
-  ChevronLeft,
-  ChevronRight,
-  AlertTriangle,
-  Mail,
-  Clock,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/lib/api';
+import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem } from '@/types';
 
 const commentStatusColors: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800',
-  approved: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800',
-  rejected: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
+  pending:
+    'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800',
+  approved:
+    'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800',
+  rejected:
+    'bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800',
   spam: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
 };
 
@@ -147,7 +150,9 @@ export default function CommentsPage() {
     if (!replyId || !replyContent.trim()) return;
     setReplying(true);
     try {
-      const res = await api.post(`/api/comments/admin/${replyId}/reply`, { content: replyContent.trim() });
+      const res = await api.post(`/api/comments/admin/${replyId}/reply`, {
+        content: replyContent.trim(),
+      });
       if (res.success) {
         toast.success('Yanıt gönderildi');
         setReplyId(null);
@@ -166,7 +171,10 @@ export default function CommentsPage() {
   const handleBulkAction = async () => {
     if (bulkIds.length === 0 || !bulkAction) return;
     try {
-      const res = await api.put('/api/comments/admin/bulk/status', { ids: bulkIds, status: bulkAction });
+      const res = await api.put('/api/comments/admin/bulk/status', {
+        ids: bulkIds,
+        status: bulkAction,
+      });
       if (res.success) {
         toast.success(`${bulkIds.length} yorum güncellendi`);
         setBulkIds([]);
@@ -181,7 +189,7 @@ export default function CommentsPage() {
   };
 
   const toggleBulkId = (id: number) => {
-    setBulkIds((prev) => prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]);
+    setBulkIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
   };
 
   return (
@@ -189,7 +197,9 @@ export default function CommentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Yorumlar</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            Yorumlar
+          </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} toplam yorum</p>
         </div>
       </div>
@@ -217,7 +227,9 @@ export default function CommentsPage() {
 
         {bulkIds.length > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500 dark:text-slate-400">{bulkIds.length} seçili</span>
+            <span className="text-sm text-slate-500 dark:text-slate-400">
+              {bulkIds.length} seçili
+            </span>
             <Select value={bulkAction} onValueChange={setBulkAction}>
               <SelectTrigger className="w-[160px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                 <SelectValue placeholder="Toplu işlem" />
@@ -246,15 +258,22 @@ export default function CommentsPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-6 space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-24 w-full rounded-xl" />
+              {Array.from({ length: 5 }).map((_, _i) => (
+                <Skeleton
+                  key={`skeleton-comment-${Math.random()}`}
+                  className="h-24 w-full rounded-xl"
+                />
               ))}
             </div>
           ) : comments.length === 0 ? (
             <div className="text-center py-16">
               <MessageCircle className="h-16 w-16 mx-auto mb-4 text-slate-300 dark:text-slate-600" />
-              <p className="text-lg font-medium text-slate-500 dark:text-slate-400">Yorum bulunamadı</p>
-              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Henüz bu habere yorum yapılmamış</p>
+              <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
+                Yorum bulunamadı
+              </p>
+              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
+                Henüz bu habere yorum yapılmamış
+              </p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -262,7 +281,9 @@ export default function CommentsPage() {
                 <div
                   key={comment.id}
                   className={`p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors ${
-                    comment.parent_id ? 'pl-12 border-l-2 border-indigo-200 dark:border-indigo-800 ml-6' : ''
+                    comment.parentId
+                      ? 'pl-12 border-l-2 border-indigo-200 dark:border-indigo-800 ml-6'
+                      : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -278,21 +299,23 @@ export default function CommentsPage() {
                       {/* Header */}
                       <div className="flex items-center gap-2 flex-wrap mb-2">
                         <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                          {comment.author_name}
+                          {comment.authorName}
                         </span>
                         <span className="text-xs text-slate-400 flex items-center gap-1">
                           <Mail className="h-3 w-3" />
-                          {comment.author_email}
+                          {comment.authorEmail}
                         </span>
                         <span className="text-xs text-slate-400 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatDateWithTime(comment.created_at)}
+                          {formatDateWithTime(comment.createdAt)}
                         </span>
                         <Badge
                           variant="outline"
                           className={`${commentStatusColors[comment.status]} text-xs font-medium rounded-full px-2 py-0.5`}
                         >
-                          <span className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${commentStatusDots[comment.status]}`} />
+                          <span
+                            className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${commentStatusDots[comment.status]}`}
+                          />
                           {commentStatusLabels[comment.status]}
                         </Badge>
                       </div>
@@ -303,15 +326,15 @@ export default function CommentsPage() {
                       </p>
 
                       {/* News reference */}
-                      {comment.news_title && (
+                      {comment.newsTitle && (
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-3">
                           <ExternalLink className="h-3 w-3" />
                           <Link
-                            href={`/news/${comment.news_slug}`}
+                            href={`/news/${comment.newsSlug}`}
                             target="_blank"
                             className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate max-w-[300px]"
                           >
-                            {comment.news_title}
+                            {comment.newsTitle}
                           </Link>
                         </div>
                       )}
@@ -351,7 +374,7 @@ export default function CommentsPage() {
                             Spam
                           </Button>
                         )}
-                        {!comment.parent_id && (
+                        {!comment.parentId && (
                           <Button
                             size="sm"
                             variant="ghost"
@@ -423,7 +446,11 @@ export default function CommentsPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setDeleteId(null)} className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteId(null)}
+              className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
+            >
               İptal
             </Button>
             <Button
@@ -439,7 +466,13 @@ export default function CommentsPage() {
       </Dialog>
 
       {/* Reply Dialog */}
-      <Dialog open={!!replyId} onOpenChange={() => { setReplyId(null); setReplyContent(''); }}>
+      <Dialog
+        open={!!replyId}
+        onOpenChange={() => {
+          setReplyId(null);
+          setReplyContent('');
+        }}
+      >
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
             <DialogTitle className="text-lg dark:text-slate-100">Yorumu Yanıtla</DialogTitle>
@@ -455,7 +488,14 @@ export default function CommentsPage() {
             className="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
           />
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => { setReplyId(null); setReplyContent(''); }} className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setReplyId(null);
+                setReplyContent('');
+              }}
+              className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
+            >
               İptal
             </Button>
             <Button

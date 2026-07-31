@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
   currentPage: number;
@@ -29,7 +28,11 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
   } else {
     pages.push(1);
     if (currentPage > 3) pages.push('...');
-    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+    for (
+      let i = Math.max(2, currentPage - 1);
+      i <= Math.min(totalPages - 1, currentPage + 1);
+      i++
+    ) {
       pages.push(i);
     }
     if (currentPage < totalPages - 2) pages.push('...');
@@ -37,26 +40,26 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
   }
 
   return (
-    <nav className='flex items-center justify-center gap-1 mt-8'>
+    <nav className="flex items-center justify-center gap-1 mt-8">
       <Button
-        variant='outline'
-        size='icon'
+        variant="outline"
+        size="icon"
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
-        <ChevronLeft className='h-4 w-4' />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
-      
-      {pages.map((page, index) =>
+
+      {pages.map((page, _index) =>
         typeof page === 'string' ? (
-          <span key={`dots-${index}`} className='px-2 text-muted-foreground'>
+          <span key={`ellipsis-${Math.random()}`} className="px-2 text-muted-foreground">
             ...
           </span>
         ) : (
           <Button
-            key={page}
+            key={`page-${page}-${Math.random()}`}
             variant={page === currentPage ? 'default' : 'outline'}
-            size='icon'
+            size="icon"
             onClick={() => handlePageChange(page)}
           >
             {page}
@@ -65,12 +68,12 @@ export function Pagination({ currentPage, totalPages, basePath }: PaginationProp
       )}
 
       <Button
-        variant='outline'
-        size='icon'
+        variant="outline"
+        size="icon"
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
-        <ChevronRight className='h-4 w-4' />
+        <ChevronRight className="h-4 w-4" />
       </Button>
     </nav>
   );

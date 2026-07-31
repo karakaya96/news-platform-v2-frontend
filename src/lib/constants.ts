@@ -1,5 +1,6 @@
 export const SITE_NAME = 'NewsHaberGlobal';
-export const SITE_DESCRIPTION = 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.';
+export const SITE_DESCRIPTION =
+  'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newshaberglobal.vercel.app';
 export const SITE_LOGO_URL = `${SITE_URL}/favicon.png`;
 export const SITE_LANGUAGE = 'tr';
@@ -32,7 +33,10 @@ export const CATEGORY_COLORS: Record<string, string> = {
 };
 
 export const CATEGORY_TRANSLATIONS: Record<string, { name: string; description: string }> = {
-  technology: { name: 'Teknoloji', description: 'Teknoloji, yapay zeka ve inovasyonda son gelişmeler' },
+  technology: {
+    name: 'Teknoloji',
+    description: 'Teknoloji, yapay zeka ve inovasyonda son gelişmeler',
+  },
   'world-news': { name: 'Dünya Haberleri', description: 'Dünya genelinden son dakika haberleri' },
   economy: { name: 'Ekonomi', description: 'Piyasalar, iş dünyası ve finans haberleri' },
   sports: { name: 'Spor', description: 'Skorlar, analizler ve spor haberleri' },

@@ -1,14 +1,15 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ChevronDown, ChevronUp, Eye, Loader2, Star, Zap } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { RichTextEditor } from '@/components/admin/rich-text-editor';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -17,23 +18,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RichTextEditor } from '@/components/admin/rich-text-editor';
-import { ChevronDown, ChevronUp, Loader2, Eye, Star, Zap } from 'lucide-react';
-import type { News, Category } from '@/types';
+import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+import type { Category, News } from '@/types';
 
 const newsSchema = z.object({
   title: z.string().min(1, 'Başlık zorunludur').max(200),
   slug: z.string().min(1, 'Slug zorunludur').max(200),
-  category_id: z.string().min(1, 'Kategori zorunludur'),
+  categoryId: z.string().min(1, 'Kategori zorunludur'),
   excerpt: z.string().max(500).optional(),
-  image_url: z.string().url('Geçerli bir URL giriniz').optional().or(z.literal('')),
+  imageUrl: z.string().url('Geçerli bir URL giriniz').optional().or(z.literal('')),
   status: z.enum(['draft', 'published', 'archived']),
-  is_featured: z.boolean(),
-  is_breaking: z.boolean(),
-  seo_title: z.string().max(70).optional(),
-  seo_description: z.string().max(160).optional(),
+  isFeatured: z.boolean(),
+  isBreaking: z.boolean(),
+  seoTitle: z.string().max(70).optional(),
+  seoDescription: z.string().max(160).optional(),
 });
 
 type NewsFormData = z.infer<typeof newsSchema>;
@@ -70,22 +71,25 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
     defaultValues: {
       title: article?.title || '',
       slug: article?.slug || '',
-      category_id: String(article?.category_id || ''),
+      categoryId: String(article?.categoryId || ''),
       excerpt: article?.excerpt || '',
-      image_url: article?.image_url || '',
-      status: (article?.status === 'published' || article?.status === 'archived') ? article.status : 'draft',
-      is_featured: Boolean(article?.is_featured),
-      is_breaking: Boolean(article?.is_breaking),
-      seo_title: article?.seo_title || '',
-      seo_description: article?.seo_description || '',
+      imageUrl: article?.imageUrl || '',
+      status:
+        article?.status === 'published' || article?.status === 'archived'
+          ? article.status
+          : 'draft',
+      isFeatured: Boolean(article?.isFeatured),
+      isBreaking: Boolean(article?.isBreaking),
+      seoTitle: article?.seoTitle || '',
+      seoDescription: article?.seoDescription || '',
     },
   });
 
   const title = watch('title');
-  const imageUrl = watch('image_url');
+  const imageUrl = watch('imageUrl');
   const status = watch('status');
-  const isFeatured = watch('is_featured');
-  const isBreaking = watch('is_breaking');
+  const isFeatured = watch('isFeatured');
+  const isBreaking = watch('isBreaking');
 
   // Auto-generate slug from title
   const generateSlug = useCallback(() => {
@@ -136,9 +140,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   {...register('title')}
                   className={cn(errors.title && 'border-red-500')}
                 />
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
-                )}
+                {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
               </div>
 
               <div className="space-y-2">
@@ -149,13 +151,11 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   {...register('slug')}
                   className={cn(errors.slug && 'border-red-500')}
                 />
-                {errors.slug && (
-                  <p className="text-sm text-red-500">{errors.slug.message}</p>
-                )}
+                {errors.slug && <p className="text-sm text-red-500">{errors.slug.message}</p>}
               </div>
 
               <div className="space-y-2">
-<Label htmlFor="excerpt">Özet</Label>
+                <Label htmlFor="excerpt">Özet</Label>
                 <Textarea
                   id="excerpt"
                   placeholder="Haberin kısa özeti..."
@@ -177,20 +177,13 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                 onChange={setContent}
                 placeholder="Haber içeriğini buraya yazın..."
               />
-              {!content && (
-                <p className="text-sm text-red-500 mt-1">
-                  İçerik zorunludur
-                </p>
-              )}
+              {!content && <p className="text-sm text-red-500 mt-1">İçerik zorunludur</p>}
             </CardContent>
           </Card>
 
           {/* SEO Section */}
           <Card>
-            <CardHeader
-              className="cursor-pointer"
-              onClick={() => setShowSeo(!showSeo)}
-            >
+            <CardHeader className="cursor-pointer" onClick={() => setShowSeo(!showSeo)}>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">SEO Ayarları</CardTitle>
                 {showSeo ? (
@@ -203,20 +196,20 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
             {showSeo && (
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-<Label htmlFor="seo_title">SEO Başlığı</Label>
+                  <Label htmlFor="seoTitle">SEO Başlığı</Label>
                   <Input
-                    id="seo_title"
+                    id="seoTitle"
                     placeholder="Özel SEO başlığı..."
-                    {...register('seo_title')}
+                    {...register('seoTitle')}
                   />
                 </div>
                 <div className="space-y-2">
-<Label htmlFor="seo_description">SEO Açıklaması</Label>
+                  <Label htmlFor="seoDescription">SEO Açıklaması</Label>
                   <Textarea
-                    id="seo_description"
+                    id="seoDescription"
                     placeholder="Arama motorları için meta açıklaması..."
                     rows={3}
-                    {...register('seo_description')}
+                    {...register('seoDescription')}
                   />
                 </div>
               </CardContent>
@@ -236,17 +229,30 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                 <Label>Durum</Label>
                 <Select
                   value={status}
-                  onValueChange={(val) =>
-                    setValue('status', val as 'draft' | 'published')
-                  }
+                  onValueChange={(val) => setValue('status', val as 'draft' | 'published')}
                 >
                   <SelectTrigger className="dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
                     <SelectValue placeholder="Durum seçin" />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
-                    <SelectItem value="draft" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Taslak</SelectItem>
-                    <SelectItem value="published" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Yayında</SelectItem>
-                    <SelectItem value="archived" className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">Arşiv</SelectItem>
+                    <SelectItem
+                      value="draft"
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      Taslak
+                    </SelectItem>
+                    <SelectItem
+                      value="published"
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      Yayında
+                    </SelectItem>
+                    <SelectItem
+                      value="archived"
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      Arşiv
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -258,20 +264,26 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                     ? 'border-amber-300 bg-amber-50 dark:border-amber-500 dark:bg-amber-950/50'
                     : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500'
                 )}
-                onClick={() => setValue('is_featured', !isFeatured)}
+                onClick={() => setValue('isFeatured', !isFeatured)}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                      isFeatured ? 'bg-amber-200 text-amber-700 dark:bg-amber-700 dark:text-amber-100' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'
+                      isFeatured
+                        ? 'bg-amber-200 text-amber-700 dark:bg-amber-700 dark:text-amber-100'
+                        : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'
                     )}
                   >
                     <Star className="h-4 w-4" />
                   </div>
                   <div>
-                    <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">Öne Çıkan</Label>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Ana sayfada öne çıkar</p>
+                    <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">
+                      Öne Çıkan
+                    </Label>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Ana sayfada öne çıkar
+                    </p>
                   </div>
                 </div>
                 <div
@@ -296,20 +308,26 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                     ? 'border-red-300 bg-red-50 dark:border-red-500 dark:bg-red-950/50'
                     : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500'
                 )}
-                onClick={() => setValue('is_breaking', !isBreaking)}
+                onClick={() => setValue('isBreaking', !isBreaking)}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={cn(
                       'flex h-8 w-8 items-center justify-center rounded-lg transition-colors',
-                      isBreaking ? 'bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-100' : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'
+                      isBreaking
+                        ? 'bg-red-200 text-red-700 dark:bg-red-700 dark:text-red-100'
+                        : 'bg-slate-100 text-slate-400 dark:bg-slate-700 dark:text-slate-400'
                     )}
                   >
                     <Zap className="h-4 w-4" />
                   </div>
                   <div>
-                    <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">Son Dakika Haberi</Label>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">Son dakika banner&apos;ı</p>
+                    <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">
+                      Son Dakika Haberi
+                    </Label>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Son dakika banner&apos;ı
+                    </p>
                   </div>
                 </div>
                 <div
@@ -328,14 +346,8 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
               </div>
 
               <div className="flex gap-2 pt-2">
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !content}
-                  className="flex-1"
-                >
-                  {isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
+                <Button type="submit" disabled={isSubmitting || !content} className="flex-1">
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {article ? 'Güncelle' : 'Oluştur'}
                 </Button>
                 <Button
@@ -359,27 +371,32 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                 <div className="h-10 bg-muted animate-pulse rounded" />
               ) : (
                 <Select
-                  value={watch('category_id')}
-                  onValueChange={(val) => setValue('category_id', val)}
+                  value={watch('categoryId')}
+                  onValueChange={(val) => setValue('categoryId', val)}
                 >
                   <SelectTrigger
-                    className={cn(errors.category_id && 'border-red-500', 'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100')}
+                    className={cn(
+                      errors.categoryId && 'border-red-500',
+                      'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100'
+                    )}
                   >
                     <SelectValue placeholder="Kategori seçin" />
                   </SelectTrigger>
                   <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
                     {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={String(cat.id)} className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white">
+                      <SelectItem
+                        key={cat.id}
+                        value={String(cat.id)}
+                        className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                      >
                         {translateCategoryName(cat.slug, cat.name)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               )}
-              {errors.category_id && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.category_id.message}
-                </p>
+              {errors.categoryId && (
+                <p className="text-sm text-red-500 mt-1">{errors.categoryId.message}</p>
               )}
             </CardContent>
           </Card>
@@ -391,27 +408,25 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="image_url">Görsel URL</Label>
+                <Label htmlFor="imageUrl">Görsel URL</Label>
                 <Input
-                  id="image_url"
-placeholder="https://ornek.com/gorsel.jpg" 
-                  {...register('image_url')}
+                  id="imageUrl"
+                  placeholder="https://ornek.com/gorsel.jpg"
+                  {...register('imageUrl')}
                 />
-                {errors.image_url && (
-                  <p className="text-sm text-red-500">
-                    {errors.image_url.message}
-                  </p>
+                {errors.imageUrl && (
+                  <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
                 )}
               </div>
               {imageUrl && (
-                <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-                  <img
+                <div className="aspect-video rounded-lg overflow-hidden bg-muted relative">
+                  <Image
                     src={imageUrl}
                     alt="Preview"
+                    fill
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
+                    sizes="100%"
+                    unoptimized
                   />
                 </div>
               )}
@@ -426,21 +441,20 @@ placeholder="https://ornek.com/gorsel.jpg"
           <div className="bg-white dark:bg-slate-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
             <div className="flex items-center justify-between p-4 border-b">
               <h3 className="font-semibold">Önizleme</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowPreview(false)}
-              >
+              <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
                 Kapat
               </Button>
             </div>
             <div className="p-6">
               <h1 className="text-3xl font-bold mb-4 dark:text-slate-100">{title}</h1>
               {imageUrl && (
-                <img
+                <Image
                   src={imageUrl}
                   alt=""
+                  fill
                   className="w-full max-h-[400px] object-cover rounded-lg mb-4"
+                  sizes="100%"
+                  unoptimized
                 />
               )}
               <div

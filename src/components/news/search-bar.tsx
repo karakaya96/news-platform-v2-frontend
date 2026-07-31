@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -24,17 +25,17 @@ export function SearchBar({ placeholder = 'Haber ara...', className }: SearchBar
 
   return (
     <form onSubmit={handleSearch} className={`flex items-center gap-2 ${className}`}>
-      <div className='relative flex-1'>
-        <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          type='search'
+          type="search"
           placeholder={placeholder}
-          className='pl-10'
+          className="pl-10"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
-      <Button type='submit'>Search</Button>
+      <Button type="submit">Search</Button>
     </form>
   );
 }

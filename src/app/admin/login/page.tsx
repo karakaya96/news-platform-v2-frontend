@@ -1,15 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { Loader2, NewspaperIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
-import { setToken } from '@/lib/auth';
-import { setAuthToken as setApiAuthToken } from '@/lib/api';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { NewspaperIcon, Loader2 } from 'lucide-react';
+import { api, setAuthToken as setApiAuthToken } from '@/lib/api';
+import { setToken } from '@/lib/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -24,10 +23,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await api.post<{ token: string; user: unknown }>(
-        '/api/auth/login',
-        { email, password }
-      );
+      const res = await api.post<{ token: string; user: unknown }>('/api/auth/login', {
+        email,
+        password,
+      });
 
       if (res.success && res.data?.token) {
         setToken(res.data.token);
@@ -36,7 +35,7 @@ export default function LoginPage() {
       } else {
         setError(res.error || 'Geçersiz kimlik bilgileri');
       }
-    } catch (err) {
+    } catch (_err) {
       setError('Bir hata oluştu. Lütfen tekrar deneyin.');
     } finally {
       setLoading(false);
@@ -54,9 +53,7 @@ export default function LoginPage() {
           </div>
           <div>
             <CardTitle className="text-2xl">Hoş Geldiniz</CardTitle>
-            <CardDescription>
-              NewsHaberGlobal yönetim paneline giriş yapın
-            </CardDescription>
+            <CardDescription>NewsHaberGlobal yönetim paneline giriş yapın</CardDescription>
           </div>
         </CardHeader>
         <CardContent>

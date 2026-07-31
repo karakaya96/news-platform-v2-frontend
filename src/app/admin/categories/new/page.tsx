@@ -2,35 +2,45 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
 const categorySchema = z.object({
   name: z.string().min(1, 'Ad zorunludur').max(100),
   slug: z.string().min(1, 'Slug zorunludur').max(100),
   description: z.string().max(500).optional(),
   color: z.string().optional(),
-  sort_order: z.number().int().default(0),
+  sortOrder: z.number().int().default(0),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
 
 function slugify(text: string): string {
   const turkishMap: Record<string, string> = {
-    'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
-    'Ç': 'c', 'Ğ': 'g', 'İ': 'i', 'Ö': 'o', 'Ş': 's', 'Ü': 'u',
+    ç: 'c',
+    ğ: 'g',
+    ı: 'i',
+    ö: 'o',
+    ş: 's',
+    ü: 'u',
+    Ç: 'c',
+    Ğ: 'g',
+    İ: 'i',
+    Ö: 'o',
+    Ş: 's',
+    Ü: 'u',
   };
   return text
     .toLowerCase()
@@ -72,7 +82,7 @@ export default function NewCategoryPage() {
       slug: '',
       description: '',
       color: '#3b82f6',
-      sort_order: 0,
+      sortOrder: 0,
     },
   });
 
@@ -99,7 +109,7 @@ export default function NewCategoryPage() {
         slug: data.slug,
         description: data.description || '',
         color: data.color || '#3b82f6',
-        sort_order: data.sort_order ?? 0,
+        sortOrder: data.sortOrder ?? 0,
       });
 
       if (res.success) {
@@ -133,9 +143,7 @@ export default function NewCategoryPage() {
                 {...register('name')}
                 className={cn(errors.name && 'border-red-500')}
               />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -146,9 +154,7 @@ export default function NewCategoryPage() {
                 {...register('slug')}
                 className={cn(errors.slug && 'border-red-500')}
               />
-              {errors.slug && (
-                <p className="text-sm text-red-500">{errors.slug.message}</p>
-              )}
+              {errors.slug && <p className="text-sm text-red-500">{errors.slug.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -162,12 +168,12 @@ export default function NewCategoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sort_order">Sıralama</Label>
+              <Label htmlFor="sortOrder">Sıralama</Label>
               <Input
-                id="sort_order"
+                id="sortOrder"
                 type="number"
                 placeholder="0"
-                {...register('sort_order', { valueAsNumber: true })}
+                {...register('sortOrder', { valueAsNumber: true })}
               />
             </div>
 
@@ -180,11 +186,7 @@ export default function NewCategoryPage() {
                   onChange={(e) => setValue('color', e.target.value)}
                   className="h-10 w-10 rounded cursor-pointer border-0"
                 />
-                <Input
-                  {...register('color')}
-                  placeholder="#3b82f6"
-                  className="w-32"
-                />
+                <Input {...register('color')} placeholder="#3b82f6" className="w-32" />
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {presetColors.map((c) => (
@@ -206,16 +208,10 @@ export default function NewCategoryPage() {
 
         <div className="flex gap-3">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Kategori Oluştur
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push('/admin/categories')}
-          >
+          <Button type="button" variant="outline" onClick={() => router.push('/admin/categories')}>
             İptal
           </Button>
         </div>

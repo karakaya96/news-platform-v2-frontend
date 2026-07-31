@@ -1,11 +1,11 @@
 'use client';
 
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { isAuthenticated } from '@/lib/auth';
-import { setAuthToken, getAuthToken } from '@/lib/api';
-import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { AdminHeader } from '@/components/admin/admin-header';
+import { AdminSidebar } from '@/components/admin/admin-sidebar';
+import { getAuthToken, setAuthToken } from '@/lib/api';
+import { isAuthenticated } from '@/lib/auth';
 
 const pageTitles: Record<string, string> = {
   '/admin/dashboard': 'Gösterge Paneli',
@@ -23,11 +23,7 @@ function getPageTitle(pathname: string): string {
   return 'Yönetim';
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -40,9 +36,14 @@ export default function AdminLayout({
       return;
     }
 
-    if (!isAuthenticated()) {
-      router.push('/admin/login');
-      return;
+    // Check auth but don't block rendering - let children handle their own loading
+    const authenticated = isAuthenticated();
+    if (!authenticated) {
+      // Small delay to allow hydration, then redirect
+      const timer = setTimeout(() => {
+        router.push('/admin/login');
+      }, 100);
+      return () => clearTimeout(timer);
     }
 
     // Set auth token for API calls
@@ -59,6 +60,8 @@ export default function AdminLayout({
     return <>{children}</>;
   }
 
+  // Render children immediately - they handle their own loading/auth states
+  // Only show full-screen spinner during initial hydration check
   if (checking) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -69,10 +72,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen bg-slate-100 dark:bg-slate-900">
-      <AdminSidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <AdminHeader
           title={getPageTitle(pathname)}

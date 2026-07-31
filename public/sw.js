@@ -52,21 +52,23 @@ self.addEventListener('notificationclick', (event) => {
 // Handle subscription change
 self.addEventListener('pushsubscriptionchange', (event) => {
   event.waitUntil(
-    self.registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: event.oldSubscription?.options?.applicationServerKey,
-    }).then((newSubscription) => {
-      // Send new subscription to server
-      return fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'browser',
-          endpoint: newSubscription.endpoint,
-          p256dh: btoa(String.fromCharCode(...new Uint8Array(newSubscription.getKey('p256dh')))),
-          auth: btoa(String.fromCharCode(...new Uint8Array(newSubscription.getKey('auth')))),
-        }),
-      });
-    })
+    self.registration.pushManager
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: event.oldSubscription?.options?.applicationServerKey,
+      })
+      .then((newSubscription) => {
+        // Send new subscription to server
+        return fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'browser',
+            endpoint: newSubscription.endpoint,
+            p256dh: btoa(String.fromCharCode(...new Uint8Array(newSubscription.getKey('p256dh')))),
+            auth: btoa(String.fromCharCode(...new Uint8Array(newSubscription.getKey('auth')))),
+          }),
+        });
+      })
   );
 });

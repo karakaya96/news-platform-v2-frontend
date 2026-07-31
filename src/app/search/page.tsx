@@ -1,7 +1,7 @@
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 import type { Metadata } from 'next';
-import { SITE_NAME, SITE_URL, SITE_LOGO_URL } from '@/lib/constants';
+import { SITE_LOGO_URL, SITE_NAME, SITE_URL } from '@/lib/constants';
 import SearchContent from './search-content';
 
 export const metadata: Metadata = {
@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   description: 'Haberler içinde arama yapın. Anahtar kelime, kategori ve tarihe göre filtreleyin.',
   openGraph: {
     title: `Haber Ara | ${SITE_NAME}`,
-    description: 'Haberler içinde arama yapın. Anahtar kelime, kategori ve tarihe göre filtreleyin.',
+    description:
+      'Haberler içinde arama yapın. Anahtar kelime, kategori ve tarihe göre filtreleyin.',
     type: 'website',
     url: `${SITE_URL}/search`,
     siteName: SITE_NAME,

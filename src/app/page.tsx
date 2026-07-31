@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import api from '@/lib/api';
-import type { News, Category } from '@/types';
+import type { Category, News } from '@/types';
 import HomePageClient from './home-page';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'NewsHaberGlobal - Güvenilir Haber Kaynağınız',
-  description: 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.',
+  description:
+    'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.',
 };
 
 async function getFeaturedNews(): Promise<News[]> {

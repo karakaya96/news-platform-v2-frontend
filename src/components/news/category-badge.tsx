@@ -1,15 +1,17 @@
-import React from 'react';
-import type { Category } from '@/types';
 import { CATEGORY_COLORS, translateCategoryName } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 
 interface CategoryBadgeProps {
-  category: Category;
+  category: {
+    name: string;
+    slug: string;
+    color?: string;
+  };
   className?: string;
 }
 
 export function CategoryBadge({ category, className }: CategoryBadgeProps) {
-  const colorClass = CATEGORY_COLORS[category.slug] || 'bg-gray-500';
+  const colorClass = category.color || CATEGORY_COLORS[category.slug] || 'bg-gray-500';
 
   return (
     <span

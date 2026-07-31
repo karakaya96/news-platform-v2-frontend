@@ -1,5 +1,26 @@
 /** @type {import('next').NextConfig} */
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'imgcdn.ensonhaber.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'vcdn.ensonhaber.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.karakaya-mk96.workers.dev',
+      },
+    ],
+    formats: ['image/avif', 'image/webp'],
+  },
   async headers() {
     return [
       {
@@ -33,4 +54,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(nextConfig);

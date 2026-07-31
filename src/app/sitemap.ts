@@ -1,6 +1,6 @@
-import { MetadataRoute } from 'next';
-import type { News, Category } from '@/types';
+import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/constants';
+import type { Category, News } from '@/types';
 
 const API_URL = 'https://news-v2-api.karakaya-mk96.workers.dev';
 
@@ -8,7 +8,7 @@ async function fetchJSON<T>(path: string): Promise<T | null> {
   try {
     const res = await fetch(`${API_URL}${path}`, { next: { revalidate: 300 } });
     if (!res.ok) return null;
-    const data = await res.json() as Record<string, unknown>;
+    const data = (await res.json()) as Record<string, unknown>;
     return data.data as T;
   } catch {
     return null;
@@ -38,16 +38,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Fetch all articles (limit 1000 for sitemap)
-  const articles = await fetchJSON<News[]>('/api/news?limit=1000&status=published') || [];
+  const articles = (await fetchJSON<News[]>('/api/news?limit=1000&status=published')) || [];
   const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
     url: `${SITE_URL}/news/${article.slug}`,
-    lastModified: article.updated_at ? new Date(article.updated_at) : new Date(),
+    lastModified: article.updatedAt ? new Date(article.updatedAt) : new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
 
   // Fetch categories
-  const categories = await fetchJSON<Category[]>('/api/categories') || [];
+  const categories = (await fetchJSON<Category[]>('/api/categories')) || [];
   const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
     url: `${SITE_URL}/categories/${category.slug}`,
     lastModified: new Date(),

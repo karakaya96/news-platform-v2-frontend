@@ -1,4 +1,3 @@
-import React from 'react';
 import type { News } from '@/types';
 import { NewsCard } from './news-card';
 
@@ -9,11 +8,7 @@ interface NewsGridProps {
 
 export function NewsGrid({ articles, columns = 3 }: NewsGridProps) {
   if (!articles || articles.length === 0) {
-    return (
-      <div className='text-center py-12 text-muted-foreground'>
-        Henüz haber bulunamadı.
-      </div>
-    );
+    return <div className="text-center py-12 text-muted-foreground">Henüz haber bulunamadı.</div>;
   }
 
   const gridClass = {

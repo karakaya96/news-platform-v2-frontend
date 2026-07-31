@@ -1,36 +1,36 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
 import Underline from '@tiptap/extension-underline';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import {
+  AlignCenter,
+  AlignJustify,
+  AlignLeft,
+  AlignRight,
   Bold,
-  Italic,
-  Underline as UnderlineIcon,
+  Code,
   Heading1,
   Heading2,
   Heading3,
+  ImageIcon,
+  Italic,
+  Link as LinkIcon,
   List,
   ListOrdered,
-  Link as LinkIcon,
-  ImageIcon,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
   Quote,
-  Code,
-  Undo,
   Redo,
+  Underline as UnderlineIcon,
+  Undo,
   Video,
 } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 // Regex patterns for video/iframe/embedded content
 const VIDEO_EMBED_REGEX = /<div class="video-embed"[\s\S]*?<\/div>/g;
@@ -75,7 +75,7 @@ function stripVideoBlocks(html: string): { clean: string; videos: string[] } {
 function mergeContent(editorHtml: string, videos: string[]): string {
   if (!videos.length) return editorHtml;
   if (!editorHtml.trim()) return videos.join('\n');
-  return editorHtml + '\n' + videos.join('\n');
+  return `${editorHtml}\n${videos.join('\n')}`;
 }
 
 export function RichTextEditor({
@@ -181,7 +181,9 @@ export function RichTextEditor({
     if (!url) return;
 
     let embedHtml = '';
-    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
+    const ytMatch = url.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/
+    );
     if (ytMatch) {
       embedHtml = `<div class="video-embed" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;margin:24px 0;"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
     } else if (url.includes('vimeo.com')) {
@@ -192,7 +194,16 @@ export function RichTextEditor({
       embedHtml = `<div class="video-embed" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;margin:24px 0;"><iframe src="https://www.dailymotion.com/embed/video/${dmId}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
     } else if (/\.(mp4|webm|flv|m3u8|mov)(\?|$)/i.test(url)) {
       const ext = url.match(/\.(mp4|webm|flv|m3u8|mov)/i)?.[1]?.toLowerCase() || 'mp4';
-      const mime = ext === 'webm' ? 'video/webm' : ext === 'flv' ? 'video/x-flv' : ext === 'm3u8' ? 'application/x-mpegURL' : ext === 'mov' ? 'video/quicktime' : 'video/mp4';
+      const mime =
+        ext === 'webm'
+          ? 'video/webm'
+          : ext === 'flv'
+            ? 'video/x-flv'
+            : ext === 'm3u8'
+              ? 'application/x-mpegURL'
+              : ext === 'mov'
+                ? 'video/quicktime'
+                : 'video/mp4';
       embedHtml = `<div class="video-embed" style="margin:24px 0;border-radius:12px;overflow:hidden;"><video controls style="width:100%;" playsinline><source src="${url}" type="${mime}">Tarayıcınız video desteklemiyor.</video></div>`;
     } else {
       embedHtml = `<div class="video-embed" style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;margin:24px 0;"><iframe src="${url}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen></iframe></div>`;
@@ -205,9 +216,7 @@ export function RichTextEditor({
   };
 
   if (!editor) {
-    return (
-      <div className="border rounded-lg min-h-[400px] animate-pulse bg-muted" />
-    );
+    return <div className="border rounded-lg min-h-[400px] animate-pulse bg-muted" />;
   }
 
   const ToolbarButton = ({
@@ -249,58 +258,114 @@ export function RichTextEditor({
 
         <div className="w-px h-6 bg-slate-300 mx-1" />
 
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} isActive={editor.isActive('bold')} title="Kalın">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          isActive={editor.isActive('bold')}
+          title="Kalın"
+        >
           <Bold className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} isActive={editor.isActive('italic')} title="İtalik">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          isActive={editor.isActive('italic')}
+          title="İtalik"
+        >
           <Italic className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} isActive={editor.isActive('underline')} title="Altı Çizili">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          isActive={editor.isActive('underline')}
+          title="Altı Çizili"
+        >
           <UnderlineIcon className="h-4 w-4" />
         </ToolbarButton>
 
         <div className="w-px h-6 bg-slate-300 mx-1" />
 
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} isActive={editor.isActive('heading', { level: 1 })} title="Başlık 1">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          isActive={editor.isActive('heading', { level: 1 })}
+          title="Başlık 1"
+        >
           <Heading1 className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} isActive={editor.isActive('heading', { level: 2 })} title="Başlık 2">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          isActive={editor.isActive('heading', { level: 2 })}
+          title="Başlık 2"
+        >
           <Heading2 className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} isActive={editor.isActive('heading', { level: 3 })} title="Başlık 3">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          isActive={editor.isActive('heading', { level: 3 })}
+          title="Başlık 3"
+        >
           <Heading3 className="h-4 w-4" />
         </ToolbarButton>
 
         <div className="w-px h-6 bg-slate-300 mx-1" />
 
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} isActive={editor.isActive('bulletList')} title="Madde Listesi">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          isActive={editor.isActive('bulletList')}
+          title="Madde Listesi"
+        >
           <List className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} isActive={editor.isActive('orderedList')} title="Numaralı Liste">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          isActive={editor.isActive('orderedList')}
+          title="Numaralı Liste"
+        >
           <ListOrdered className="h-4 w-4" />
         </ToolbarButton>
 
         <div className="w-px h-6 bg-slate-300 mx-1" />
 
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('left').run()} isActive={editor.isActive({ textAlign: 'left' })} title="Sola Hizala">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          isActive={editor.isActive({ textAlign: 'left' })}
+          title="Sola Hizala"
+        >
           <AlignLeft className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('center').run()} isActive={editor.isActive({ textAlign: 'center' })} title="Ortala">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          isActive={editor.isActive({ textAlign: 'center' })}
+          title="Ortala"
+        >
           <AlignCenter className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })} title="Sağa Hizala">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          isActive={editor.isActive({ textAlign: 'right' })}
+          title="Sağa Hizala"
+        >
           <AlignRight className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('justify').run()} isActive={editor.isActive({ textAlign: 'justify' })} title="İki Yana Yasla">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+          isActive={editor.isActive({ textAlign: 'justify' })}
+          title="İki Yana Yasla"
+        >
           <AlignJustify className="h-4 w-4" />
         </ToolbarButton>
 
         <div className="w-px h-6 bg-slate-300 mx-1" />
 
-        <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} isActive={editor.isActive('blockquote')} title="Alıntı">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          isActive={editor.isActive('blockquote')}
+          title="Alıntı"
+        >
           <Quote className="h-4 w-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} isActive={editor.isActive('codeBlock')} title="Kod Bloğu">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          isActive={editor.isActive('codeBlock')}
+          title="Kod Bloğu"
+        >
           <Code className="h-4 w-4" />
         </ToolbarButton>
 

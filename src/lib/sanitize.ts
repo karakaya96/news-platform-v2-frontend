@@ -1,0 +1,27 @@
+import sanitizeHtml from 'sanitize-html';
+
+export const sanitizeArticleContent = (content: string): string => {
+  return sanitizeHtml(content, {
+    allowedTags: [
+      'p', 'br', 'strong', 'em', 'u', 's',
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+      'ul', 'ol', 'li', 'blockquote',
+      'a', 'img', 'iframe', 'video', 'source',
+      'figure', 'figcaption', 'div', 'span',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      'pre', 'code', 'hr', 'section', 'article', 'aside', 'header', 'footer',
+    ],
+    allowedAttributes: {
+      '*': ['href', 'src', 'alt', 'title', 'width', 'height', 'class', 'id', 'style', 'target', 'rel', 'allowfullscreen', 'frameborder', 'allow', 'controls', 'preload', 'poster', 'type', 'datetime', 'cite'],
+    },
+    allowedSchemes: ['http', 'https', 'mailto', 'tel', 'data'],
+    allowedIframeHostnames: ['www.youtube.com', 'www.youtube-nocookie.com', 'player.vimeo.com', 'www.dailymotion.com', 'www.bloomberg.com'],
+  });
+};
+
+export const sanitizeExcerpt = (text: string): string => {
+  return sanitizeHtml(text, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+};
