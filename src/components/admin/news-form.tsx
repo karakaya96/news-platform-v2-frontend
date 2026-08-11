@@ -448,14 +448,16 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
             <div className="p-6">
               <h1 className="text-3xl font-bold mb-4 dark:text-slate-100">{title}</h1>
               {imageUrl && (
-                <Image
-                  src={imageUrl}
-                  alt=""
-                  fill
-                  className="w-full max-h-[400px] object-cover rounded-lg mb-4"
-                  sizes="100%"
-                  unoptimized
-                />
+                <div className="relative w-full max-h-[400px] rounded-lg overflow-hidden mb-4">
+                  <Image
+                    src={imageUrl}
+                    alt=""
+                    fill
+                    className="w-full h-full object-cover"
+                    sizes="100%"
+                    unoptimized
+                  />
+                </div>
               )}
               <div
                 className="prose max-w-none dark:prose-invert"
