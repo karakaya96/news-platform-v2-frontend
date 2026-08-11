@@ -23,6 +23,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
               sizes="100%"
               placeholder="blur"
               blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSIjZDNkM2QzIi8+PC9zdmc+"
+              unoptimized
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">
@@ -64,6 +65,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             placeholder="blur"
             blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSIjZDNkM2QzIi8+PC9zdmc+"
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">

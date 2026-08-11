@@ -401,6 +401,7 @@ export default function DashboardPage() {
                               fill
                               className="h-full w-full object-cover"
                               sizes="40px"
+                              unoptimized
                             />
                           </div>
                         ) : (

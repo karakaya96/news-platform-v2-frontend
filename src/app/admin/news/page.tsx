@@ -423,6 +423,7 @@ export default function NewsListPage() {
                                 fill
                                 className="h-full w-full object-cover"
                                 sizes="44px"
+                                unoptimized
                               />
                             </div>
                           ) : (
