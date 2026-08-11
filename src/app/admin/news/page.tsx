@@ -551,12 +551,12 @@ export default function NewsListPage() {
             {/* Page numbers */}
             {getPageNumbers().map((p, _i) =>
               p === '...' ? (
-                <span key={`ellipsis-${Math.random()}`} className="px-2 text-slate-400">
+                <span key={`ellipsis-${p}`} className="px-2 text-slate-400">
                   …
                 </span>
               ) : (
                 <Button
-                  key={`page-${p}-${Math.random()}`}
+                  key={`page-${p}`}
                   variant={page === p ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setPage(p)}
