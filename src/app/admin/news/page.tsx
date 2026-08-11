@@ -93,14 +93,20 @@ export default function NewsListPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Fetch categories for filter dropdown
-  useEffect(() => {
-    api.get<CategoryOption[]>('/api/categories').then((res) => {
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await api.get<CategoryOption[]>('/api/categories');
       if (res.success && res.data) {
         setCategories(Array.isArray(res.data) ? res.data : []);
       }
-    });
+    } catch {
+      // Silently fail - categories are optional for filtering
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const fetchArticles = useCallback(async () => {
     setLoading(true);
@@ -368,9 +374,10 @@ export default function NewsListPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-6 space-y-3">
-              {Array.from({ length: 10 }).map((_, _i) => (
+              {[...Array(10)].map((_, i) => (
                 <Skeleton
-                  key={`skeleton-news-${Math.random()}`}
+                  // biome-ignore lint/suspicious/noArrayIndexKey: Skeleton placeholders are static, index is fine
+                  key={`skeleton-news-${i}`}
                   className="h-16 w-full rounded-xl"
                 />
               ))}
@@ -416,7 +423,7 @@ export default function NewsListPage() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {article.imageUrl ? (
-                            <div className="h-11 w-11 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                            <div className="h-11 w-11 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0 ring-1 ring-slate-200 dark:ring-slate-700 relative">
                               <Image
                                 src={article.imageUrl}
                                 alt=""
