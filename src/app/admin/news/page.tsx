@@ -166,10 +166,10 @@ export default function NewsListPage() {
 
   const resetFilters = () => {
     setStatus('all');
-    setCategory('');
+    setCategory('all');
     setSearch('');
-    setFeatured('');
-    setBreaking('');
+    setFeatured('all');
+    setBreaking('all');
     setDateFrom('');
     setDateTo('');
     setSortBy('newest');
@@ -435,13 +435,13 @@ export default function NewsListPage() {
                               {article.title}
                             </p>
                             <div className="flex items-center gap-1.5 mt-1">
-                              {article.isFeatured === 1 && (
+                              {article.isFeatured && (
                                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
                                   <Star className="h-2.5 w-2.5" />
                                   Öne Çıkan
                                 </span>
                               )}
-                              {article.isBreaking === 1 && (
+                              {article.isBreaking && (
                                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
                                   <Zap className="h-2.5 w-2.5" />
                                   Son Dakika

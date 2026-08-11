@@ -122,13 +122,13 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                           {article.title}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
-                          {article.isFeatured === 1 && (
+                          {article.isFeatured && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
                               <Star className="h-2.5 w-2.5" />
                               Öne Çıkan
                             </span>
                           )}
-                          {article.isBreaking === 1 && (
+                          {article.isBreaking && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
                               <Zap className="h-2.5 w-2.5" />
                               Son Dakika

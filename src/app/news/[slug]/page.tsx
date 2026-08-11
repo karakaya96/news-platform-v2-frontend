@@ -1,11 +1,12 @@
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 import { ArrowLeft, Calendar, Eye } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import sanitizeHtml from 'sanitize-html';
 import { ArticleContent } from '@/components/news/article-content';
 import { CategoryBadge } from '@/components/news/category-badge';
 import { CommentsSection } from '@/components/news/comments-section';
@@ -16,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { SITE_LOGO_URL, SITE_NAME, SITE_URL } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem, News } from '@/types';
-import sanitizeHtml from 'sanitize-html';
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
@@ -24,31 +24,84 @@ interface ArticlePageProps {
 
 const SANITIZE_OPTIONS = {
   allowedTags: [
-    'p', 'br', 'strong', 'em', 'u', 's',
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'ul', 'ol', 'li', 'blockquote',
-    'a', 'img', 'iframe', 'video', 'source',
-    'figure', 'figcaption', 'div', 'span',
-    'table', 'thead', 'tbody', 'tr', 'th', 'td',
-    'pre', 'code', 'hr', 'section', 'article', 'aside', 'header', 'footer',
+    'p',
+    'br',
+    'strong',
+    'em',
+    'u',
+    's',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'a',
+    'img',
+    'iframe',
+    'video',
+    'source',
+    'figure',
+    'figcaption',
+    'div',
+    'span',
+    'table',
+    'thead',
+    'tbody',
+    'tr',
+    'th',
+    'td',
+    'pre',
+    'code',
+    'hr',
+    'section',
+    'article',
+    'aside',
+    'header',
+    'footer',
   ],
   allowedAttributes: {
-    '*': ['href', 'src', 'alt', 'title', 'width', 'height', 'class', 'id', 'style', 'target', 'rel', 'allowfullscreen', 'frameborder', 'allow', 'controls', 'preload', 'poster', 'type', 'datetime', 'cite'],
-    'a': ['href', 'target', 'rel', 'title'],
-    'img': ['src', 'alt', 'title', 'width', 'height', 'class', 'style'],
-    'video': ['src', 'controls', 'preload', 'poster', 'style'],
-    'source': ['src', 'type'],
-    'iframe': ['src', 'allowfullscreen', 'frameborder', 'allow', 'width', 'height', 'style'],
-    'div': ['class', 'style'],
-    'span': ['class', 'style'],
+    '*': [
+      'href',
+      'src',
+      'alt',
+      'title',
+      'width',
+      'height',
+      'class',
+      'id',
+      'style',
+      'target',
+      'rel',
+      'allowfullscreen',
+      'frameborder',
+      'allow',
+      'controls',
+      'preload',
+      'poster',
+      'type',
+      'datetime',
+      'cite',
+    ],
+    a: ['href', 'target', 'rel', 'title'],
+    img: ['src', 'alt', 'title', 'width', 'height', 'class', 'style'],
+    video: ['src', 'controls', 'preload', 'poster', 'style'],
+    source: ['src', 'type'],
+    iframe: ['src', 'allowfullscreen', 'frameborder', 'allow', 'width', 'height', 'style'],
+    div: ['class', 'style'],
+    span: ['class', 'style'],
   },
   allowedSchemes: ['http', 'https', 'mailto', 'tel', 'data'],
   allowedSchemesByTag: {
-    'img': ['http', 'https', 'data'],
-    'video': ['http', 'https', 'data'],
-    'source': ['http', 'https', 'data'],
-    'iframe': ['http', 'https'],
-    'a': ['http', 'https', 'mailto'],
+    img: ['http', 'https', 'data'],
+    video: ['http', 'https', 'data'],
+    source: ['http', 'https', 'data'],
+    iframe: ['http', 'https'],
+    a: ['http', 'https', 'mailto'],
   },
 };
 
@@ -80,7 +133,9 @@ async function getArticle(slug: string): Promise<News | null> {
 async function getRelatedArticles(categorySlug: string): Promise<News[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
   try {
-    const res = await fetch(`${apiUrl}/api/news?category=${categorySlug}&limit=4`, { cache: 'no-store' });
+    const res = await fetch(`${apiUrl}/api/news?category=${categorySlug}&limit=4`, {
+      cache: 'no-store',
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return data.data || [];
@@ -93,7 +148,10 @@ async function getRelatedArticles(categorySlug: string): Promise<News[]> {
 async function getComments(newsId: number) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
   try {
-    const res = await fetch(`${apiUrl}/api/comments/${newsId}`, { cache: 'no-store', headers: { 'Content-Type': 'application/json' } });
+    const res = await fetch(`${apiUrl}/api/comments/${newsId}`, {
+      cache: 'no-store',
+      headers: { 'Content-Type': 'application/json' },
+    });
     if (!res.ok) return { comments: [], count: 0 };
     const data = await res.json();
     const comments = data.data || [];
@@ -127,7 +185,9 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
         publishedTime: article.publishedAt || undefined,
         modifiedTime: article.updatedAt || undefined,
         authors: article.authorName ? [article.authorName] : [],
-        images: article.imageUrl ? [{ url: article.imageUrl, width: 1200, height: 630, alt: article.title }] : [],
+        images: article.imageUrl
+          ? [{ url: article.imageUrl, width: 1200, height: 630, alt: article.title }]
+          : [],
         url: `${SITE_URL}/news/${article.slug}`,
       },
       twitter: {

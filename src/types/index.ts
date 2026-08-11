@@ -39,8 +39,8 @@ export interface News {
   categoryId: number;
   authorId: number;
   status: 'draft' | 'published' | 'archived';
-  isFeatured: number; // SQLite boolean (0/1)
-  isBreaking: number; // SQLite boolean (0/1)
+  isFeatured: boolean;
+  isBreaking: boolean;
   viewCount: number;
   seoTitle: string | null;
   seoDescription: string | null;

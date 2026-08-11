@@ -420,10 +420,7 @@ export default function DashboardPage() {
                     <td className="px-6 py-4 hidden md:table-cell">
                       <span className="text-sm text-slate-600 dark:text-slate-300">
                         {article.categoryName
-                          ? translateCategoryName(
-                              article.categorySlug ?? '',
-                              article.categoryName
-                            )
+                          ? translateCategoryName(article.categorySlug ?? '', article.categoryName)
                           : '—'}
                       </span>
                     </td>
