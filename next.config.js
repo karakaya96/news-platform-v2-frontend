@@ -38,6 +38,26 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'trthaberstatic.cdn.wp.trt.com.tr',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.medimagazin.com.tr',
+      },
+      {
+        protocol: 'https',
+        hostname: 'geoim.bloomberght.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i20.haber7.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ichef.bbci.co.uk',
+      },
+      {
+        protocol: 'https',
+        hostname: 'imgrosetta.mynet.com.tr',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
   },
