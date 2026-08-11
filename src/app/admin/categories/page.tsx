@@ -147,7 +147,7 @@ export default function KategorilerPage() {
                       </td>
                       <td className="px-4 py-3 hidden md:table-cell">
                         <span className="text-sm text-muted-foreground dark:text-slate-400">
-                          {category.articleCount ?? 0}
+                          {category.articleCount ?? category.article_count ?? 0}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">

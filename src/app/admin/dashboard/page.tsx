@@ -46,7 +46,8 @@ interface DashboardStats {
     name: string;
     slug: string;
     color: string;
-    articleCount: number;
+    articleCount?: number;
+    article_count?: number; // Backend returns snake_case
   }[];
 }
 
@@ -288,7 +289,7 @@ export default function DashboardPage() {
                 >
                   {translateCategoryName(cat.slug, cat.name)}
                   <span className="bg-white/30 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                    {cat.articleCount}
+                    {cat.articleCount ?? cat.article_count ?? 0}
                   </span>
                 </span>
               ))}

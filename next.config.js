@@ -18,6 +18,26 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.karakaya-mk96.workers.dev',
       },
+      {
+        protocol: 'https',
+        hostname: 'image.cnnturk.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'foto.haberler.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.ntv.com.tr',
+      },
+      {
+        protocol: 'https',
+        hostname: 'image.hurimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'trthaberstatic.cdn.wp.trt.com.tr',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
   },

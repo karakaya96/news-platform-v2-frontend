@@ -20,6 +20,7 @@ export interface Category {
   createdAt: string;
   // Computed (from joins)
   articleCount?: number;
+  article_count?: number; // Backend returns snake_case
 }
 
 export interface Tag {
