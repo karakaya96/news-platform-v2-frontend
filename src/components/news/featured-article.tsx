@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
@@ -12,6 +12,7 @@ interface FeaturedArticleProps {
 
 export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticleProps) {
   const t = useTranslations('news');
+  const locale = useLocale();
 
   if (variant === 'compact') {
     return (
@@ -37,7 +38,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
           <div className="absolute bottom-0 left-0 right-0 p-4">
             {article.categoryName && (
               <span className="inline-block px-2 py-0.5 mb-2 text-xs font-semibold bg-white/20 text-white rounded-full backdrop-blur-sm">
-                {translateCategoryName(article.categorySlug || '', article.categoryName)}
+                {translateCategoryName(article.categorySlug || '', article.categoryName, locale)}
               </span>
             )}
             <h3 className="text-lg font-bold text-white line-clamp-2 leading-snug">
@@ -79,7 +80,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 lg:p-10">
             {article.categoryName && (
               <span className="inline-block px-2 sm:px-3 py-1 mb-2 sm:mb-3 text-xs font-semibold bg-white/20 text-white rounded-full backdrop-blur-sm">
-                {translateCategoryName(article.categorySlug || '', article.categoryName)}
+                {translateCategoryName(article.categorySlug || '', article.categoryName, locale)}
               </span>
             )}
             <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-2 sm:mb-3 line-clamp-3 leading-tight">

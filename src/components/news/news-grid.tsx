@@ -1,5 +1,6 @@
 import type { News } from '@/types';
 import { NewsCard } from './news-card';
+import { useTranslations } from 'next-intl';
 
 interface NewsGridProps {
   articles: News[];
@@ -7,8 +8,10 @@ interface NewsGridProps {
 }
 
 export function NewsGrid({ articles, columns = 3 }: NewsGridProps) {
+  const t = useTranslations('news');
+
   if (!articles || articles.length === 0) {
-    return <div className="text-center py-12 text-muted-foreground">Henüz haber bulunamadı.</div>;
+    return <div className="text-center py-12 text-muted-foreground">{t('noNews')}</div>;
   }
 
   const gridClass = {
