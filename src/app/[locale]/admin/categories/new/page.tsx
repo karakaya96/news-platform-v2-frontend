@@ -130,7 +130,7 @@ export default function NewCategoryPage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">{t('newCategoryTitle')}</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('newCategoryPage.title')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <Card>

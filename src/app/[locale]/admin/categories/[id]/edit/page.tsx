@@ -172,7 +172,7 @@ export default function EditCategoryPage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">{t('editCategoryTitle')}</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('editCategoryPage.title')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <Card>
