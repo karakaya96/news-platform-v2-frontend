@@ -18,6 +18,14 @@ import { SITE_LOGO_URL, SITE_NAME, SITE_URL } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem, News } from '@/types';
 
+interface PublicSettings {
+  comments_enabled: string;
+  comments_max_length: string;
+  notifications_enabled: string;
+  site_name: string;
+  [key: string]: string;
+}
+
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
 }
@@ -166,6 +174,20 @@ async function getComments(newsId: number) {
   }
 }
 
+async function getPublicSettings(): Promise<PublicSettings> {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
+  try {
+    const res = await fetch(`${apiUrl}/api/settings/public/all`, { cache: 'no-store' });
+    if (!res.ok) {
+      return { comments_enabled: 'true', comments_max_length: '5000', notifications_enabled: 'true', site_name: 'News Platform' };
+    }
+    const data = await res.json();
+    return data.data || { comments_enabled: 'true', comments_max_length: '5000', notifications_enabled: 'true', site_name: 'News Platform' };
+  } catch {
+    return { comments_enabled: 'true', comments_max_length: '5000', notifications_enabled: 'true', site_name: 'News Platform' };
+  }
+}
+
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
   try {
@@ -217,9 +239,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const [related, commentsData] = await Promise.all([
+  const [related, commentsData, publicSettings] = await Promise.all([
     article.categorySlug ? getRelatedArticles(article.categorySlug) : Promise.resolve([]),
     getComments(article.id),
+    getPublicSettings(),
   ]);
 
   return (
@@ -392,6 +415,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         newsId={article.id}
         initialComments={commentsData.comments}
         initialCount={commentsData.count}
+        commentsEnabled={publicSettings.comments_enabled !== 'false'}
+        commentsMaxLength={Number.parseInt(publicSettings.comments_max_length || '5000', 10)}
       />
     </article>
   );

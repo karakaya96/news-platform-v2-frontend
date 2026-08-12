@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react';
 
 interface SubscriptionFormProps {
   categories: { slug: string; name: string; color: string }[];
+  showBrowserPush?: boolean;
+  showEmail?: boolean;
 }
 
-export function SubscriptionForm({ categories }: SubscriptionFormProps) {
+export function SubscriptionForm({ categories, showBrowserPush = true, showEmail = true }: SubscriptionFormProps) {
   const [email, setEmail] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -248,7 +250,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
       </div>
 
       {/* Browser Push Notification */}
-      {permission !== 'denied' && (
+      {showBrowserPush && permission !== 'denied' && (
         <div className="mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
           {browserSubscribed ? (
             <>
@@ -309,7 +311,7 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
         </div>
       )}
 
-      {permission === 'denied' && (
+      {showBrowserPush && permission === 'denied' && (
         <div className="mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800">
             <BellOff className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
@@ -321,37 +323,39 @@ export function SubscriptionForm({ categories }: SubscriptionFormProps) {
       )}
 
       {/* Email Subscription */}
-      <div>
-        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
-          E-posta ile Abone Ol
-        </p>
-        <div className="flex gap-2">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="ornek@email.com"
-            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors"
-          />
-          <button
-            type="button"
-            onClick={handleEmailSubscribe}
-            disabled={submitting}
-            className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-          >
-            {submitting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Mail className="w-4 h-4" />
-            )}
-            Abone Ol
-          </button>
+      {showEmail && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+            E-posta ile Abone Ol
+          </p>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ornek@email.com"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm transition-colors"
+            />
+            <button
+              type="button"
+              onClick={handleEmailSubscribe}
+              disabled={submitting}
+              className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {submitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Mail className="w-4 h-4" />
+              )}
+              Abone Ol
+            </button>
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+            📬 Abone olduğunuzda onay e-postası gönderilecektir. Spam klasörünüzü kontrol etmeyi
+            unutmayın.
+          </p>
         </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-          📬 Abone olduğunuzda onay e-postası gönderilecektir. Spam klasörünüzü kontrol etmeyi
-          unutmayın.
-        </p>
-      </div>
+      )}
 
       {/* Message */}
       {message && (

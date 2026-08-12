@@ -18,9 +18,17 @@ interface CommentsSectionProps {
   newsId: number;
   initialComments: CommentItem[];
   initialCount: number;
+  commentsEnabled?: boolean;
+  commentsMaxLength?: number;
 }
 
-export function CommentsSection({ newsId, initialComments, initialCount }: CommentsSectionProps) {
+export function CommentsSection({
+  newsId,
+  initialComments,
+  initialCount,
+  commentsEnabled = true,
+  commentsMaxLength = 5000,
+}: CommentsSectionProps) {
   const [comments, _setComments] = useState<Comment[]>(initialComments);
   const [count, _setCount] = useState(initialCount);
   const [authorName, setAuthorName] = useState('');
@@ -146,106 +154,126 @@ export function CommentsSection({ newsId, initialComments, initialCount }: Comme
         </div>
       </div>
 
-      {/* Comment Form */}
-      <form
-        id="comment-form"
-        onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8 shadow-sm"
-      >
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-          {replyingTo ? 'Yorumu Yanıtla' : 'Yorum Yap'}
-        </h3>
+      {/* Comment Form - only if comments are enabled */}
+      {commentsEnabled ? (
+        <form
+          id="comment-form"
+          onSubmit={handleSubmit}
+          className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8 shadow-sm"
+        >
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
+            {replyingTo ? 'Yorumu Yanıtla' : 'Yorum Yap'}
+          </h3>
 
-        {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm">
-            {success}
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label
-              htmlFor="authorName"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
-            >
-              Adınız <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="authorName"
-              type="text"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              placeholder="Adınızı girin"
-              maxLength={100}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="authorEmail"
-              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
-            >
-              E-posta <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="authorEmail"
-              type="email"
-              value={authorEmail}
-              onChange={(e) => setAuthorEmail(e.target.value)}
-              placeholder="ornek@email.com"
-              maxLength={255}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-            />
-          </div>
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="content"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
-          >
-            Yorumunuz <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Düşüncelerinizi paylaşın..."
-            rows={4}
-            maxLength={5000}
-            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
-          />
-          <p className="text-xs text-slate-400 mt-1">{content.length}/5000</p>
-        </div>
-
-        <div className="flex items-center justify-between">
-          {replyingTo && (
-            <button
-              type="button"
-              onClick={() => {
-                setReplyingTo(null);
-                setParentId(null);
-                setContent('');
-              }}
-              className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-            >
-              Yanıtı iptal et
-            </button>
+          {error && (
+            <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm">
+              {error}
+            </div>
           )}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="ml-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          {success && (
+            <div className="mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm">
+              {success}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                htmlFor="authorName"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+              >
+                Adınız <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="authorName"
+                type="text"
+                value={authorName}
+                onChange={(e) => setAuthorName(e.target.value)}
+                placeholder="Adınızı girin"
+                maxLength={100}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="authorEmail"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+              >
+                E-posta <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="authorEmail"
+                type="email"
+                value={authorEmail}
+                onChange={(e) => setAuthorEmail(e.target.value)}
+                placeholder="ornek@email.com"
+                maxLength={255}
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+              />
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="content"
+              className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
+            >
+              Yorumunuz <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Düşüncelerinizi paylaşın..."
+              rows={4}
+              maxLength={commentsMaxLength}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+            />
+            <p className="text-xs text-slate-400 mt-1">{content.length}/{commentsMaxLength}</p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            {replyingTo && (
+              <button
+                type="button"
+                onClick={() => {
+                  setReplyingTo(null);
+                  setParentId(null);
+                  setContent('');
+                }}
+                className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+              >
+                Yanıtı iptal et
+              </button>
+            )}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="ml-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? 'Gönderiliyor...' : 'Yorum Gönder'}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8 text-center">
+          <svg
+            className="w-10 h-10 mx-auto mb-3 text-slate-300 dark:text-slate-600"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            {submitting ? 'Gönderiliyor...' : 'Yorum Gönder'}
-          </button>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+            />
+          </svg>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Yorumlar kapatılmış</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Bu haberde yorum yapma devre dışıdır.</p>
         </div>
-      </form>
+      )}
 
       {/* Comments List */}
       {nestedComments.length === 0 ? (
