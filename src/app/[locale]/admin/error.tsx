@@ -29,7 +29,7 @@ export default function AdminError({
         </p>
         {error.digest && (
           <p className="text-xs text-slate-400 dark:text-slate-500 mb-4 font-mono">
-            Hata kodu: {error.digest}
+            {t('errorCode')} {error.digest}
           </p>
         )}
         <div className="flex gap-3 justify-center">
@@ -37,7 +37,7 @@ export default function AdminError({
             {t('retry')}
           </Button>
           <Button onClick={() => (window.location.href = '/admin/dashboard')}>
-            {t('dashboard')}
+            {t('backToDashboard')}
           </Button>
         </div>
       </div>
