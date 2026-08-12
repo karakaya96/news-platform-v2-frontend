@@ -17,6 +17,7 @@ import {
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -51,11 +52,11 @@ const commentStatusColors: Record<string, string> = {
   spam: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
 };
 
-const commentStatusLabels: Record<string, string> = {
-  pending: 'Beklemede',
-  approved: 'Onaylandı',
-  rejected: 'Reddedildi',
-  spam: 'Spam',
+const commentStatusLabels = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+  spam: 'spam',
 };
 
 const commentStatusDots: Record<string, string> = {
@@ -66,6 +67,7 @@ const commentStatusDots: Record<string, string> = {
 };
 
 export default function CommentsPage() {
+  const t = useTranslations('admin.commentsPage');
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
@@ -97,7 +99,7 @@ export default function CommentsPage() {
         setTotalPages(res.pagination?.totalPages || 1);
         setTotal(res.pagination?.total || 0);
       } else {
-        toast.error('Yorumlar yüklenemedi');
+        toast.error(t('loadError'));
       }
     } catch {
       toast.error('Yorumlar yüklenemedi');
@@ -114,15 +116,15 @@ export default function CommentsPage() {
     try {
       const res = await api.put(`/api/comments/admin/${id}/status`, { status: newStatus });
       if (res.success) {
-        toast.success(`Yorum ${commentStatusLabels[newStatus].toLowerCase()}`);
+        toast.success(t('statusUpdated', { status: t(`status.${newStatus}`) }));
         setComments((prev) =>
           prev.map((c) => (c.id === id ? { ...c, status: newStatus as CommentItem['status'] } : c))
         );
       } else {
-        toast.error('Durum güncellenemedi');
+        toast.error(t('statusUpdateFailed'));
       }
     } catch {
-      toast.error('Durum güncellenemedi');
+      toast.error(t('statusUpdateFailed'));
     }
   };
 
@@ -132,14 +134,14 @@ export default function CommentsPage() {
     try {
       const res = await api.delete(`/api/comments/admin/${deleteId}`);
       if (res.success) {
-        toast.success('Yorum silindi');
+        toast.success(t('deleted'));
         setComments((prev) => prev.filter((c) => c.id !== deleteId));
         setTotal((prev) => prev - 1);
       } else {
-        toast.error('Silme başarısız');
+        toast.error(t('deleteFailed'));
       }
     } catch {
-      toast.error('Yorum silinemedi');
+      toast.error(t('deleteError'));
     } finally {
       setDeleting(false);
       setDeleteId(null);
@@ -154,15 +156,15 @@ export default function CommentsPage() {
         content: replyContent.trim(),
       });
       if (res.success) {
-        toast.success('Yanıt gönderildi');
+        toast.success(t('replySent'));
         setReplyId(null);
         setReplyContent('');
         fetchComments();
       } else {
-        toast.error('Yanıt gönderilemedi');
+        toast.error(t('replyFailed'));
       }
     } catch {
-      toast.error('Yanıt gönderilemedi');
+      toast.error(t('replyFailed'));
     } finally {
       setReplying(false);
     }
@@ -176,15 +178,15 @@ export default function CommentsPage() {
         status: bulkAction,
       });
       if (res.success) {
-        toast.success(`${bulkIds.length} yorum güncellendi`);
+        toast.success(t('bulkUpdated', { count: bulkIds.length }));
         setBulkIds([]);
         setBulkAction('');
         fetchComments();
       } else {
-        toast.error('Toplu işlem başarısız');
+        toast.error(t('bulkFailed'));
       }
     } catch {
-      toast.error('Toplu işlem başarısız');
+      toast.error(t('bulkFailed'));
     }
   };
 
@@ -198,9 +200,9 @@ export default function CommentsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            Yorumlar
+            {t('title')}
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} toplam yorum</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} {t('count')}</p>
         </div>
       </div>
 
@@ -214,31 +216,31 @@ export default function CommentsPage() {
           }}
         >
           <SelectTrigger className="w-[180px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-            <SelectValue placeholder="Tüm Durumlar" />
+            <SelectValue placeholder={t('allStatus')} />
           </SelectTrigger>
           <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-            <SelectItem value="all">Tüm Durumlar</SelectItem>
-            <SelectItem value="pending">Beklemede</SelectItem>
-            <SelectItem value="approved">Onaylandı</SelectItem>
-            <SelectItem value="rejected">Reddedildi</SelectItem>
-            <SelectItem value="spam">Spam</SelectItem>
+            <SelectItem value="all">{t('allStatus')}</SelectItem>
+            <SelectItem value="pending">{t('status.pending')}</SelectItem>
+            <SelectItem value="approved">{t('status.approved')}</SelectItem>
+            <SelectItem value="rejected">{t('status.rejected')}</SelectItem>
+            <SelectItem value="spam">{t('status.spam')}</SelectItem>
           </SelectContent>
         </Select>
 
         {bulkIds.length > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-500 dark:text-slate-400">
-              {bulkIds.length} seçili
+              {bulkIds.length} {t('selected')}
             </span>
             <Select value={bulkAction} onValueChange={setBulkAction}>
               <SelectTrigger className="w-[160px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                <SelectValue placeholder="Toplu işlem" />
+                <SelectValue placeholder={t('bulkPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="approved">Onayla</SelectItem>
-                <SelectItem value="rejected">Reddet</SelectItem>
-                <SelectItem value="spam">Spam İşaretle</SelectItem>
-                <SelectItem value="pending">Beklemeye Al</SelectItem>
+                <SelectItem value="approved">{t('bulkApprove')}</SelectItem>
+                <SelectItem value="rejected">{t('bulkReject')}</SelectItem>
+                <SelectItem value="spam">{t('bulkSpam')}</SelectItem>
+                <SelectItem value="pending">{t('bulkPending')}</SelectItem>
               </SelectContent>
             </Select>
             <Button
@@ -247,7 +249,7 @@ export default function CommentsPage() {
               disabled={!bulkAction}
               className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
             >
-              Uygula
+              {t('applyButton')}
             </Button>
           </div>
         )}
@@ -269,10 +271,10 @@ export default function CommentsPage() {
             <div className="text-center py-16">
               <MessageCircle className="h-16 w-16 mx-auto mb-4 text-slate-300 dark:text-slate-600" />
               <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
-                Yorum bulunamadı
+                {t('noComments')}
               </p>
               <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                Henüz bu habere yorum yapılmamış
+                {t('noCommentsDetail')}
               </p>
             </div>
           ) : (
@@ -316,7 +318,7 @@ export default function CommentsPage() {
                           <span
                             className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${commentStatusDots[comment.status]}`}
                           />
-                          {commentStatusLabels[comment.status]}
+                          {t(`status.${comment.status}`)}
                         </Badge>
                       </div>
 
@@ -349,7 +351,7 @@ export default function CommentsPage() {
                             onClick={() => handleStatusChange(comment.id, 'approved')}
                           >
                             <CheckCircle2 className="h-3 w-3 mr-1" />
-                            Onayla
+                            {t('approveButton')}
                           </Button>
                         )}
                         {comment.status !== 'rejected' && comment.status !== 'spam' && (
@@ -360,7 +362,7 @@ export default function CommentsPage() {
                             onClick={() => handleStatusChange(comment.id, 'rejected')}
                           >
                             <XCircle className="h-3 w-3 mr-1" />
-                            Reddet
+                            {t('rejectButton')}
                           </Button>
                         )}
                         {comment.status !== 'spam' && (
@@ -371,7 +373,7 @@ export default function CommentsPage() {
                             onClick={() => handleStatusChange(comment.id, 'spam')}
                           >
                             <AlertTriangle className="h-3 w-3 mr-1" />
-                            Spam
+                            {t('spamButton')}
                           </Button>
                         )}
                         {!comment.parentId && (
@@ -382,7 +384,7 @@ export default function CommentsPage() {
                             onClick={() => setReplyId(comment.id)}
                           >
                             <MessageCircle className="h-3 w-3 mr-1" />
-                            Yanıtla
+                            {t('replyButton')}
                           </Button>
                         )}
                         <Button
@@ -392,7 +394,7 @@ export default function CommentsPage() {
                           onClick={() => setDeleteId(comment.id)}
                         >
                           <Trash2 className="h-3 w-3 mr-1" />
-                          Sil
+                          {t('deleteButton')}
                         </Button>
                       </div>
                     </div>
@@ -408,7 +410,7 @@ export default function CommentsPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Sayfa <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
+            {t('page')} <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
             <span className="font-semibold text-slate-700 dark:text-slate-300">{totalPages}</span>
           </p>
           <div className="flex gap-2">
@@ -420,7 +422,7 @@ export default function CommentsPage() {
               className="rounded-xl border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
-              Önceki
+              {t('previous')}
             </Button>
             <Button
               variant="outline"
@@ -429,7 +431,7 @@ export default function CommentsPage() {
               onClick={() => setPage((p) => p + 1)}
               className="rounded-xl border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
             >
-              Sonraki
+              {t('next')}
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -440,9 +442,9 @@ export default function CommentsPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="text-lg dark:text-slate-100">Yorumu Sil</DialogTitle>
+            <DialogTitle className="text-lg dark:text-slate-100">{t('deleteDialog.title')}</DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
-              Bu yorumu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+              {t('deleteDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
@@ -451,7 +453,7 @@ export default function CommentsPage() {
               onClick={() => setDeleteId(null)}
               className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
             >
-              İptal
+              {t('deleteDialog.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -459,7 +461,7 @@ export default function CommentsPage() {
               disabled={deleting}
               className="rounded-xl"
             >
-              {deleting ? 'Siliniyor...' : 'Sil'}
+              {deleting ? t('deleteDialog.deleting') : t('deleteDialog.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -475,13 +477,13 @@ export default function CommentsPage() {
       >
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="text-lg dark:text-slate-100">Yorumu Yanıtla</DialogTitle>
+            <DialogTitle className="text-lg dark:text-slate-100">{t('replyDialog.title')}</DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
-              Bu yorumu yönetici olarak yanıtlayın. Yanıt otomatik olarak onaylanır.
+              {t('replyDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <Textarea
-            placeholder="Yanıtınızı yazın..."
+            placeholder={t('replyDialog.placeholder')}
             value={replyContent}
             onChange={(e) => setReplyContent(e.target.value)}
             rows={4}
@@ -496,14 +498,14 @@ export default function CommentsPage() {
               }}
               className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
             >
-              İptal
+              {t('replyDialog.cancel')}
             </Button>
             <Button
               onClick={handleReply}
               disabled={replying || !replyContent.trim()}
               className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white"
             >
-              {replying ? 'Gönderiliyor...' : 'Yanıtla'}
+              {replying ? t('replyDialog.sending') : t('replyDialog.reply')}
             </Button>
           </DialogFooter>
         </DialogContent>
