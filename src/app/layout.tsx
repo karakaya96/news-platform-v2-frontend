@@ -4,111 +4,105 @@ import { VercelAnalytics } from '@/components/analytics/vercel-analytics';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-import {
-  GOOGLE_SITE_VERIFICATION,
-  SITE_DESCRIPTION,
-  SITE_LOGO_URL,
-  SITE_NAME,
-  SITE_URL,
-} from '@/lib/constants';
+import { GOOGLE_SITE_VERIFICATION, NAVIGATION } from '@/lib/constants';
+import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl, getSiteDescription, getSocialLinks } from '@/lib/settings';
 import { inter } from '@/lib/fonts';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: {
-    default: `${SITE_NAME} - Güvenilir Haber Kaynağınız`,
-    template: `%s | ${SITE_NAME}`,
-  },
-  description: SITE_DESCRIPTION,
-  keywords: [
-    'haber',
-    'son dakika',
-    'güncel haberler',
-    'Türkiye haberleri',
-    'dünya haberleri',
-    'ekonomi',
-    'siyaset',
-    'spor',
-    'teknoloji',
-    'sağlık',
-    'kültür',
-    'analiz',
-    'haberler',
-    'gündem',
-    'news',
-    'breaking news',
-    'Turkey news',
-  ],
-  authors: [{ name: SITE_NAME, url: SITE_URL }],
-  creator: SITE_NAME,
-  publisher: SITE_NAME,
-  applicationName: SITE_NAME,
-  robots: {
-    index: true,
-    follow: true,
-    'max-image-preview': 'large',
-    'max-snippet': -1,
-    'max-video-preview': -1,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSettings();
+  const siteName = getSiteName(settings);
+  const siteUrl = getSiteUrl(settings);
+  const siteDescription = getSiteDescription(settings);
+  const logoUrl = getLogoUrl(settings);
+  const socialLinks = getSocialLinks(settings);
+  const seoKeywords = settings.seo_keywords || 'haber, son dakika, güncel haberler, Türkiye haberleri, dünya haberleri';
+
+  const title = settings.seo_title || `${siteName} - Güvenilir Haber Kaynağınız`;
+
+  const ogImages = settings.seo_og_image
+    ? [{ url: settings.seo_og_image, width: 1200, height: 630, alt: siteName }]
+    : [{ url: logoUrl, width: 512, height: 512, alt: siteName, type: 'image/png' as const }];
+
+  return {
+    title: {
+      default: title,
+      template: `%s | ${siteName}`,
+    },
+    description: settings.seo_description || siteDescription,
+    keywords: seoKeywords.split(',').map((k) => k.trim()),
+    authors: [{ name: siteName, url: siteUrl }],
+    creator: siteName,
+    publisher: siteName,
+    applicationName: siteName,
+    robots: {
       index: true,
       follow: true,
       'max-image-preview': 'large',
       'max-snippet': -1,
       'max-video-preview': -1,
-    },
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'tr_TR',
-    alternateLocale: ['en_US'],
-    siteName: SITE_NAME,
-    title: {
-      default: `${SITE_NAME} - Güvenilir Haber Kaynağınız`,
-      template: `%s | ${SITE_NAME}`,
-    },
-    description: SITE_DESCRIPTION,
-    url: SITE_URL,
-    images: [
-      {
-        url: SITE_LOGO_URL,
-        width: 512,
-        height: 512,
-        alt: SITE_NAME,
-        type: 'image/png',
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+        'max-video-preview': -1,
       },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: '@newshaberglobal',
-    creator: '@newshaberglobal',
-    title: `${SITE_NAME} - Güvenilir Haber Kaynağınız`,
-    description: SITE_DESCRIPTION,
-    images: [SITE_LOGO_URL],
-  },
-  alternates: {
-    canonical: SITE_URL,
-    languages: {
-      tr: SITE_URL,
     },
-  },
-  icons: {
-    icon: '/favicon.png',
-    apple: '/favicon.png',
-  },
-  metadataBase: new URL(SITE_URL),
-  verification: {
-    google: GOOGLE_SITE_VERIFICATION,
-  },
-};
+    openGraph: {
+      type: 'website',
+      locale: 'tr_TR',
+      alternateLocale: ['en_US'],
+      siteName,
+      title: {
+        default: title,
+        template: `%s | ${siteName}`,
+      },
+      description: settings.seo_description || siteDescription,
+      url: siteUrl,
+      images: ogImages,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: socialLinks.twitter ? `@${socialLinks.twitter.split('/').pop()}` : undefined,
+      creator: socialLinks.twitter ? `@${socialLinks.twitter.split('/').pop()}` : undefined,
+      title,
+      description: settings.seo_description || siteDescription,
+      images: [settings.seo_og_image || logoUrl],
+    },
+    alternates: {
+      canonical: siteUrl,
+      languages: {
+        [settings.site_language || 'tr']: siteUrl,
+      },
+    },
+    icons: {
+      icon: getFaviconUrl(settings),
+      apple: getFaviconUrl(settings),
+    },
+    metadataBase: new URL(siteUrl),
+    verification: {
+      google: GOOGLE_SITE_VERIFICATION,
+    },
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await getPublicSettings();
+  const siteName = getSiteName(settings);
+  const siteUrl = getSiteUrl(settings);
+  const siteDescription = getSiteDescription(settings);
+  const logoUrl = getLogoUrl(settings);
+  const socialLinks = getSocialLinks(settings);
+
+  const sameAs = Object.values(socialLinks).filter(Boolean);
+
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang={settings.site_language || 'tr'} suppressHydrationWarning>
       <head>
         <meta
           httpEquiv="Content-Security-Policy"
@@ -135,37 +129,32 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'NewsMediaOrganization',
-              name: SITE_NAME,
-              url: SITE_URL,
+              name: siteName,
+              url: siteUrl,
               logo: {
                 '@type': 'ImageObject',
-                url: SITE_LOGO_URL,
+                url: logoUrl,
                 width: 512,
                 height: 512,
               },
-              sameAs: [
-                'https://twitter.com/newshaberglobal',
-                'https://facebook.com/newshaberglobal',
-                'https://linkedin.com/company/newshaberglobal',
-                'https://youtube.com/@newshaberglobal',
-              ],
+              sameAs: sameAs.length > 0 ? sameAs : undefined,
               contactPoint: {
                 '@type': 'ContactPoint',
                 contactType: 'customer service',
-                email: 'newshaberglobal@gmail.com',
-                url: `${SITE_URL}/contact`,
+                email: settings.email_from_address || 'newshaberglobal@gmail.com',
+                url: `${siteUrl}/contact`,
               },
-              description: SITE_DESCRIPTION,
+              description: siteDescription,
               foundingDate: '2025',
-              publishingPrinciples: `${SITE_URL}/editorial`,
+              publishingPrinciples: `${siteUrl}/editorial`,
             }),
           }}
         />
         <ThemeProvider>
           <div className="relative flex min-h-screen flex-col">
-            <Header />
+            <Header settings={settings} navigation={NAVIGATION} />
             <main className="flex-1">{children}</main>
-            <Footer />
+            <Footer settings={settings} navigation={NAVIGATION} />
             <VercelAnalytics />
           </div>
         </ThemeProvider>

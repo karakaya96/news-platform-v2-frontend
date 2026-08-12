@@ -1,7 +1,10 @@
 import type { MetadataRoute } from 'next';
-import { SITE_URL } from '@/lib/constants';
+import { getPublicSettings, getSiteUrl } from '@/lib/settings';
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const settings = await getPublicSettings();
+  const siteUrl = getSiteUrl(settings);
+
   return {
     rules: [
       {
@@ -40,7 +43,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: '/',
       },
     ],
-    sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/sitemap-news.xml`],
-    host: SITE_URL,
+    sitemap: [`${siteUrl}/sitemap.xml`, `${siteUrl}/sitemap-news.xml`],
+    host: siteUrl,
   };
 }

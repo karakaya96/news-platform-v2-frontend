@@ -3,13 +3,18 @@ export const runtime = 'edge';
 import type { Metadata } from 'next';
 import { SubscriptionForm } from '@/components/news/subscription-form';
 import { UnsubscribeHandler } from '@/components/news/unsubscribe-handler';
-import { CATEGORY_TRANSLATIONS, SITE_NAME } from '@/lib/constants';
+import { CATEGORY_TRANSLATIONS } from '@/lib/constants';
+import { getPublicSettings, getSiteName } from '@/lib/settings';
 
-export const metadata: Metadata = {
-  title: `Bildirim Aboneliği — ${SITE_NAME}`,
-  description:
-    'Yeni haberlerden anında haberdar olun. Tarayıcı bildirimi veya e-posta ile abone olun.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSettings();
+  const siteName = getSiteName(settings);
+  return {
+    title: `Bildirim Aboneliği — ${siteName}`,
+    description:
+      'Yeni haberlerden anında haberdar olun. Tarayıcı bildirimi veya e-posta ile abone olun.',
+  };
+}
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 

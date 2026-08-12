@@ -2,42 +2,41 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getCategoryIcon } from '@/components/news/category-icons';
 import api from '@/lib/api';
-import {
-  CATEGORY_COLORS,
-  SITE_LOGO_URL,
-  SITE_NAME,
-  SITE_URL,
-  translateCategoryDescription,
-  translateCategoryName,
-} from '@/lib/constants';
+import { CATEGORY_COLORS, translateCategoryDescription, translateCategoryName } from '@/lib/constants';
+import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl } from '@/lib/settings';
 import type { Category } from '@/types';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export const metadata: Metadata = {
-  title: `Kategoriler | ${SITE_NAME}`,
-  description:
-    'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
-  openGraph: {
-    title: `Kategoriler | ${SITE_NAME}`,
-    description:
-      'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
-    type: 'website',
-    url: `${SITE_URL}/categories`,
-    siteName: SITE_NAME,
-    images: [{ url: SITE_LOGO_URL, width: 512, height: 512, alt: SITE_NAME }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `Kategoriler | ${SITE_NAME}`,
-    description: 'Tüm haber kategorilerini keşfedin.',
-    images: [SITE_LOGO_URL],
-  },
-  alternates: {
-    canonical: `${SITE_URL}/categories`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getPublicSettings();
+  const siteName = getSiteName(settings);
+  const siteUrl = getSiteUrl(settings);
+  const logoUrl = getLogoUrl(settings);
+
+  return {
+    title: `Kategoriler | ${siteName}`,
+    description: 'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
+    openGraph: {
+      title: `Kategoriler | ${siteName}`,
+      description: 'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
+      type: 'website',
+      url: `${siteUrl}/categories`,
+      siteName,
+      images: [{ url: logoUrl, width: 512, height: 512, alt: siteName }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `Kategoriler | ${siteName}`,
+      description: 'Tüm haber kategorilerini keşfedin.',
+      images: [logoUrl],
+    },
+    alternates: {
+      canonical: `${siteUrl}/categories`,
+    },
+  };
+}
 
 async function getCategories(): Promise<Category[]> {
   const res = await api.get<Category[]>('/api/categories');

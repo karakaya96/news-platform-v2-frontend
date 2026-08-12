@@ -1,4 +1,4 @@
-import { SITE_LANGUAGE, SITE_NAME, SITE_URL } from '@/lib/constants';
+import { getPublicSettings, getSiteName, getSiteUrl } from '@/lib/settings';
 
 const API_URL = 'https://news-v2-api.karakaya-mk96.workers.dev';
 
@@ -14,7 +14,6 @@ interface NewsArticle {
 
 async function fetchRecentNews(): Promise<NewsArticle[]> {
   try {
-    // Google News sitemap: only articles published in last 48 hours
     const res = await fetch(`${API_URL}/api/news?limit=1000&status=published`, {
       cache: 'no-store',
     });
@@ -22,7 +21,6 @@ async function fetchRecentNews(): Promise<NewsArticle[]> {
     const data = await res.json();
     const articles: NewsArticle[] = data.data || [];
 
-    // Filter: only last 48 hours
     const cutoff = Date.now() - 48 * 60 * 60 * 1000;
     return articles.filter((a) => {
       const pubDate = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
@@ -43,6 +41,11 @@ function escapeXml(str: string): string {
 }
 
 export async function GET() {
+  const settings = await getPublicSettings();
+  const siteUrl = getSiteUrl(settings);
+  const siteName = getSiteName(settings);
+  const siteLanguage = settings.site_language || 'tr';
+
   const articles = await fetchRecentNews();
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -52,11 +55,11 @@ export async function GET() {
 ${articles
   .map(
     (article) => `  <url>
-    <loc>${escapeXml(`${SITE_URL}/news/${article.slug}`)}</loc>
+    <loc>${escapeXml(`${siteUrl}/news/${article.slug}`)}</loc>
     <news:news>
       <news:publication>
-        <news:name>${escapeXml(SITE_NAME)}</news:name>
-        <news:language>${SITE_LANGUAGE}</news:language>
+        <news:name>${escapeXml(siteName)}</news:name>
+        <news:language>${siteLanguage}</news:language>
       </news:publication>
       <news:publication_date>${article.publishedAt ? new Date(article.publishedAt).toISOString() : ''}</news:publication_date>
       <news:title>${escapeXml(article.title)}</news:title>

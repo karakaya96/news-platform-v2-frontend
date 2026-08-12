@@ -3,15 +3,20 @@
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { NAVIGATION, SITE_NAME } from '@/lib/constants';
+import type { PublicSettings } from '@/lib/settings';
+import { getSiteName } from '@/lib/settings';
 
 interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
+  settings: PublicSettings;
+  navigation: { name: string; href: string }[];
 }
 
-export function MobileNav({ isOpen, onClose }: MobileNavProps) {
+export function MobileNav({ isOpen, onClose, settings, navigation }: MobileNavProps) {
   if (!isOpen) return null;
+
+  const siteName = getSiteName(settings);
 
   return (
     <div className="fixed inset-0 z-50 md:hidden">
@@ -21,7 +26,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
       {/* Slide-out Menu */}
       <div className="fixed right-0 top-0 h-full w-80 bg-background shadow-xl">
         <div className="flex items-center justify-between p-4 border-b">
-          <span className="text-lg font-semibold">{SITE_NAME}</span>
+          <span className="text-lg font-semibold">{siteName}</span>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-6 w-6" />
           </Button>
@@ -29,7 +34,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
 
         <nav className="p-4">
           <ul className="space-y-4">
-            {NAVIGATION.map((item) => (
+            {navigation.map((item) => (
               <li key={item.name}>
                 <Link
                   href={item.href}

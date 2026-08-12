@@ -7,7 +7,8 @@ import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { NAVIGATION, SITE_NAME } from '@/lib/constants';
+import type { PublicSettings } from '@/lib/settings';
+import { getSiteName } from '@/lib/settings';
 import { ThemeToggle } from './theme-toggle';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
@@ -18,7 +19,12 @@ interface Suggestion {
   slug: string;
 }
 
-export function Header() {
+interface HeaderProps {
+  settings: PublicSettings;
+  navigation: { name: string; href: string }[];
+}
+
+export function Header({ settings, navigation }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -27,6 +33,8 @@ export function Header() {
   const router = useRouter();
   const suggestionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  const siteName = getSiteName(settings);
 
   const fetchSuggestions = useCallback(async (q: string) => {
     if (q.length < 2) {
@@ -96,13 +104,13 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <span className="text-2xl font-bold text-primary group-hover:opacity-80 transition-opacity">
-              {SITE_NAME}
+              {siteName}
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
-            {NAVIGATION.map((item) => (
+            {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -186,7 +194,7 @@ export function Header() {
         {isMenuOpen && (
           <div className="md:hidden border-t py-4 space-y-4">
             <nav className="flex flex-col space-y-1">
-              {NAVIGATION.map((item) => (
+              {navigation.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}

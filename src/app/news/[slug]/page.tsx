@@ -14,16 +14,12 @@ import { RelatedArticles } from '@/components/news/related-articles';
 import { ShareButtons } from '@/components/news/share-buttons';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { SITE_LOGO_URL, SITE_NAME, SITE_URL } from '@/lib/constants';
+import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl } from '@/lib/settings';
 import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem, News } from '@/types';
 
-interface PublicSettings {
-  comments_enabled: string;
-  comments_max_length: string;
-  notifications_enabled: string;
-  site_name: string;
-  [key: string]: string;
+interface ArticlePageProps {
+  params: Promise<{ slug: string }>;
 }
 
 interface ArticlePageProps {
@@ -174,22 +170,10 @@ async function getComments(newsId: number) {
   }
 }
 
-async function getPublicSettings(): Promise<PublicSettings> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
-  try {
-    const res = await fetch(`${apiUrl}/api/settings/public/all`, { cache: 'no-store' });
-    if (!res.ok) {
-      return { comments_enabled: 'true', comments_max_length: '5000', notifications_enabled: 'true', site_name: 'News Platform' };
-    }
-    const data = await res.json();
-    return data.data || { comments_enabled: 'true', comments_max_length: '5000', notifications_enabled: 'true', site_name: 'News Platform' };
-  } catch {
-    return { comments_enabled: 'true', comments_max_length: '5000', notifications_enabled: 'true', site_name: 'News Platform' };
-  }
-}
-
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
+  const settings = await getPublicSettings();
+  const siteUrl = getSiteUrl(settings);
   try {
     const article = await getArticle(slug);
 
@@ -213,7 +197,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
         images: article.imageUrl
           ? [{ url: article.imageUrl, width: 1200, height: 630, alt: article.title }]
           : [],
-        url: `${SITE_URL}/news/${article.slug}`,
+        url: `${siteUrl}/news/${article.slug}`,
       },
       twitter: {
         card: 'summary_large_image',
@@ -222,7 +206,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
         images: article.imageUrl ? [article.imageUrl] : [],
       },
       alternates: {
-        canonical: `${SITE_URL}/news/${article.slug}`,
+        canonical: `${siteUrl}/news/${article.slug}`,
       },
     };
   } catch (error) {
@@ -244,6 +228,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     getComments(article.id),
     getPublicSettings(),
   ]);
+
+  const siteName = getSiteName(publicSettings);
+  const siteUrl = getSiteUrl(publicSettings);
+  const logoUrl = getLogoUrl(publicSettings);
 
   return (
     <article className="container mx-auto px-4 py-8">
@@ -284,18 +272,18 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               : undefined,
             publisher: {
               '@type': 'Organization',
-              name: SITE_NAME,
-              url: SITE_URL,
+              name: siteName,
+              url: siteUrl,
               logo: {
                 '@type': 'ImageObject',
-                url: SITE_LOGO_URL,
+                url: logoUrl,
                 width: 512,
                 height: 512,
               },
             },
             mainEntityOfPage: {
               '@type': 'WebPage',
-              '@id': `${SITE_URL}/news/${article.slug}`,
+              '@id': `${siteUrl}/news/${article.slug}`,
             },
             isAccessibleForFree: true,
             inLanguage: 'tr',
@@ -370,7 +358,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Share Buttons */}
       <div className="mb-8">
-        <ShareButtons url={`${SITE_URL}/news/${article.slug}`} title={article.title} />
+        <ShareButtons url={`${siteUrl}/news/${article.slug}`} title={article.title} />
       </div>
 
       {/* Article Content */}

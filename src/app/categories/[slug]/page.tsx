@@ -5,13 +5,8 @@ import { notFound } from 'next/navigation';
 import { NewsGrid } from '@/components/news/news-grid';
 import { Pagination } from '@/components/shared/pagination';
 import api from '@/lib/api';
-import {
-  SITE_LOGO_URL,
-  SITE_NAME,
-  SITE_URL,
-  translateCategoryDescription,
-  translateCategoryName,
-} from '@/lib/constants';
+import { translateCategoryDescription, translateCategoryName } from '@/lib/constants';
+import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl } from '@/lib/settings';
 import type { Category, News } from '@/types';
 
 interface CategoryPageProps {
@@ -37,7 +32,10 @@ async function getCategoryNews(
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategory(slug);
+  const [category, settings] = await Promise.all([getCategory(slug), getPublicSettings()]);
+  const siteName = getSiteName(settings);
+  const siteUrl = getSiteUrl(settings);
+  const logoUrl = getLogoUrl(settings);
 
   if (!category) {
     return { title: 'Kategori Bulunamadı' };
@@ -56,9 +54,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
         category.description || `${category.name} kategorisindeki son haberler.`
       ),
       type: 'website',
-      url: `${SITE_URL}/categories/${slug}`,
-      siteName: SITE_NAME,
-      images: [{ url: SITE_LOGO_URL, width: 512, height: 512, alt: SITE_NAME }],
+      url: `${siteUrl}/categories/${slug}`,
+      siteName,
+      images: [{ url: logoUrl, width: 512, height: 512, alt: siteName }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -67,10 +65,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
         slug,
         category.description || `${category.name} kategorisindeki son haberler.`
       ),
-      images: [SITE_LOGO_URL],
+      images: [logoUrl],
     },
     alternates: {
-      canonical: `${SITE_URL}/categories/${slug}`,
+      canonical: `${siteUrl}/categories/${slug}`,
     },
   };
 }
