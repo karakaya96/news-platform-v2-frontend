@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { getCategoryIcon } from '@/components/news/category-icons';
 import api from '@/lib/api';
@@ -47,9 +46,10 @@ async function getCategories(): Promise<Category[]> {
   return res.data || [];
 }
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const categories = await getCategories();
-  const t = useTranslations('categories');
+  const t = await getTranslations({ locale, namespace: 'categories' });
 
   function EmptyIcon() {
     return (
