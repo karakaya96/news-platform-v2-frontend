@@ -96,11 +96,11 @@ export default async function CategoriesPage({ params }: { params: Promise<{ loc
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <h2 className="text-base font-semibold mb-1.5 group-hover:text-primary transition-colors">
-                  {translateCategoryName(category.slug, category.name)}
+                  {translateCategoryName(category.slug, category.name, locale)}
                 </h2>
                 {category.description && (
                   <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                    {translateCategoryDescription(category.slug, category.description)}
+                    {translateCategoryDescription(category.slug, category.description, locale)}
                   </p>
                 )}
                 {category.articleCount !== undefined && (

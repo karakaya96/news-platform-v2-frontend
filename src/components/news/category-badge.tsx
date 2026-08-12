@@ -1,5 +1,8 @@
+'use client';
+
 import { CATEGORY_COLORS, translateCategoryName } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { useLocale } from 'next-intl';
 
 interface CategoryBadgeProps {
   category: {
@@ -11,6 +14,7 @@ interface CategoryBadgeProps {
 }
 
 export function CategoryBadge({ category, className }: CategoryBadgeProps) {
+  const locale = useLocale();
   const colorClass = category.color || CATEGORY_COLORS[category.slug] || 'bg-gray-500';
 
   return (
@@ -21,7 +25,7 @@ export function CategoryBadge({ category, className }: CategoryBadgeProps) {
         className
       )}
     >
-      {translateCategoryName(category.slug, category.name)}
+      {translateCategoryName(category.slug, category.name, locale)}
     </span>
   );
 }

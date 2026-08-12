@@ -44,16 +44,18 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   }
 
   return {
-    title: translateCategoryName(slug, category.name),
+    title: translateCategoryName(slug, category.name, locale),
     description: translateCategoryDescription(
       slug,
-      category.description || `${category.name} ${t('categoryNews')}`
+      category.description || `${category.name} ${t('categoryNews')}`,
+      locale
     ),
     openGraph: {
-      title: translateCategoryName(slug, category.name),
+      title: translateCategoryName(slug, category.name, locale),
       description: translateCategoryDescription(
         slug,
-        category.description || `${category.name} ${t('categoryNews')}`
+        category.description || `${category.name} ${t('categoryNews')}`,
+        locale
       ),
       type: 'website',
       url: `${siteUrl}/categories/${slug}`,
@@ -62,10 +64,11 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     },
     twitter: {
       card: 'summary_large_image',
-      title: translateCategoryName(slug, category.name),
+      title: translateCategoryName(slug, category.name, locale),
       description: translateCategoryDescription(
         slug,
-        category.description || `${category.name} ${t('categoryNews')}`
+        category.description || `${category.name} ${t('categoryNews')}`,
+        locale
       ),
       images: [logoUrl],
     },
@@ -93,11 +96,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       {/* Category Header */}
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-3">
-          {translateCategoryName(slug, category.name)}
+          {translateCategoryName(slug, category.name, locale)}
         </h1>
         {category.description && (
           <p className="text-lg text-muted-foreground">
-            {translateCategoryDescription(slug, category.description)}
+            {translateCategoryDescription(slug, category.description, locale)}
           </p>
         )}
       </header>

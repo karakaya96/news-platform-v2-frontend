@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { BreakingTicker } from '@/components/news/breaking-ticker';
@@ -28,6 +28,7 @@ export default function HomePageClient({
   categoryArticles,
 }: HomePageClientProps) {
   const t = useTranslations('home');
+  const locale = useLocale();
   const [heroIndex, setHeroIndex] = useState(0);
 
   // Auto-rotate featured hero every 5 seconds
@@ -111,7 +112,8 @@ export default function HomePageClient({
                           <span className="inline-block px-2 py-0.5 mb-2 text-xs font-semibold bg-white/20 text-white rounded-full backdrop-blur-sm">
                             {translateCategoryName(
                               article.categorySlug || '',
-                              article.categoryName
+                              article.categoryName,
+                              locale
                             )}
                           </span>
                         )}
@@ -154,7 +156,7 @@ export default function HomePageClient({
                   href={`/categories/${category.slug}`}
                   className="hover:text-primary transition-colors"
                 >
-                  {translateCategoryName(category.slug, category.name)}
+                  {translateCategoryName(category.slug, category.name, locale)}
                 </Link>
               </h2>
               <NewsGrid articles={categoryArticles[index]?.slice(0, 3) || []} />
