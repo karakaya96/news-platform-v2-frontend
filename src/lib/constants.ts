@@ -89,8 +89,21 @@ export const CATEGORY_TRANSLATIONS: Record<string, { name: string; nameEn: strin
   },
 };
 
+const SLUG_ALIASES: Record<string, string> = {
+  'tech': 'technology',
+  'world': 'world-news',
+  'agenda': 'gundem',
+  'business': 'economy',
+  'sport': 'sports',
+  'sci': 'science',
+  'ent': 'entertainment',
+  'pol': 'politics',
+  'health': 'health',
+};
+
 export function translateCategoryName(slug: string, fallback: string, locale = 'tr'): string {
-  const cat = CATEGORY_TRANSLATIONS[slug];
+  const normalizedSlug = SLUG_ALIASES[slug] || slug;
+  const cat = CATEGORY_TRANSLATIONS[normalizedSlug];
   if (!cat) return fallback;
   return locale === 'en' ? cat.nameEn : cat.name;
 }
