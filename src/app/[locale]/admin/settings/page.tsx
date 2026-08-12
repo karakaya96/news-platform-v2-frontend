@@ -27,6 +27,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter, usePathname } from '@/i18n/navigation';
 
 const settingsSchema = z.object({
   site_name: z.string().min(1, 'Site adı zorunludur'),
@@ -57,15 +59,19 @@ const settingsSchema = z.object({
 type SettingsFormData = z.infer<typeof settingsSchema>;
 
 const TABS = [
-  { value: 'general', label: 'Genel', icon: Settings },
-  { value: 'seo', label: 'SEO', icon: Search },
-  { value: 'social', label: 'Sosyal Medya', icon: Share2 },
-  { value: 'email', label: 'E-posta', icon: Mail },
-  { value: 'comments', label: 'Yorumlar', icon: MessageCircle },
-  { value: 'notifications', label: 'Bildirimler', icon: Bell },
+  { value: 'general', labelKey: 'tabGeneral', icon: Settings },
+  { value: 'seo', labelKey: 'tabSeo', icon: Search },
+  { value: 'social', labelKey: 'tabSocial', icon: Share2 },
+  { value: 'email', labelKey: 'tabEmail', icon: Mail },
+  { value: 'comments', labelKey: 'tabComments', icon: MessageCircle },
+  { value: 'notifications', labelKey: 'tabNotifications', icon: Bell },
 ];
 
 export default function SettingsPage() {
+  const t = useTranslations('admin.settingsPage');
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -143,7 +149,7 @@ export default function SettingsPage() {
         });
       }
     } catch {
-      toast.error('Ayarlar yüklenemedi');
+      toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
@@ -163,15 +169,20 @@ export default function SettingsPage() {
       }
       const res = await api.put('/api/settings', payload);
       if (res.success) {
-        toast.success('Ayarlar kaydedildi');
+        toast.success(t('saved'));
         setSaved(true);
         reset(data);
+        
+        if (data.site_language && data.site_language !== locale) {
+          router.replace(pathname, { locale: data.site_language });
+        }
+        
         setTimeout(() => setSaved(false), 2000);
       } else {
-        toast.error(res.error || 'Kaydetme başarısız');
+        toast.error(res.error || t('saveFailed'));
       }
     } catch {
-      toast.error('Ayarlar kaydedilemedi');
+      toast.error(t('saveError'));
     } finally {
       setSaving(false);
     }
@@ -182,10 +193,10 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            Ayarlar
+            {t('title')}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Site yapılandırması ve tercihleri
+            {t('description')}
           </p>
         </div>
         <div className="space-y-4">
@@ -203,22 +214,22 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            Ayarlar
+            {t('title')}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Site yapılandırması ve tercihleri
+            {t('description')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           {saved && (
             <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-sm animate-in fade-in">
               <CheckCircle2 className="h-4 w-4" />
-              Kaydedildi
+              {t('savedIndicator')}
             </div>
           )}
           {isDirty && !saved && (
             <span className="text-xs text-amber-600 dark:text-amber-400">
-              Kaydedilmemiş değişiklikler var
+              {t('unsavedIndicator')}
             </span>
           )}
         </div>
@@ -234,7 +245,7 @@ export default function SettingsPage() {
                 className="flex items-center gap-2 py-2.5 data-[state=active]:bg-background data-[state=active]:shadow-sm"
               >
                 <tab.icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="hidden sm:inline">{t(tab.labelKey)}</span>
               </TabsTrigger>
             ))}
           </TabsList>
@@ -245,16 +256,16 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Globe className="h-5 w-5 text-primary" />
-                  Site Bilgileri
+                  {t('siteInfo')}
                 </CardTitle>
                 <CardDescription>
-                  Sitenizin temel bilgilerini yapılandırın
+                  {t('siteInfoDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="site_name">Site Adı *</Label>
+                    <Label htmlFor="site_name">{t('siteName')}</Label>
                     <Input
                       id="site_name"
                       placeholder="News Platform"
@@ -266,7 +277,7 @@ export default function SettingsPage() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="site_url">Site URL</Label>
+                    <Label htmlFor="site_url">{t('siteUrl')}</Label>
                     <Input
                       id="site_url"
                       placeholder="https://newshaberglobal.com"
@@ -275,17 +286,17 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="site_description">Site Açıklaması</Label>
+                  <Label htmlFor="site_description">{t('siteDescription')}</Label>
                   <Textarea
                     id="site_description"
-                    placeholder="Sitenizin kısa açıklaması..."
+                    placeholder={t('siteDescriptionPlaceholder')}
                     rows={3}
                     {...register('site_description')}
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="site_logo">Logo URL</Label>
+                    <Label htmlFor="site_logo">{t('logoUrl')}</Label>
                     <Input
                       id="site_logo"
                       placeholder="https://ornek.com/logo.png"
@@ -293,7 +304,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="site_favicon">Favicon URL</Label>
+                    <Label htmlFor="site_favicon">{t('faviconUrl')}</Label>
                     <Input
                       id="site_favicon"
                       placeholder="https://ornek.com/favicon.ico"
@@ -302,14 +313,14 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="site_language">Dil</Label>
+                  <Label htmlFor="site_language">{t('language')}</Label>
                   <select
                     id="site_language"
                     {...register('site_language')}
                     className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                   >
-                    <option value="tr">Türkçe</option>
-                    <option value="en">English</option>
+                    <option value="tr">{t('turkish')}</option>
+                    <option value="en">{t('english')}</option>
                   </select>
                 </div>
               </CardContent>
@@ -322,49 +333,49 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Search className="h-5 w-5 text-primary" />
-                  SEO Ayarları
+                  {t('seoSettings')}
                 </CardTitle>
                 <CardDescription>
-                  Arama motoru optimizasyonu ayarları
+                  {t('seoDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="seo_title">Varsayılan SEO Başlığı</Label>
+                  <Label htmlFor="seo_title">{t('seoTitle')}</Label>
                   <Input
                     id="seo_title"
                     placeholder="News Platform - Gündem, Teknoloji, Ekonomi"
                     {...register('seo_title')}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {watch('seo_title')?.length || 0}/70 karakter
+                    {watch('seo_title')?.length || 0}/70 {t('characters')}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="seo_description">Varsayılan Meta Açıklama</Label>
+                  <Label htmlFor="seo_description">{t('metaDescription')}</Label>
                   <Textarea
                     id="seo_description"
-                    placeholder="Son dakika haberleri, gündem, teknoloji, ekonomi ve daha fazlası."
+                    placeholder={t('metaDescriptionPlaceholder')}
                     rows={3}
                     {...register('seo_description')}
                   />
                   <p className="text-xs text-muted-foreground">
-                    {watch('seo_description')?.length || 0}/160 karakter
+                    {watch('seo_description')?.length || 0}/160 {t('characters')}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="seo_keywords">Anahtar Kelimeler</Label>
+                  <Label htmlFor="seo_keywords">{t('keywords')}</Label>
                   <Input
                     id="seo_keywords"
-                    placeholder="haber, gündem, son dakika, türkiye"
+                    placeholder={t('keywordsPlaceholder')}
                     {...register('seo_keywords')}
                   />
                   <p className="text-xs text-muted-foreground">
-                    Virgülle ayırın
+                    {t('keywordsHelp')}
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="seo_og_image">Varsayılan OG Görseli</Label>
+                  <Label htmlFor="seo_og_image">{t('ogImage')}</Label>
                   <Input
                     id="seo_og_image"
                     placeholder="https://ornek.com/og-image.jpg"
@@ -381,10 +392,10 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Share2 className="h-5 w-5 text-primary" />
-                  Sosyal Medya
+                  {t('socialMedia')}
                 </CardTitle>
                 <CardDescription>
-                  Sosyal medya hesap bağlantıları
+                  {t('socialDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -423,7 +434,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="social_telegram">Telegram Kanalı</Label>
+                  <Label htmlFor="social_telegram">{t('telegramChannel')}</Label>
                   <Input
                     id="social_telegram"
                     placeholder="https://t.me/kanaladi"
@@ -440,16 +451,16 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Mail className="h-5 w-5 text-primary" />
-                  E-posta Ayarları
+                  {t('emailSettings')}
                 </CardTitle>
                 <CardDescription>
-                  E-posta gönderim ayarları
+                  {t('emailDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email_from_name">Gönderen Adı</Label>
+                    <Label htmlFor="email_from_name">{t('senderName')}</Label>
                     <Input
                       id="email_from_name"
                       placeholder="News Platform"
@@ -457,7 +468,7 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email_from_address">Gönderen E-posta</Label>
+                    <Label htmlFor="email_from_address">{t('senderEmail')}</Label>
                     <Input
                       id="email_from_address"
                       placeholder="noreply@newshaberglobal.com"
@@ -466,7 +477,7 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email_reply_to">Yanıtla Adresi</Label>
+                  <Label htmlFor="email_reply_to">{t('replyTo')}</Label>
                   <Input
                     id="email_reply_to"
                     placeholder="info@newshaberglobal.com"
@@ -483,18 +494,18 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <MessageCircle className="h-5 w-5 text-primary" />
-                  Yorum Ayarları
+                  {t('commentSettings')}
                 </CardTitle>
                 <CardDescription>
-                  Yorum sistemini yapılandırın
+                  {t('commentDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                   <div className="space-y-0.5">
-                    <Label className="text-base">Yorumları Etkinleştir</Label>
+                    <Label className="text-base">{t('enableComments')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Haberlerde yorum yapılmasını sağlar
+                      {t('enableCommentsDesc')}
                     </p>
                   </div>
                   <Controller
@@ -512,9 +523,9 @@ export default function SettingsPage() {
                   <>
                     <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                       <div className="space-y-0.5">
-                        <Label className="text-base">Moderasyon Gerekli</Label>
+                        <Label className="text-base">{t('moderationRequired')}</Label>
                         <p className="text-sm text-muted-foreground">
-                          Yorumlar yayınlanmadan önce onaylanmalı
+                          {t('moderationDesc')}
                         </p>
                       </div>
                       <Controller
@@ -529,7 +540,7 @@ export default function SettingsPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="comments_max_length">Maksimum Yorum Uzunluğu</Label>
+                      <Label htmlFor="comments_max_length">{t('maxCommentLength')}</Label>
                       <Input
                         id="comments_max_length"
                         type="number"
@@ -550,18 +561,18 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Bell className="h-5 w-5 text-primary" />
-                  Bildirim Ayarları
+                  {t('notificationSettings')}
                 </CardTitle>
                 <CardDescription>
-                  Bildirim tercihlerini yapılandırın
+                  {t('notificationDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                   <div className="space-y-0.5">
-                    <Label className="text-base">Bildirimleri Etkinleştir</Label>
+                    <Label className="text-base">{t('enableNotifications')}</Label>
                     <p className="text-sm text-muted-foreground">
-                      Yeni haberlerde bildirim gönderilir
+                      {t('enableNotificationsDesc')}
                     </p>
                   </div>
                   <Controller
@@ -578,9 +589,9 @@ export default function SettingsPage() {
                 {notificationsEnabled && (
                   <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                     <div className="space-y-0.5">
-                      <Label className="text-base">E-posta Bildirimleri</Label>
+                      <Label className="text-base">{t('emailNotifications')}</Label>
                       <p className="text-sm text-muted-foreground">
-                        Abonelere e-posta ile bildirim gönder
+                        {t('emailNotificationsDesc')}
                       </p>
                     </div>
                     <Controller
@@ -610,10 +621,10 @@ export default function SettingsPage() {
               variant="outline"
               onClick={() => {
                 reset();
-                toast.info('Değişiklikler iptal edildi');
+                toast.info(t('cancelChanges'));
               }}
             >
-              İptal
+              {t('cancelButton')}
             </Button>
           )}
           <Button
@@ -626,7 +637,7 @@ export default function SettingsPage() {
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
-            Kaydet
+            {t('saveButton')}
           </Button>
         </div>
       </form>
