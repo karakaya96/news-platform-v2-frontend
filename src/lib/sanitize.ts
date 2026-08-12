@@ -65,7 +65,11 @@ export const sanitizeArticleContent = (content: string): string => {
         'type',
         'datetime',
         'cite',
+        'data-video-src',
+        'data-video-type',
+        'data-video-title',
       ],
+      div: ['data-video-src', 'data-video-type', 'data-video-title'],
     },
     allowedSchemes: ['http', 'https', 'mailto', 'tel', 'data'],
     allowedIframeHostnames: [
