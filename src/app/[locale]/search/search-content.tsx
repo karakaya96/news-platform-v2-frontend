@@ -13,6 +13,7 @@ import {
 import { useSearchParams } from 'next/navigation';
 import type React from 'react';
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import { NewsCard } from '@/components/news/news-card';
 import { NewsGridSkeleton } from '@/components/shared/loading-skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,8 @@ interface SearchSuggestion {
 }
 
 function SearchContent() {
+  const t = useTranslations('search');
+  const locale = useLocale();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const initialPage = Number.parseInt(searchParams.get('page') || '1', 10);
@@ -196,7 +199,7 @@ function SearchContent() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <h1 className="text-3xl font-bold mb-6">🔍 Gelişmiş Arama</h1>
+      <h1 className="text-3xl font-bold mb-6">🔍 {t('advancedSearch')}</h1>
 
       <div className="relative mb-4">
         <div className="flex gap-2">
@@ -204,7 +207,7 @@ function SearchContent() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Haber ara... (örn: seçim, ekonomi, spor)"
+              placeholder={t('placeholder')}
               className="pl-11 h-12 text-base"
               value={searchQuery}
               onChange={(e) => handleInputChange(e.target.value)}
@@ -232,7 +235,7 @@ function SearchContent() {
             )}
           </div>
           <Button onClick={handleSearch} className="h-12 px-6">
-            Ara
+            {t('filterButton')}
           </Button>
           <Button
             type="button"
@@ -241,7 +244,7 @@ function SearchContent() {
             onClick={() => setShowFilters(!showFilters)}
           >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
-            Filtreler
+            {t('filter')}
             {activeFilterCount > 0 && (
               <Badge
                 variant="secondary"
@@ -276,34 +279,34 @@ function SearchContent() {
       {showFilters && (
         <div className="bg-muted/30 border rounded-xl p-6 mb-6 space-y-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-sm">Filtreler</h3>
+            <h3 className="font-semibold text-sm">{t('filter')}</h3>
             {activeFilterCount > 0 && (
               <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs">
-                <X className="h-3 w-3 mr-1" /> Temizle
+                <X className="h-3 w-3 mr-1" /> {t('clear')}
               </Button>
             )}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <Tag className="h-3 w-3" /> Kategori
+                <Tag className="h-3 w-3" /> {t('category')}
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <option value="">Tümü</option>
+                <option value="">{locale === 'en' ? 'All' : 'Tümü'}</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={cat.slug}>
-                    {translateCategoryName(cat.slug, cat.name)}
+                    {translateCategoryName(cat.slug, cat.name, locale)}
                   </option>
                 ))}
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" /> Tarihten
+                <Calendar className="h-3 w-3" /> {t('fromDate')}
               </label>
               <Input
                 type="date"
@@ -314,7 +317,7 @@ function SearchContent() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <Calendar className="h-3 w-3" /> Tarihe
+                <Calendar className="h-3 w-3" /> {t('toDate')}
               </label>
               <Input
                 type="date"
@@ -325,22 +328,22 @@ function SearchContent() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <ArrowUpDown className="h-3 w-3" /> Sıralama
+                <ArrowUpDown className="h-3 w-3" /> {t('sortBy')}
               </label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'relevance' | 'date' | 'views')}
                 className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
-                <option value="relevance">Alaka</option>
-                <option value="date">Tarih (Yeni)</option>
-                <option value="views">Görüntülenme</option>
+                <option value="relevance">{t('relevance')}</option>
+                <option value="date">{locale === 'en' ? 'Date (Newest)' : 'Tarih (Yeni)'}</option>
+                <option value="views">{locale === 'en' ? 'Views' : 'Görüntülenme'}</option>
               </select>
             </div>
           </div>
           <div className="flex justify-end pt-2">
             <Button onClick={handleSearch} size="sm">
-              <Search className="h-3 w-3 mr-2" /> Filtrele
+              <Search className="h-3 w-3 mr-2" /> {t('filterButton')}
             </Button>
           </div>
         </div>
@@ -351,14 +354,14 @@ function SearchContent() {
       ) : searched && articles.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <Search className="h-16 w-16 mx-auto mb-4 opacity-30" />
-          <p className="text-xl font-medium mb-2">Sonuç bulunamadı</p>
-          <p className="text-sm">Farklı anahtar kelimeler veya filtreler deneyin.</p>
+          <p className="text-xl font-medium mb-2">{t('noResults')}</p>
+          <p className="text-sm">{t('noResultsDetail')}</p>
         </div>
       ) : articles.length > 0 ? (
         <>
           <div className="flex items-center justify-between mb-6">
             <p className="text-muted-foreground">
-              <span className="font-semibold text-foreground">{totalResults}</span> sonuç bulundu
+              <span className="font-semibold text-foreground">{totalResults}</span> {t('resultsCount')}
               {searchQuery && <span> — &quot;{searchQuery}&quot;</span>}
             </p>
           </div>
@@ -375,10 +378,10 @@ function SearchContent() {
                 disabled={currentPage <= 1}
                 onClick={() => goToPage(currentPage - 1)}
               >
-                <ChevronLeft className="h-4 w-4 mr-1" /> Önceki
+                <ChevronLeft className="h-4 w-4 mr-1" /> {locale === 'en' ? 'Previous' : 'Önceki'}
               </Button>
               <span className="text-sm text-muted-foreground px-4">
-                Sayfa {currentPage} / {totalPages}
+                {locale === 'en' ? 'Page' : 'Sayfa'} {currentPage} / {totalPages}
               </span>
               <Button
                 variant="outline"
@@ -386,7 +389,7 @@ function SearchContent() {
                 disabled={currentPage >= totalPages}
                 onClick={() => goToPage(currentPage + 1)}
               >
-                Sonraki <ChevronRight className="h-4 w-4 ml-1" />
+                {locale === 'en' ? 'Next' : 'Sonraki'} <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
           )}
@@ -394,10 +397,10 @@ function SearchContent() {
       ) : (
         <div className="text-center py-16 text-muted-foreground">
           <Search className="h-16 w-16 mx-auto mb-4 opacity-30" />
-          <p className="text-xl font-medium mb-2">Haber aramaya başlayın</p>
-          <p className="text-sm">Anahtar kelimeler girin veya filtreleri kullanın.</p>
+          <p className="text-xl font-medium mb-2">{t('startSearching')}</p>
+          <p className="text-sm">{t('startSearchingDetail')}</p>
           <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {['seçim', 'ekonomi', 'spor', 'teknoloji', 'dünya'].map((term) => (
+            {(locale === 'en' ? ['election', 'economy', 'sports', 'technology', 'world'] : ['seçim', 'ekonomi', 'spor', 'teknoloji', 'dünya']).map((term) => (
               <Button
                 key={term}
                 variant="outline"

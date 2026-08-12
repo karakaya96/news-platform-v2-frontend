@@ -1,21 +1,28 @@
 export const revalidate = 60;
 
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl } from '@/lib/settings';
 import SearchContent from './search-content';
 
-export async function generateMetadata(): Promise<Metadata> {
+interface SearchPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: SearchPageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'search' });
   const settings = await getPublicSettings();
   const siteName = getSiteName(settings);
   const siteUrl = getSiteUrl(settings);
   const logoUrl = getLogoUrl(settings);
 
   return {
-    title: `Haber Ara | ${siteName}`,
-    description: 'Haberler içinde arama yapın. Anahtar kelime, kategori ve tarihe göre filtreleyin.',
+    title: `${t('title')} | ${siteName}`,
+    description: t('description'),
     openGraph: {
-      title: `Haber Ara | ${siteName}`,
-      description: 'Haberler içinde arama yapın. Anahtar kelime, kategori ve tarihe göre filtreleyin.',
+      title: `${t('title')} | ${siteName}`,
+      description: t('description'),
       type: 'website',
       url: `${siteUrl}/search`,
       siteName,
@@ -23,8 +30,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Haber Ara | ${siteName}`,
-      description: 'Haberler içinde arama yapın.',
+      title: `${t('title')} | ${siteName}`,
+      description: t('description'),
       images: [logoUrl],
     },
     alternates: {
