@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Eye, Loader2, Star, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { RichTextEditor } from '@/components/admin/rich-text-editor';
 import { Button } from '@/components/ui/button';
@@ -25,24 +26,9 @@ import { sanitizeArticleContent } from '@/lib/sanitize';
 import { cn } from '@/lib/utils';
 import type { Category, News } from '@/types';
 
-const newsSchema = z.object({
-  title: z.string().min(1, 'Başlık zorunludur').max(200),
-  slug: z.string().min(1, 'Slug zorunludur').max(200),
-  categoryId: z.string().min(1, 'Kategori zorunludur'),
-  excerpt: z.string().max(500).optional(),
-  imageUrl: z.string().url('Geçerli bir URL giriniz').optional().or(z.literal('')),
-  status: z.enum(['draft', 'published', 'archived']),
-  isFeatured: z.boolean(),
-  isBreaking: z.boolean(),
-  seoTitle: z.string().max(70).optional(),
-  seoDescription: z.string().max(160).optional(),
-});
-
-type NewsFormData = z.infer<typeof newsSchema>;
-
 interface NewsFormProps {
   article?: News;
-  onSubmit: (data: NewsFormData & { content: string }) => Promise<void>;
+  onSubmit: (data: any) => Promise<void>;
   isSubmitting: boolean;
 }
 
@@ -54,9 +40,26 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+function createNewsSchema(t: ReturnType<typeof useTranslations>) {
+  return z.object({
+    title: z.string().min(1, t('titleRequired')).max(200),
+    slug: z.string().min(1, t('slugRequired')).max(200),
+    categoryId: z.string().min(1, t('categoryRequired')),
+    excerpt: z.string().max(500).optional(),
+    imageUrl: z.string().url(t('invalidUrl')).optional().or(z.literal('')),
+    status: z.enum(['draft', 'published', 'archived']),
+    isFeatured: z.boolean(),
+    isBreaking: z.boolean(),
+    seoTitle: z.string().max(70).optional(),
+    seoDescription: z.string().max(160).optional(),
+  });
+}
+
 export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
-  const [content, setContent] = useState(article?.content || '');
+  const t = useTranslations('admin.newsForm');
+  const newsSchema = createNewsSchema(t);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [content, setContent] = useState(article?.content || '');
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [showSeo, setShowSeo] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -67,7 +70,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<NewsFormData>({
+  } = useForm<z.infer<typeof newsSchema>>({
     resolver: zodResolver(newsSchema),
     defaultValues: {
       title: article?.title || '',
@@ -134,10 +137,10 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
           <Card>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Başlık *</Label>
+                <Label htmlFor="title">{t('titleLabel')}</Label>
                 <Input
                   id="title"
-                  placeholder="Haber başlığı..."
+                  placeholder={t('titlePlaceholder')}
                   {...register('title')}
                   className={cn(errors.title && 'border-red-500')}
                 />
@@ -145,10 +148,10 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="slug">Slug (URL) *</Label>
+                <Label htmlFor="slug">{t('slugLabel')}</Label>
                 <Input
                   id="slug"
-                  placeholder="haber-slug"
+                  placeholder={t('slugPlaceholder')}
                   {...register('slug')}
                   className={cn(errors.slug && 'border-red-500')}
                 />
@@ -156,10 +159,10 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="excerpt">Özet</Label>
+                <Label htmlFor="excerpt">{t('summaryLabel')}</Label>
                 <Textarea
                   id="excerpt"
-                  placeholder="Haberin kısa özeti..."
+                  placeholder={t('summaryPlaceholder')}
                   rows={3}
                   {...register('excerpt')}
                 />
@@ -170,23 +173,23 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
           {/* Content Editor */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">İçerik *</CardTitle>
+              <CardTitle className="text-lg">{t('contentCard')}</CardTitle>
             </CardHeader>
             <CardContent>
               <RichTextEditor
                 value={content}
                 onChange={setContent}
-                placeholder="Haber içeriğini buraya yazın..."
+                placeholder={t('contentPlaceholder')}
               />
-              {!content && <p className="text-sm text-red-500 mt-1">İçerik zorunludur</p>}
+              {!content && <p className="text-sm text-red-500 mt-1">{t('contentRequired')}</p>}
             </CardContent>
           </Card>
 
           {/* SEO Section */}
           <Card>
-            <CardHeader className="cursor-pointer" onClick={() => setShowSeo(!showSeo)}>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">SEO Ayarları</CardTitle>
+<CardHeader className="cursor-pointer" onClick={() => setShowSeo(!showSeo)}>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">{t('seoCard')}</CardTitle>
                 {showSeo ? (
                   <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
@@ -197,18 +200,18 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
             {showSeo && (
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="seoTitle">SEO Başlığı</Label>
+                  <Label htmlFor="seoTitle">{t('seoTitle')}</Label>
                   <Input
                     id="seoTitle"
-                    placeholder="Özel SEO başlığı..."
+                    placeholder={t('seoTitlePlaceholder')}
                     {...register('seoTitle')}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="seoDescription">SEO Açıklaması</Label>
+                  <Label htmlFor="seoDescription">{t('seoDescription')}</Label>
                   <Textarea
                     id="seoDescription"
-                    placeholder="Arama motorları için meta açıklaması..."
+                    placeholder={t('seoDescriptionPlaceholder')}
                     rows={3}
                     {...register('seoDescription')}
                   />
@@ -222,41 +225,41 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
         <div className="space-y-6">
           {/* Publish */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Yayınla</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>Durum</Label>
-                <Select
-                  value={status}
-                  onValueChange={(val) => setValue('status', val as 'draft' | 'published')}
-                >
-                  <SelectTrigger className="dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
-                    <SelectValue placeholder="Durum seçin" />
-                  </SelectTrigger>
-                  <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
-                    <SelectItem
-                      value="draft"
-                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                    >
-                      Taslak
-                    </SelectItem>
-                    <SelectItem
-                      value="published"
-                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                    >
-                      Yayında
-                    </SelectItem>
-                    <SelectItem
-                      value="archived"
-                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                    >
-                      Arşiv
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+<CardHeader>
+            <CardTitle className="text-lg">{t('publishCard')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>{t('statusLabel')}</Label>
+              <Select
+                value={status}
+                onValueChange={(val) => setValue('status', val as 'draft' | 'published')}
+              >
+                <SelectTrigger className="dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
+                  <SelectValue placeholder={t('statusPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
+                  <SelectItem
+                    value="draft"
+                    className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                  >
+                    {t('draft')}
+                  </SelectItem>
+                  <SelectItem
+                    value="published"
+                    className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                  >
+                    {t('published')}
+                  </SelectItem>
+                  <SelectItem
+                    value="archived"
+                    className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                  >
+                    {t('archived')}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
               <div
                 className={cn(
@@ -280,10 +283,10 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   </div>
                   <div>
                     <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">
-                      Öne Çıkan
+                      {t('featuredLabel')}
                     </Label>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Ana sayfada öne çıkar
+                      {t('featuredDescription')}
                     </p>
                   </div>
                 </div>
@@ -322,12 +325,12 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   >
                     <Zap className="h-4 w-4" />
                   </div>
-                  <div>
+<div>
                     <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">
-                      Son Dakika Haberi
+                      {t('breakingLabel')}
                     </Label>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Son dakika banner&apos;ı
+                      {t('breakingDescription')}
                     </p>
                   </div>
                 </div>
@@ -349,7 +352,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
               <div className="flex gap-2 pt-2">
                 <Button type="submit" disabled={isSubmitting || !content} className="flex-1">
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {article ? 'Güncelle' : 'Oluştur'}
+                  {article ? t('updateButton') : t('createButton')}
                 </Button>
                 <Button
                   type="button"
@@ -364,61 +367,61 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
 
           {/* Category */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Kategori *</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loadingCategories ? (
-                <div className="h-10 bg-muted animate-pulse rounded" />
-              ) : (
-                <Select
-                  value={watch('categoryId')}
-                  onValueChange={(val) => setValue('categoryId', val)}
+<CardHeader>
+            <CardTitle className="text-lg">{t('categoryCard')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loadingCategories ? (
+              <div className="h-10 bg-muted animate-pulse rounded" />
+            ) : (
+              <Select
+                value={watch('categoryId')}
+                onValueChange={(val) => setValue('categoryId', val)}
+              >
+                <SelectTrigger
+                  className={cn(
+                    errors.categoryId && 'border-red-500',
+                    'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100'
+                  )}
                 >
-                  <SelectTrigger
-                    className={cn(
-                      errors.categoryId && 'border-red-500',
-                      'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100'
-                    )}
-                  >
-                    <SelectValue placeholder="Kategori seçin" />
-                  </SelectTrigger>
-                  <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
-                    {categories.map((cat) => (
-                      <SelectItem
-                        key={cat.id}
-                        value={String(cat.id)}
-                        className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                      >
-                        {translateCategoryName(cat.slug, cat.name)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-              {errors.categoryId && (
-                <p className="text-sm text-red-500 mt-1">{errors.categoryId.message}</p>
-              )}
-            </CardContent>
+                  <SelectValue placeholder={t('categoryPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
+                  {categories.map((cat) => (
+                    <SelectItem
+                      key={cat.id}
+                      value={String(cat.id)}
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      {translateCategoryName(cat.slug, cat.name)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {errors.categoryId && (
+              <p className="text-sm text-red-500 mt-1">{errors.categoryId.message}</p>
+            )}
+          </CardContent>
           </Card>
 
           {/* Image */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Öne Çıkan Görsel</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="imageUrl">Görsel URL</Label>
-                <Input
-                  id="imageUrl"
-                  placeholder="https://ornek.com/gorsel.jpg"
-                  {...register('imageUrl')}
-                />
-                {errors.imageUrl && (
-                  <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
-                )}
-              </div>
+<CardHeader>
+            <CardTitle className="text-lg">{t('imageCard')}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="imageUrl">{t('imageUrl')}</Label>
+              <Input
+                id="imageUrl"
+                placeholder={t('imagePlaceholder')}
+                {...register('imageUrl')}
+              />
+              {errors.imageUrl && (
+                <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
+              )}
+            </div>
               {imageUrl && (
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted relative">
                   <Image
@@ -440,12 +443,12 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
       {showPreview && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="font-semibold">Önizleme</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
-                Kapat
-              </Button>
-            </div>
+<div className="flex items-center justify-between p-4 border-b">
+            <h3 className="font-semibold">{t('previewTitle')}</h3>
+            <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
+              {t('previewClose')}
+            </Button>
+          </div>
             <div className="p-6">
               <h1 className="text-3xl font-bold mb-4 dark:text-slate-100">{title}</h1>
               {imageUrl && (
