@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,6 +51,7 @@ interface NotificationLog {
 }
 
 export default function NotificationsPage() {
+  const t = useTranslations('admin.notificationsPage');
   const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [notifications, setNotifications] = useState<NotificationLog[]>([]);
@@ -69,9 +71,9 @@ export default function NotificationsPage() {
       if (statsRes.success && statsRes.data) setStats(statsRes.data);
       if (subRes.success && subRes.data) setSubscriptions(subRes.data);
       if (notifRes.success && notifRes.data) setNotifications(notifRes.data);
-    } catch {
-      toast.error('Veriler yüklenemedi');
-    } finally {
+} catch {
+        toast.error(t('loadError'));
+      } finally {
       setLoading(false);
     }
   }, []);
@@ -81,15 +83,15 @@ export default function NotificationsPage() {
   }, [fetchData]);
 
   const handleDeleteSubscription = async (id: number) => {
-    if (!confirm('Bu aboneliği kalıcı olarak silmek istediğinizden emin misiniz?')) return;
+    if (!confirm(t('confirmDeleteSubscription'))) return;
     try {
       const res = await api.delete(`/api/subscribe/admin/${id}`);
       if (res.success) {
-        toast.success('Abonelik kalıcı olarak silindi');
+        toast.success(t('subscriptionDeleted'));
         setSubscriptions((prev) => prev.filter((s) => s.id !== id));
       }
     } catch {
-      toast.error('Silme başarısız');
+      toast.error(t('deleteFailed'));
     }
   };
 
@@ -98,28 +100,28 @@ export default function NotificationsPage() {
     try {
       const res = await api.post(`/api/subscribe/admin/${id}/${action}`, {});
       if (res.success) {
-        toast.success(currentStatus === 1 ? 'Abonelik deaktif edildi' : 'Abonelik aktif edildi');
+        toast.success(currentStatus === 1 ? t('deactivated') : t('activated'));
         setSubscriptions((prev) =>
           prev.map((s) => (s.id === id ? { ...s, is_active: currentStatus === 1 ? 0 : 1 } : s))
         );
       }
     } catch {
-      toast.error('İşlem başarısız');
+      toast.error(t('operationFailed'));
     }
   };
 
   const handleDeleteNotification = async (id: number) => {
-    if (!confirm('Bu bildirimi silmek istediğinizden emin misiniz?')) return;
+    if (!confirm(t('confirmDeleteNotification'))) return;
     try {
       const res = await api.delete(`/api/subscribe/admin/notifications/${id}`);
       if (res.success) {
-        toast.success('Bildirim silindi');
+        toast.success(t('notificationDeleted'));
         setNotifications((prev) => prev.filter((n) => n.id !== id));
       } else {
-        toast.error(res.error || 'Silme başarısız');
+        toast.error(res.error || t('deleteFailed'));
       }
     } catch {
-      toast.error('Silme başarısız');
+      toast.error(t('deleteFailed'));
     }
   };
 
@@ -148,10 +150,10 @@ export default function NotificationsPage() {
       {/* Header */}
       <div>
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-          Bildirim & Abonelik
+          {t('title')}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Abonelikleri ve bildirimleri yönetin
+          {t('description')}
         </p>
       </div>
 
@@ -165,7 +167,7 @@ export default function NotificationsPage() {
                   <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Toplam Abonelik</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('totalSubscriptions')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {stats.totalSubscriptions}
                   </p>
@@ -180,7 +182,7 @@ export default function NotificationsPage() {
                   <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Aktif</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('active')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {stats.activeSubscriptions}
                   </p>
@@ -195,7 +197,7 @@ export default function NotificationsPage() {
                   <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">E-posta Abone</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('emailSubscribers')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {stats.emailSubscriptions}
                   </p>
@@ -210,7 +212,7 @@ export default function NotificationsPage() {
                   <MailOpen className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Gönderilen</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('sent')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {stats.notificationsSent}
                   </p>
@@ -225,7 +227,7 @@ export default function NotificationsPage() {
       <Card className="border-0 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Abonelikler</CardTitle>
+            <CardTitle className="text-lg">{t('subscriptions')}</CardTitle>
             <div className="flex gap-2">
               {['all', 'browser', 'email'].map((type) => (
                 <Button
@@ -235,7 +237,7 @@ export default function NotificationsPage() {
                   onClick={() => setTypeFilter(type)}
                   className="rounded-xl text-xs"
                 >
-                  {type === 'all' ? 'Tümü' : type === 'browser' ? 'Tarayıcı' : 'E-posta'}
+                  {type === 'all' ? t('all') : type === 'browser' ? t('browser') : t('email')}
                 </Button>
               ))}
               <div className="w-px bg-slate-200 dark:bg-slate-700 mx-1" />
@@ -247,7 +249,7 @@ export default function NotificationsPage() {
                   onClick={() => setStatusFilter(status)}
                   className="rounded-xl text-xs"
                 >
-                  {status === 'all' ? 'Tüm Durumlar' : status === 'active' ? 'Aktif' : 'Deaktif'}
+                  {status === 'all' ? t('allStatus') : status === 'active' ? t('active') : t('inactive')}
                 </Button>
               ))}
             </div>
@@ -257,7 +259,7 @@ export default function NotificationsPage() {
           {filteredSubs.length === 0 ? (
             <div className="text-center py-12">
               <BellOff className="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
-              <p className="text-slate-500 dark:text-slate-400">Henüz abonelik yok</p>
+              <p className="text-slate-500 dark:text-slate-400">{t('noSubscriptions')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -265,22 +267,22 @@ export default function NotificationsPage() {
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50">
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      Tip
+                      {t('tableType')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      E-posta
+                      {t('tableEmail')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      Kategoriler
+                      {t('tableCategories')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      Durum
+                      {t('tableStatus')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      Tarih
+                      {t('tableDate')}
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      İşlem
+                      {t('tableAction')}
                     </th>
                   </tr>
                 </thead>
@@ -292,7 +294,7 @@ export default function NotificationsPage() {
                     >
                       <td className="px-4 py-3">
                         <Badge variant="outline" className="rounded-full text-xs">
-                          {sub.type === 'browser' ? '🔔 Tarayıcı' : '📧 E-posta'}
+                          {sub.type === 'browser' ? t('browserBadge') : t('emailBadge')}
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
@@ -319,7 +321,7 @@ export default function NotificationsPage() {
                           variant={sub.is_active ? 'default' : 'secondary'}
                           className="rounded-full text-xs"
                         >
-                          {sub.is_active ? 'Aktif' : 'Deaktif'}
+                          {sub.is_active ? t('activeBadge') : t('inactiveBadge')}
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
@@ -335,7 +337,7 @@ export default function NotificationsPage() {
                               onClick={() => handleToggleActive(sub.id, sub.is_active)}
                             >
                               <BellOff className="h-3 w-3 mr-1" />
-                              Deaktif Et
+                              {t('deactivateButton')}
                             </Button>
                           ) : (
                             <Button
@@ -345,7 +347,7 @@ export default function NotificationsPage() {
                               onClick={() => handleToggleActive(sub.id, sub.is_active)}
                             >
                               <Bell className="h-3 w-3 mr-1" />
-                              Aktif Et
+                              {t('activateButton')}
                             </Button>
                           )}
                           <Button
@@ -355,7 +357,7 @@ export default function NotificationsPage() {
                             onClick={() => handleDeleteSubscription(sub.id)}
                           >
                             <Trash2 className="h-3 w-3 mr-1" />
-                            Sil
+                            {t('deleteButton')}
                           </Button>
                         </div>
                       </td>
@@ -371,13 +373,13 @@ export default function NotificationsPage() {
       {/* Notification Log */}
       <Card className="border-0 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">Son Bildirimler</CardTitle>
+          <CardTitle className="text-lg">{t('notificationsLog')}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           {notifications.length === 0 ? (
             <div className="text-center py-12">
               <AlertTriangle className="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
-              <p className="text-slate-500 dark:text-slate-400">Henüz bildirim gönderilmemiş</p>
+              <p className="text-slate-500 dark:text-slate-400">{t('noNotifications')}</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -410,7 +412,7 @@ export default function NotificationsPage() {
                   </div>
                   <div className="text-right flex-shrink-0">
                     <Badge variant="outline" className="rounded-full text-xs">
-                      {notif.type === 'browser' ? 'Tarayıcı' : 'E-posta'}
+                      {notif.type === 'browser' ? t('browserType') : t('emailType')}
                     </Badge>
                     <p className="text-xs text-slate-400 mt-1">
                       {formatDateWithTime(notif.createdAt)}
