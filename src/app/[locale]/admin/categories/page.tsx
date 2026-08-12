@@ -6,6 +6,7 @@ import { Edit, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -22,6 +23,7 @@ import { translateCategoryDescription, translateCategoryName } from '@/lib/const
 import type { Category } from '@/types';
 
 export default function KategorilerPage() {
+  const t = useTranslations('admin.categoriesPage');
   const [categories, setKategoriler] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -33,11 +35,11 @@ export default function KategorilerPage() {
       if (res.success && res.data) {
         setKategoriler(res.data);
       } else {
-        toast.error('Kategoriler yüklenemedi');
+        toast.error(t('loadError'));
       }
-    } catch {
-      toast.error('Kategoriler yüklenemedi');
-    } finally {
+} catch {
+        toast.error(t('loadError'));
+      } finally {
       setLoading(false);
     }
   }, []);
@@ -52,13 +54,13 @@ export default function KategorilerPage() {
     try {
       const res = await api.delete(`/api/categories/${deleteId}`);
       if (res.success) {
-        toast.success('Kategori silindi');
+        toast.success(t('deleted'));
         setKategoriler((prev) => prev.filter((c) => c.id !== Number(deleteId)));
       } else {
-        toast.error(res.error || 'Kategori silinemedi');
+        toast.error(res.error || t('deleteFailed'));
       }
     } catch {
-      toast.error('Kategori silinemedi');
+      toast.error(t('deleteError'));
     } finally {
       setDeleting(false);
       setDeleteId(null);
@@ -70,13 +72,13 @@ export default function KategorilerPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold dark:text-slate-100">Kategoriler</h2>
-          <p className="text-muted-foreground dark:text-slate-400">{categories.length} kategori</p>
+          <h2 className="text-2xl font-bold dark:text-slate-100">{t('title')}</h2>
+          <p className="text-muted-foreground dark:text-slate-400">{categories.length} {t('count')}</p>
         </div>
         <Link href="/admin/categories/new">
           <Button className="dark:bg-primary dark:text-primary-foreground">
             <Plus className="mr-2 h-4 w-4" />
-            Yeni Kategori
+            {t('newCategory')}
           </Button>
         </Link>
       </div>
@@ -92,7 +94,7 @@ export default function KategorilerPage() {
             </div>
           ) : categories.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground dark:text-slate-400">
-              Henüz kategori yok. İlk kategorinizi oluşturun!
+              {t('noCategories')}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -100,19 +102,19 @@ export default function KategorilerPage() {
                 <thead>
                   <tr className="border-b bg-slate-50 dark:bg-slate-800/50 dark:border-slate-700 text-left">
                     <th className="px-4 py-3 text-sm font-medium text-muted-foreground dark:text-slate-400">
-                      Renk
+                      {t('color')}
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-muted-foreground dark:text-slate-400">
-                      Ad
+                      {t('name')}
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-muted-foreground dark:text-slate-400 hidden sm:table-cell">
-                      Slug
+                      {t('slug')}
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-muted-foreground dark:text-slate-400 hidden md:table-cell">
-                      Haberler
+                      {t('newsCount')}
                     </th>
                     <th className="px-4 py-3 text-sm font-medium text-muted-foreground dark:text-slate-400 text-right">
-                      İşlemler
+                      {t('actions')}
                     </th>
                   </tr>
                 </thead>
@@ -184,10 +186,9 @@ export default function KategorilerPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="dark:text-slate-100">Kategoriyi Sil</DialogTitle>
+            <DialogTitle className="dark:text-slate-100">{t('deleteDialog.title')}</DialogTitle>
             <DialogDescription className="dark:text-slate-400">
-              Bu kategoriyi silmek istediğinizden emin misiniz? Bu kategorideki haberler
-              silinmeyecek ancak kategorisiz kalacak.
+              {t('deleteDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -196,10 +197,10 @@ export default function KategorilerPage() {
               onClick={() => setDeleteId(null)}
               className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
             >
-              İptal
+              {t('deleteDialog.cancel')}
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
-              {deleting ? 'Siliniyor...' : 'Sil'}
+              {deleting ? t('deleteDialog.deleting') : t('deleteDialog.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
