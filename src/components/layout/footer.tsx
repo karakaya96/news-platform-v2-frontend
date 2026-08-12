@@ -1,7 +1,10 @@
-import Link from 'next/link';
+'use client';
+
+import { useTranslations } from 'next-intl';
 import { CATEGORY_TRANSLATIONS, NAVIGATION } from '@/lib/constants';
 import type { PublicSettings } from '@/lib/settings';
 import { getSiteName, getSiteDescription, getSocialLinks } from '@/lib/settings';
+import { Link } from '@/i18n/navigation';
 
 interface FooterProps {
   settings: PublicSettings;
@@ -9,6 +12,7 @@ interface FooterProps {
 }
 
 export function Footer({ settings, navigation }: FooterProps) {
+  const t = useTranslations('layout');
   const currentYear = new Date().getFullYear();
   const siteName = getSiteName(settings);
   const siteDescription = getSiteDescription(settings);
@@ -35,7 +39,7 @@ export function Footer({ settings, navigation }: FooterProps) {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-foreground">Hızlı Bağlantılar</h4>
+            <h4 className="text-sm font-semibold text-foreground">{t('quickLinks')}</h4>
             <nav className="flex flex-col space-y-2.5">
               {navigation.map((item) => (
                 <Link
@@ -51,7 +55,7 @@ export function Footer({ settings, navigation }: FooterProps) {
 
           {/* Categories */}
           <div className="space-y-4">
-            <h4 className="text-sm font-semibold text-foreground">Kategoriler</h4>
+            <h4 className="text-sm font-semibold text-foreground">{t('categories')}</h4>
             <nav className="flex flex-col space-y-2.5">
               {footerCategories.map((category) => (
                 <Link
@@ -68,7 +72,7 @@ export function Footer({ settings, navigation }: FooterProps) {
           {/* Social Links */}
           {socialEntries.length > 0 && (
             <div className="space-y-4">
-              <h4 className="text-sm font-semibold text-foreground">Bizi Takip Edin</h4>
+              <h4 className="text-sm font-semibold text-foreground">{t('followUs')}</h4>
               <div className="flex space-x-3">
                 {socialEntries.map(([platform, url]) => (
                   <a
@@ -88,7 +92,7 @@ export function Footer({ settings, navigation }: FooterProps) {
 
         <div className="mt-10 pt-8 border-t text-center text-sm text-muted-foreground">
           <p>
-            &copy; {currentYear} {siteName}. Tüm hakları saklıdır.
+            &copy; {currentYear} {siteName}. {t('copyright')}
           </p>
         </div>
       </div>

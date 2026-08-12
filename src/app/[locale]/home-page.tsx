@@ -1,12 +1,13 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { BreakingTicker } from '@/components/news/breaking-ticker';
 import { FeaturedArticle } from '@/components/news/featured-article';
 import { NewsGrid } from '@/components/news/news-grid';
 import { TrendingWidget } from '@/components/news/trending-widget';
+import { Link } from '@/i18n/navigation';
 import { ARTICLE_LIMITS, translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { Category, News } from '@/types';
@@ -26,6 +27,7 @@ export default function HomePageClient({
   categories,
   categoryArticles,
 }: HomePageClientProps) {
+  const t = useTranslations('home');
   const [heroIndex, setHeroIndex] = useState(0);
 
   // Auto-rotate featured hero every 5 seconds
@@ -70,13 +72,13 @@ export default function HomePageClient({
                             ? 'w-6 bg-blue-500'
                             : 'w-1.5 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400'
                         }`}
-                        aria-label={`Haber ${i + 1}`}
+                        aria-label={`News ${i + 1}`}
                       />
                     ))}
                   </div>
                 </div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                  Öne Çıkan Haberler
+                  {t('featuredNews')}
                 </h2>
               </div>
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 scrollbar-track-transparent">
@@ -100,7 +102,7 @@ export default function HomePageClient({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-slate-800">
-                          <span className="text-slate-500 text-sm">Görsel yok</span>
+                          <span className="text-slate-500 text-sm">{t('noImage')}</span>
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -118,7 +120,7 @@ export default function HomePageClient({
                         </h3>
                         <div className="flex items-center text-gray-300 text-xs mt-2">
                           {article.authorName && (
-                            <span className="mr-3">yazan: {article.authorName}</span>
+                            <span className="mr-3">{t('writtenBy')}{article.authorName}</span>
                           )}
                           <time dateTime={article.publishedAt || undefined}>
                             {formatDateWithTime(article.publishedAt)}
@@ -140,7 +142,7 @@ export default function HomePageClient({
         <div className="lg:col-span-2">
           {/* Latest News */}
           <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Son Haberler</h2>
+            <h2 className="text-2xl font-bold mb-6">{t('latestNews')}</h2>
             <NewsGrid articles={latest.slice(0, ARTICLE_LIMITS.homepage.latest)} />
           </section>
 

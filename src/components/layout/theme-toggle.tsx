@@ -1,11 +1,13 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Monitor, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 export function ThemeToggle() {
+  const t = useTranslations('layout');
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -35,10 +37,10 @@ export function ThemeToggle() {
       className="h-9 w-9 relative overflow-hidden"
       title={
         theme === 'light'
-          ? 'Aydınlık mod (karanlığa geç)'
+          ? t('themeLight')
           : theme === 'dark'
-            ? 'Karanlık mod (sistem tercihine geç)'
-            : 'Sistem tercihi (aydınlığa geç)'
+            ? t('themeDark')
+            : t('themeSystem')
       }
     >
       <Sun

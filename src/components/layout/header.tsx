@@ -1,12 +1,14 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Menu, Search, X } from 'lucide-react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Link } from '@/i18n/navigation';
 import type { PublicSettings } from '@/lib/settings';
 import { getSiteName } from '@/lib/settings';
 import { ThemeToggle } from './theme-toggle';
@@ -25,6 +27,7 @@ interface HeaderProps {
 }
 
 export function Header({ settings, navigation }: HeaderProps) {
+  const t = useTranslations('layout');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -121,14 +124,14 @@ export function Header({ settings, navigation }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Right side: Search + Theme Toggle */}
+          {/* Right side: Search + Language + Theme Toggle */}
           <div className="hidden md:flex items-center space-x-2">
             <form onSubmit={handleSearch} className="relative">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Haber ara..."
+                  placeholder={t('searchPlaceholder')}
                   className="w-56 pl-9 bg-muted/50 border-transparent focus:border-border focus:bg-background"
                   value={searchQuery}
                   onChange={(e) => handleInputChange(e.target.value)}
@@ -172,17 +175,19 @@ export function Header({ settings, navigation }: HeaderProps) {
                         router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                       }}
                     >
-                      <Search className="h-3 w-3" /> Tüm sonuçları gör
+                      <Search className="h-3 w-3" /> {t('seeAllResults')}
                     </button>
                   </div>
                 </div>
               )}
             </form>
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
 
-          {/* Mobile: Theme Toggle + Menu Button */}
+          {/* Mobile: Theme Toggle + Language + Menu Button */}
           <div className="flex items-center space-x-1 md:hidden">
+            <LanguageSwitcher />
             <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -210,7 +215,7 @@ export function Header({ settings, navigation }: HeaderProps) {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Haber ara..."
+                  placeholder={t('searchPlaceholder')}
                   className="w-full pl-9 bg-muted/50"
                   value={searchQuery}
                   onChange={(e) => handleInputChange(e.target.value)}

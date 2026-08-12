@@ -3,6 +3,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
+const createNextIntlPlugin = require('next-intl/plugin');
+const withNextIntl = createNextIntlPlugin();
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -64,7 +67,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/admin/:path*',
+        source: '/:locale/admin/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, max-age=0' },
           { key: 'Pragma', value: 'no-cache' },
@@ -73,7 +76,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/categories/:path*',
+        source: '/:locale/categories/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, max-age=0' },
           { key: 'Pragma', value: 'no-cache' },
@@ -82,7 +85,7 @@ const nextConfig = {
         ],
       },
       {
-        source: '/news/:path*',
+        source: '/:locale/news/:path*',
         headers: [
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, max-age=0' },
           { key: 'Pragma', value: 'no-cache' },
@@ -94,4 +97,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+module.exports = withNextIntl(withBundleAnalyzer(nextConfig));

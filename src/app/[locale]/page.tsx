@@ -1,15 +1,21 @@
 import type { Metadata } from 'next';
+import { setRequestLocale } from 'next-intl/server';
 import api from '@/lib/api';
 import type { Category, News } from '@/types';
 import HomePageClient from './home-page';
 
 export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'NewsHaberGlobal - Güvenilir Haber Kaynağınız',
-  description:
-    'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: locale === 'tr' ? 'NewsHaberGlobal - Güvenilir Haber Kaynağınız' : 'NewsHaberGlobal - Your Trusted News Source',
+    description: locale === 'tr'
+      ? 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.'
+      : 'Your trusted source for breaking news, analysis, and in-depth reporting.',
+  };
+}
 
 async function getFeaturedNews(): Promise<News[]> {
   const res = await api.get<News[]>('/api/news/featured');
@@ -36,7 +42,10 @@ async function getCategoryNews(slug: string): Promise<News[]> {
   return res.data || [];
 }
 
-export default async function HomePage() {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const [featured, breaking, latest, categories] = await Promise.all([
     getFeaturedNews(),
     getBreakingNews(),
