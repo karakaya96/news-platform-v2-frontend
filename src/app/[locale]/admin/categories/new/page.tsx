@@ -18,7 +18,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
-const t = useTranslations('admin.categoriesForm');
+const t = useTranslations('admin.newCategoryPage');
 
 const categorySchema = z.object({
   name: z.string().min(1, t('nameRequired')).max(100),
@@ -119,10 +119,10 @@ export default function NewCategoryPage() {
         toast.success(t('created'));
         router.push('/admin/categories');
       } else {
-        toast.error(res.error || t('saveFailed'));
+        toast.error(res.error || t('createFailed'));
       }
     } catch {
-      toast.error(t('saveError'));
+      toast.error(t('createFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -130,12 +130,12 @@ export default function NewCategoryPage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">{t('newCategoryPage.title')}</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('title')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{t('categoryDetails')}</CardTitle>
+            <CardTitle className="text-lg">{t('detailsCard')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">

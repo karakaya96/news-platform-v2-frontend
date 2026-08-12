@@ -22,7 +22,7 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
 
-const t = useTranslations('admin.categoriesForm');
+const t = useTranslations('admin.editCategoryPage');
 
 const categorySchema = z.object({
   name: z.string().min(1, t('nameRequired')).max(100),
@@ -143,10 +143,10 @@ export default function EditCategoryPage() {
         toast.success(t('updated'));
         router.push('/admin/categories');
       } else {
-        toast.error(res.error || t('saveFailed'));
+        toast.error(res.error || t('updateFailed'));
       }
     } catch {
-      toast.error(t('saveError'));
+      toast.error(t('updateFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -172,12 +172,12 @@ export default function EditCategoryPage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">{t('editCategoryPage.title')}</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('title')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">{t('categoryDetails')}</CardTitle>
+            <CardTitle className="text-lg">{t('detailsCard')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
