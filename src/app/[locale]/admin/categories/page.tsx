@@ -6,7 +6,7 @@ import { Edit, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -24,6 +24,7 @@ import type { Category } from '@/types';
 
 export default function KategorilerPage() {
   const t = useTranslations('admin.categoriesPage');
+  const locale = useLocale();
   const [categories, setKategoriler] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -134,11 +135,11 @@ export default function KategorilerPage() {
                       </td>
                       <td className="px-4 py-3">
                         <p className="font-medium text-sm dark:text-slate-100">
-                          {translateCategoryName(category.slug, category.name)}
+                          {translateCategoryName(category.slug, category.name, locale)}
                         </p>
                         {category.description && (
                           <p className="text-xs text-muted-foreground dark:text-slate-400 truncate max-w-[300px]">
-                            {translateCategoryDescription(category.slug, category.description)}
+                            {translateCategoryDescription(category.slug, category.description, locale)}
                           </p>
                         )}
                       </td>
