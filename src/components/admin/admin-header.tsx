@@ -1,6 +1,6 @@
 'use client';
 
-import { Bell, Clock, FileText, LogOut, Menu, Star, User, Zap } from 'lucide-react';
+import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -79,6 +79,17 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Settings */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
+          onClick={() => router.push('/admin/settings')}
+          title="Ayarlar"
+        >
+          <Settings className="h-5 w-5" />
+        </Button>
+
         {/* Notifications */}
         <div className="relative" ref={dropdownRef}>
           <Button

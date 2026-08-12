@@ -8,6 +8,7 @@ import {
   MessageCircle,
   Newspaper,
   NewspaperIcon,
+  Settings,
   Sparkles,
   X,
 } from 'lucide-react';
@@ -27,6 +28,7 @@ const navigation = [
   { name: 'Kategoriler', href: '/admin/categories', icon: FolderOpen },
   { name: 'Yorumlar', href: '/admin/comments', icon: MessageCircle },
   { name: 'Bildirimler', href: '/admin/notifications', icon: Bell },
+  { name: 'Ayarlar', href: '/admin/settings', icon: Settings },
 ];
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
