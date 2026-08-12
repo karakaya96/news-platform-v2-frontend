@@ -14,7 +14,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -77,6 +77,7 @@ export default function SettingsPage() {
     setValue,
     watch,
     reset,
+    control,
     formState: { errors, isDirty },
   } = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -164,6 +165,7 @@ export default function SettingsPage() {
       if (res.success) {
         toast.success('Ayarlar kaydedildi');
         setSaved(true);
+        reset(data);
         setTimeout(() => setSaved(false), 2000);
       } else {
         toast.error(res.error || 'Kaydetme başarısız');
@@ -495,9 +497,15 @@ export default function SettingsPage() {
                       Haberlerde yorum yapılmasını sağlar
                     </p>
                   </div>
-                  <Switch
-                    checked={commentsEnabled}
-                    onCheckedChange={(checked) => setValue('comments_enabled', checked, { shouldDirty: true })}
+                  <Controller
+                    control={control}
+                    name="comments_enabled"
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
                   />
                 </div>
                 {commentsEnabled && (
@@ -509,9 +517,15 @@ export default function SettingsPage() {
                           Yorumlar yayınlanmadan önce onaylanmalı
                         </p>
                       </div>
-                      <Switch
-                        checked={watch('comments_moderation')}
-                        onCheckedChange={(checked) => setValue('comments_moderation', checked, { shouldDirty: true })}
+                      <Controller
+                        control={control}
+                        name="comments_moderation"
+                        render={({ field }) => (
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        )}
                       />
                     </div>
                     <div className="space-y-2">
@@ -550,9 +564,15 @@ export default function SettingsPage() {
                       Yeni haberlerde bildirim gönderilir
                     </p>
                   </div>
-                  <Switch
-                    checked={notificationsEnabled}
-                    onCheckedChange={(checked) => setValue('notifications_enabled', checked, { shouldDirty: true })}
+                  <Controller
+                    control={control}
+                    name="notifications_enabled"
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
                   />
                 </div>
                 {notificationsEnabled && (
@@ -563,9 +583,15 @@ export default function SettingsPage() {
                         Abonelere e-posta ile bildirim gönder
                       </p>
                     </div>
-                    <Switch
-                      checked={watch('notifications_email_enabled')}
-                      onCheckedChange={(checked) => setValue('notifications_email_enabled', checked, { shouldDirty: true })}
+                    <Controller
+                      control={control}
+                      name="notifications_email_enabled"
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      )}
                     />
                   </div>
                 )}
