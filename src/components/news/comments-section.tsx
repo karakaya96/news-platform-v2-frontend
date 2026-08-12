@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import type { CommentItem } from '@/types';
 
 interface Comment {
@@ -29,6 +30,8 @@ export function CommentsSection({
   commentsEnabled = true,
   commentsMaxLength = 5000,
 }: CommentsSectionProps) {
+  const t = useTranslations('newsPage.comments');
+  const locale = useLocale();
   const [comments, _setComments] = useState<Comment[]>(initialComments);
   const [count, _setCount] = useState(initialCount);
   const [authorName, setAuthorName] = useState('');
@@ -46,15 +49,15 @@ export function CommentsSection({
     setSuccess('');
 
     if (!authorName.trim()) {
-      setError('İsim gerekli');
+      setError(t('nameRequired'));
       return;
     }
     if (!authorEmail.trim() || !authorEmail.includes('@')) {
-      setError('Geçerli bir e-posta adresi girin');
+      setError(t('invalidEmail'));
       return;
     }
     if (!content.trim()) {
-      setError('Yorum içeriği gerekli');
+      setError(t('contentRequired'));
       return;
     }
 
@@ -77,15 +80,15 @@ export function CommentsSection({
       const data = await res.json();
 
       if (data.success) {
-        setSuccess('Yorumunuz gönderildi ve onay bekliyor.');
+        setSuccess(t('submitted'));
         setContent('');
         setParentId(null);
         setReplyingTo(null);
       } else {
-        setError(data.error || 'Yorum gönderilemedi');
+        setError(data.error || t('submitError'));
       }
     } catch {
-      setError('Bağlantı hatası. Lütfen tekrar deneyin.');
+      setError(t('connectionError'));
     } finally {
       setSubmitting(false);
     }
@@ -104,7 +107,7 @@ export function CommentsSection({
   const formatDate = (dateStr: string) => {
     try {
       const d = new Date(dateStr);
-      return d.toLocaleDateString('tr-TR', {
+      return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -149,8 +152,8 @@ export function CommentsSection({
           </svg>
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Yorumlar</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{count} yorum</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t('title')}</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{count} {t('count')}</p>
         </div>
       </div>
 
@@ -162,7 +165,7 @@ export function CommentsSection({
           className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8 shadow-sm"
         >
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-            {replyingTo ? 'Yorumu Yanıtla' : 'Yorum Yap'}
+            {replyingTo ? t('replyToComment') : t('writeComment')}
           </h3>
 
           {error && (
@@ -182,14 +185,14 @@ export function CommentsSection({
                 htmlFor="authorName"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
               >
-                Adınız <span className="text-red-500">*</span>
+                {t('name')} <span className="text-red-500">*</span>
               </label>
               <input
                 id="authorName"
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                placeholder="Adınızı girin"
+                placeholder={t('namePlaceholder')}
                 maxLength={100}
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               />
@@ -199,7 +202,7 @@ export function CommentsSection({
                 htmlFor="authorEmail"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
               >
-                E-posta <span className="text-red-500">*</span>
+                {t('email')} <span className="text-red-500">*</span>
               </label>
               <input
                 id="authorEmail"
@@ -218,13 +221,13 @@ export function CommentsSection({
               htmlFor="content"
               className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
             >
-              Yorumunuz <span className="text-red-500">*</span>
+              {t('yourComment')} <span className="text-red-500">*</span>
             </label>
             <textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="Düşüncelerinizi paylaşın..."
+              placeholder={t('commentPlaceholder')}
               rows={4}
               maxLength={commentsMaxLength}
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
@@ -243,7 +246,7 @@ export function CommentsSection({
                 }}
                 className="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
               >
-                Yanıtı iptal et
+                {t('cancelReply')}
               </button>
             )}
             <button
@@ -251,7 +254,7 @@ export function CommentsSection({
               disabled={submitting}
               className="ml-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? 'Gönderiliyor...' : 'Yorum Gönder'}
+              {submitting ? t('sending') : t('submitButton')}
             </button>
           </div>
         </form>
@@ -270,8 +273,8 @@ export function CommentsSection({
               d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
             />
           </svg>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">Yorumlar kapatılmış</p>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Bu haberde yorum yapma devre dışıdır.</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">{t('disabled')}</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{t('disabledDetail')}</p>
         </div>
       )}
 
@@ -291,8 +294,8 @@ export function CommentsSection({
               d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
             />
           </svg>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">Henüz yorum yapılmamış</p>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">İlk yorumu siz yapın!</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">{t('noComments')}</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{t('beFirst')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -320,7 +323,7 @@ export function CommentsSection({
                     onClick={() => handleReply(comment.id, comment.authorName)}
                     className="mt-2 text-xs text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium transition-colors"
                   >
-                    Yanıtla
+                    {t('reply')}
                   </button>
                 </div>
               </div>

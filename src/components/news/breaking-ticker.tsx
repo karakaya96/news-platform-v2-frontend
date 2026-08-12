@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import type { News } from '@/types';
 
 interface BreakingTickerProps {
@@ -10,6 +11,7 @@ interface BreakingTickerProps {
 export function BreakingTicker({ articles }: BreakingTickerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
+  const t = useTranslations('news');
 
   useEffect(() => {
     if (articles.length <= 1) return;
@@ -36,7 +38,7 @@ export function BreakingTicker({ articles }: BreakingTickerProps) {
         {/* Top row mobile / left side desktop */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <span className="bg-primary text-primary-foreground px-2 sm:px-3 py-1 font-bold text-[10px] sm:text-xs uppercase tracking-wider rounded-md shrink-0">
-            Son Dakika
+            {t('breaking')}
           </span>
           {/* Dots indicator — max 10 visible, scrollable */}
           <div className="flex gap-1.5 shrink-0 overflow-x-auto max-w-[200px] scrollbar-none">

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { getCategoryIcon } from '@/components/news/category-icons';
 import api from '@/lib/api';
 import { CATEGORY_COLORS, translateCategoryDescription, translateCategoryName } from '@/lib/constants';
@@ -9,18 +11,20 @@ import type { Category } from '@/types';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'categories' });
   const settings = await getPublicSettings();
   const siteName = getSiteName(settings);
   const siteUrl = getSiteUrl(settings);
   const logoUrl = getLogoUrl(settings);
 
   return {
-    title: `Kategoriler | ${siteName}`,
-    description: 'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
+    title: `${t('title')} | ${siteName}`,
+    description: t('allCategories'),
     openGraph: {
-      title: `Kategoriler | ${siteName}`,
-      description: 'Tüm haber kategorilerini keşfedin. Ekonomi, siyaset, spor, teknoloji ve daha fazlası.',
+      title: `${t('title')} | ${siteName}`,
+      description: t('allCategories'),
       type: 'website',
       url: `${siteUrl}/categories`,
       siteName,
@@ -28,8 +32,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: 'summary_large_image',
-      title: `Kategoriler | ${siteName}`,
-      description: 'Tüm haber kategorilerini keşfedin.',
+      title: `${t('title')} | ${siteName}`,
+      description: t('allCategories'),
       images: [logoUrl],
     },
     alternates: {
@@ -45,6 +49,7 @@ async function getCategories(): Promise<Category[]> {
 
 export default async function CategoriesPage() {
   const categories = await getCategories();
+  const t = useTranslations('categories');
 
   function EmptyIcon() {
     return (
@@ -66,13 +71,13 @@ export default async function CategoriesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-2">Kategoriler</h1>
-      <p className="text-muted-foreground mb-8">İlginizi çeken konuları keşfedin.</p>
+      <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
+      <p className="text-muted-foreground mb-8">{t('description')}</p>
 
       {categories.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <EmptyIcon />
-          <p>Kategori bulunamadı.</p>
+          <p>{t('noCategories')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -100,7 +105,7 @@ export default async function CategoriesPage() {
                 )}
                 {category.articleCount !== undefined && (
                   <p className="text-xs text-muted-foreground mt-3 font-medium">
-                    {category.articleCount} haber
+                    {category.articleCount} {t('newsCount')}
                   </p>
                 )}
               </Link>

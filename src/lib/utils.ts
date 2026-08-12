@@ -15,11 +15,11 @@ function parseDate(dateString: string): Date {
   return new Date(isoString);
 }
 
-export function formatDate(dateString: string | null | undefined): string {
+export function formatDate(dateString: string | null | undefined, locale = 'tr'): string {
   if (!dateString) return '';
   const date = parseDate(dateString);
   if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('tr-TR', {
+  return date.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -27,17 +27,17 @@ export function formatDate(dateString: string | null | undefined): string {
   });
 }
 
-export function formatDateWithTime(dateString: string | null | undefined): string {
+export function formatDateWithTime(dateString: string | null | undefined, locale = 'tr'): string {
   if (!dateString) return '';
   const date = parseDate(dateString);
   if (Number.isNaN(date.getTime())) return '';
-  const day = date.toLocaleDateString('tr-TR', {
+  const day = date.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     timeZone: 'Europe/Istanbul',
   });
-  const time = date.toLocaleTimeString('tr-TR', {
+  const time = date.toLocaleTimeString(locale, {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: 'Europe/Istanbul',
@@ -45,18 +45,28 @@ export function formatDateWithTime(dateString: string | null | undefined): strin
   return `${day} ${time}`;
 }
 
-export function formatRelativeDate(dateString: string | null | undefined): string {
+export function formatRelativeDate(dateString: string | null | undefined, locale = 'tr'): string {
   if (!dateString) return '';
   const date = parseDate(dateString);
   if (Number.isNaN(date.getTime())) return '';
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return 'Az önce';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} dk önce`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} saat önce`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} gün önce`;
-  return formatDate(dateString);
+  const isTr = locale === 'tr';
+  if (diffInSeconds < 60) return isTr ? 'Az önce' : 'Just now';
+  if (diffInSeconds < 3600) {
+    const mins = Math.floor(diffInSeconds / 60);
+    return isTr ? `${mins} dk önce` : `${mins}m ago`;
+  }
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return isTr ? `${hours} saat önce` : `${hours}h ago`;
+  }
+  if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return isTr ? `${days} gün önce` : `${days}d ago`;
+  }
+  return formatDate(dateString, locale);
 }
 
 export function stripHtml(html: string): string {

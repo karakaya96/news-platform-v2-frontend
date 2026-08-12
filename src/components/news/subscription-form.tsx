@@ -2,6 +2,7 @@
 
 import { Bell, BellOff, Check, Loader2, Mail, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface SubscriptionFormProps {
   categories: { slug: string; name: string; color: string }[];
@@ -10,6 +11,7 @@ interface SubscriptionFormProps {
 }
 
 export function SubscriptionForm({ categories, showBrowserPush = true, showEmail = true }: SubscriptionFormProps) {
+  const t = useTranslations('subscribe');
   const [email, setEmail] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -20,13 +22,11 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
-  // Check existing browser subscription on mount
   useEffect(() => {
     if ('Notification' in window) {
       setPermission(Notification.permission);
     }
 
-    // Get VAPID public key
     fetch(`${apiUrl}/api/subscribe/vapid-public-key`)
       .then((res) => res.json())
       .then((data) => {
@@ -36,7 +36,6 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
       })
       .catch(() => {});
 
-    // Check if already subscribed in browser
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       navigator.serviceWorker.ready.then((registration) => {
         registration.pushManager.getSubscription().then((subscription) => {
@@ -59,7 +58,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
 
   const handleBrowserSubscribe = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      setMessage({ type: 'error', text: 'Tarayıcınız bildirimleri desteklemiyor' });
+      setMessage({ type: 'error', text: t('browserNotSupported') });
       return;
     }
 
@@ -74,7 +73,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
       setPermission(permissionResult);
 
       if (permissionResult !== 'granted') {
-        setMessage({ type: 'error', text: 'Bildirim izni reddedildi' });
+        setMessage({ type: 'error', text: t('permissionDenied') });
         return;
       }
 
@@ -82,7 +81,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
 
       if (!subscription) {
         if (!vapidKey) {
-          setMessage({ type: 'error', text: 'Bildirim sistemi yapılandırılmamış' });
+          setMessage({ type: 'error', text: t('systemNotConfigured') });
           return;
         }
         subscription = await registration.pushManager.subscribe({
@@ -117,13 +116,13 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
         setBrowserSubscribed(true);
         setMessage({
           type: 'success',
-          text: data.data?.message || '🔔 Bildirim aboneliği başarıyla oluşturuldu!',
+          text: data.data?.message || t('browserSubscribedSuccess'),
         });
       } else {
-        setMessage({ type: 'error', text: data.error || 'Abone olunamadı' });
+        setMessage({ type: 'error', text: data.error || t('subscribeError') });
       }
     } catch {
-      setMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+      setMessage({ type: 'error', text: t('genericError') });
     } finally {
       setSubmitting(false);
     }
@@ -141,25 +140,23 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
 
       if (subscription) {
         const endpoint = subscription.endpoint;
-        // Unsubscribe from browser
         await subscription.unsubscribe();
         setBrowserSubscribed(false);
         setPermission('default');
 
-        // Remove from server
         await fetch(`${apiUrl}/api/subscribe/unsubscribe`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ endpoint }),
         });
 
-        setMessage({ type: 'success', text: '🔕 Tarayıcı bildirimi iptal edildi' });
+        setMessage({ type: 'success', text: t('browserUnsubscribed') });
       } else {
         setBrowserSubscribed(false);
-        setMessage({ type: 'success', text: '🔕 Tarayıcı bildirimi iptal edildi' });
+        setMessage({ type: 'success', text: t('browserUnsubscribed') });
       }
     } catch {
-      setMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+      setMessage({ type: 'error', text: t('genericError') });
     } finally {
       setSubmitting(false);
     }
@@ -167,7 +164,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
 
   const handleEmailSubscribe = async () => {
     if (!email.trim() || !email.includes('@')) {
-      setMessage({ type: 'error', text: 'Geçerli bir e-posta adresi girin' });
+      setMessage({ type: 'error', text: t('invalidEmail') });
       return;
     }
 
@@ -190,15 +187,15 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
       if (data.success) {
         setMessage({
           type: 'success',
-          text: data.data?.message || '📧 E-posta aboneliği başarıyla oluşturuldu!',
+          text: data.data?.message || t('emailSubscribedSuccess'),
         });
         setEmail('');
         setSelectedCategories([]);
       } else {
-        setMessage({ type: 'error', text: data.error || 'Abone olunamadı' });
+        setMessage({ type: 'error', text: data.error || t('subscribeError') });
       }
     } catch {
-      setMessage({ type: 'error', text: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+      setMessage({ type: 'error', text: t('genericError') });
     } finally {
       setSubmitting(false);
     }
@@ -218,10 +215,10 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
         </div>
         <div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            Bildirim Aboneliği
+            {t('title')}
           </h3>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Yeni haberlerden haberdar olun
+            {t('description')}
           </p>
         </div>
       </div>
@@ -229,7 +226,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
       {/* Category Selection */}
       <div className="mb-6">
         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
-          Kategori Seçin (boş bırakırsanız tümü)
+          {t('selectCategories')}
         </p>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -257,7 +254,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
               <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950 border border-emerald-200 dark:border-emerald-800 mb-3">
                 <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                 <p className="text-xs text-emerald-700 dark:text-emerald-400">
-                  Tarayıcı bildirimi aktif — yeni haberlerden anında haberdar olacaksınız
+                  {t('browserActive')}
                 </p>
               </div>
               <button
@@ -271,7 +268,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
                 ) : (
                   <>
                     <X className="w-4 h-4" />
-                    Bildirimi İptal Et
+                    {t('unsubscribeBrowser')}
                   </>
                 )}
               </button>
@@ -287,23 +284,23 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
                 {submitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    İşlem Yapılıyor...
+                    {t('processing')}
                   </>
                 ) : (
                   <>
                     <Bell className="w-4 h-4" />
-                    Anlık Bildirim Al
+                    {t('enableBrowserPush')}
                   </>
                 )}
               </button>
               {permission === 'granted' && (
                 <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 text-center">
-                  ✓ Bildirim izni verilmiş — abone olmak için tıklayın
+                  {t('permissionGranted')}
                 </p>
               )}
               {permission === 'default' && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
-                  Tarayıcınızdan bildirim izni istenecek
+                  {t('permissionWillBeAsked')}
                 </p>
               )}
             </>
@@ -316,7 +313,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
           <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800">
             <BellOff className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
             <p className="text-xs text-amber-700 dark:text-amber-400">
-              Bildirim izni reddedildi. Tarayıcı ayarlarından izin verebilirsiniz.
+              {t('permissionDeniedDetail')}
             </p>
           </div>
         </div>
@@ -326,7 +323,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
       {showEmail && (
         <div>
           <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
-            E-posta ile Abone Ol
+            {t('emailLabel')}
           </p>
           <div className="flex gap-2">
             <input
@@ -347,12 +344,11 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
               ) : (
                 <Mail className="w-4 h-4" />
               )}
-              Abone Ol
+              {t('subscribeButton')}
             </button>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-            📬 Abone olduğunuzda onay e-postası gönderilecektir. Spam klasörünüzü kontrol etmeyi
-            unutmayın.
+            {t('emailInfo')}
           </p>
         </div>
       )}

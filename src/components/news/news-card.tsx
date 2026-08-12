@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
 import { CategoryBadge } from './category-badge';
@@ -9,6 +10,7 @@ interface NewsCardProps {
 }
 
 export function NewsCard({ article }: NewsCardProps) {
+  const t = useTranslations('news');
   return (
     <Link href={`/news/${article.slug}`} className="group block">
       <div className="rounded-xl border bg-card overflow-hidden card-hover">
@@ -28,7 +30,7 @@ export function NewsCard({ article }: NewsCardProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-              <span className="text-slate-400 text-sm">Görsel yok</span>
+              <span className="text-slate-400 text-sm">{t('noImage')}</span>
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

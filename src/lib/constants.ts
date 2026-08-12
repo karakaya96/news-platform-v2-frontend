@@ -14,10 +14,10 @@ export const SOCIAL_LINKS = {
 };
 
 export const NAVIGATION = [
-  { name: 'Ana Sayfa', href: '/' },
-  { name: 'Kategoriler', href: '/categories' },
-  { name: 'Arama', href: '/search' },
-  { name: 'Bildirim Al', href: '/subscribe' },
+  { name: 'Ana Sayfa', nameEn: 'Home', href: '/' },
+  { name: 'Kategoriler', nameEn: 'Categories', href: '/categories' },
+  { name: 'Arama', nameEn: 'Search', href: '/search' },
+  { name: 'Bildirim Al', nameEn: 'Subscribe', href: '/subscribe' },
 ];
 
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -32,27 +32,73 @@ export const CATEGORY_COLORS: Record<string, string> = {
   gundem: '#f59e0b',
 };
 
-export const CATEGORY_TRANSLATIONS: Record<string, { name: string; description: string }> = {
+export const CATEGORY_TRANSLATIONS: Record<string, { name: string; nameEn: string; description: string; descriptionEn: string }> = {
   technology: {
     name: 'Teknoloji',
+    nameEn: 'Technology',
     description: 'Teknoloji, yapay zeka ve inovasyonda son gelişmeler',
+    descriptionEn: 'Latest developments in technology, AI and innovation',
   },
-  'world-news': { name: 'Dünya Haberleri', description: 'Dünya genelinden son dakika haberleri' },
-  economy: { name: 'Ekonomi', description: 'Piyasalar, iş dünyası ve finans haberleri' },
-  sports: { name: 'Spor', description: 'Skorlar, analizler ve spor haberleri' },
-  science: { name: 'Bilim', description: 'Keşifler, araştırma ve bilimsel gelişmeler' },
-  health: { name: 'Sağlık', description: 'Sağlık, tıp ve kamu sağlığı haberleri' },
-  entertainment: { name: 'Eğlence', description: 'Kültür, sinema, müzik ve ünlüler' },
-  politics: { name: 'Siyaset', description: 'Devlet, politika ve siyasi analizler' },
-  gundem: { name: 'Gündem', description: 'Gündem haberleri ve son dakika gelişmeleri' },
+  'world-news': {
+    name: 'Dünya Haberleri',
+    nameEn: 'World News',
+    description: 'Dünya genelinden son dakika haberleri',
+    descriptionEn: 'Breaking news from around the world',
+  },
+  economy: {
+    name: 'Ekonomi',
+    nameEn: 'Economy',
+    description: 'Piyasalar, iş dünyası ve finans haberleri',
+    descriptionEn: 'Markets, business and finance news',
+  },
+  sports: {
+    name: 'Spor',
+    nameEn: 'Sports',
+    description: 'Skorlar, analizler ve spor haberleri',
+    descriptionEn: 'Scores, analysis and sports news',
+  },
+  science: {
+    name: 'Bilim',
+    nameEn: 'Science',
+    description: 'Keşifler, araştırma ve bilimsel gelişmeler',
+    descriptionEn: 'Discoveries, research and scientific developments',
+  },
+  health: {
+    name: 'Sağlık',
+    nameEn: 'Health',
+    description: 'Sağlık, tıp ve kamu sağlığı haberleri',
+    descriptionEn: 'Health, medicine and public health news',
+  },
+  entertainment: {
+    name: 'Eğlence',
+    nameEn: 'Entertainment',
+    description: 'Kültür, sinema, müzik ve ünlüler',
+    descriptionEn: 'Culture, cinema, music and celebrities',
+  },
+  politics: {
+    name: 'Siyaset',
+    nameEn: 'Politics',
+    description: 'Devlet, politika ve siyasi analizler',
+    descriptionEn: 'Government, policy and political analysis',
+  },
+  gundem: {
+    name: 'Gündem',
+    nameEn: 'Agenda',
+    description: 'Gündem haberleri ve son dakika gelişmeleri',
+    descriptionEn: 'Agenda news and latest developments',
+  },
 };
 
-export function translateCategoryName(slug: string, fallback: string): string {
-  return CATEGORY_TRANSLATIONS[slug]?.name || fallback;
+export function translateCategoryName(slug: string, fallback: string, locale = 'tr'): string {
+  const cat = CATEGORY_TRANSLATIONS[slug];
+  if (!cat) return fallback;
+  return locale === 'en' ? cat.nameEn : cat.name;
 }
 
-export function translateCategoryDescription(slug: string, fallback: string): string {
-  return CATEGORY_TRANSLATIONS[slug]?.description || fallback;
+export function translateCategoryDescription(slug: string, fallback: string, locale = 'tr'): string {
+  const cat = CATEGORY_TRANSLATIONS[slug];
+  if (!cat) return fallback;
+  return locale === 'en' ? cat.descriptionEn : cat.description;
 }
 
 export const BREAKING_NEWS_INTERVAL = 5000;

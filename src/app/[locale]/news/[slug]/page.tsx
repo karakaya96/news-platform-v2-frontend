@@ -6,6 +6,8 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import sanitizeHtml from 'sanitize-html';
 import { ArticleContent } from '@/components/news/article-content';
 import { CategoryBadge } from '@/components/news/category-badge';
@@ -19,11 +21,11 @@ import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem, News } from '@/types';
 
 interface ArticlePageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }
 
 interface ArticlePageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }
 
 const SANITIZE_OPTIONS = {
@@ -171,14 +173,15 @@ async function getComments(newsId: number) {
 }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'news' });
   const settings = await getPublicSettings();
   const siteUrl = getSiteUrl(settings);
   try {
     const article = await getArticle(slug);
 
     if (!article) {
-      return { title: 'Haber Bulunamadı' };
+      return { title: t('notFound') };
     }
 
     const title = article.seoTitle || article.title;
@@ -211,13 +214,14 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
     };
   } catch (error) {
     console.error('generateMetadata error:', error);
-    return { title: 'Haber Yükleniyor...' };
+    return { title: t('loading') };
   }
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await getArticle(slug);
+  const t = useTranslations('news');
 
   if (!article) {
     notFound();
@@ -295,7 +299,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <Button variant="ghost" asChild>
           <Link href="/" className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Ana Sayfaya Dön
+            {t('backToHome')}
           </Link>
         </Button>
       </div>
@@ -335,7 +339,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
           <div className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
-            <span>{article.viewCount.toLocaleString()} görüntülenme</span>
+            <span>{article.viewCount.toLocaleString()} {t('views')}</span>
           </div>
         </div>
       </header>

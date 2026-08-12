@@ -1,6 +1,7 @@
 'use client';
 
 import { Check, Copy, Mail, MessageCircle, Send, Share2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -11,6 +12,8 @@ interface ShareButtonsProps {
 
 export function ShareButtons({ url, title }: ShareButtonsProps) {
   const [copied, setCopied] = React.useState(false);
+  const tNews = useTranslations('news');
+  const tShare = useTranslations('share');
 
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
@@ -45,7 +48,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
       href: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
     },
     {
-      name: 'E-posta',
+      name: 'Email',
       icon: <Mail className="h-4 w-4" />,
       href: `mailto:?subject=${encodedTitle}&body=${encodedTitle}%0A%0A${encodedUrl}`,
     },
@@ -80,24 +83,24 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <span className="text-sm font-medium text-muted-foreground">Paylaş:</span>
+      <span className="text-sm font-medium text-muted-foreground">{tNews('share')}</span>
       {shareLinks.map((link) => (
         <Button key={link.name} variant="outline" size="icon" asChild>
           <a
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`${link.name} ile paylaş`}
+            aria-label={tShare('shareOn', { name: link.name })}
           >
             {link.icon}
           </a>
         </Button>
       ))}
-      <Button variant="outline" size="icon" onClick={handleCopyLink} aria-label="Linki kopyala">
+      <Button variant="outline" size="icon" onClick={handleCopyLink} aria-label={tShare('copyLink')}>
         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
       </Button>
       {hasNativeShare && (
-        <Button variant="outline" size="icon" onClick={handleNativeShare} aria-label="Paylaş">
+        <Button variant="outline" size="icon" onClick={handleNativeShare} aria-label={tShare('shareNative')}>
           <Share2 className="h-4 w-4" />
         </Button>
       )}

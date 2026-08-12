@@ -1,4 +1,5 @@
 import { TrendingUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { News } from '@/types';
 import { NewsListItem } from './news-list-item';
 
@@ -7,6 +8,7 @@ interface TrendingWidgetProps {
 }
 
 export function TrendingWidget({ articles }: TrendingWidgetProps) {
+  const t = useTranslations('news');
   if (!articles || articles.length === 0) {
     return null;
   }
@@ -17,7 +19,7 @@ export function TrendingWidget({ articles }: TrendingWidgetProps) {
         <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
           <TrendingUp className="h-4 w-4 text-primary" />
         </div>
-        <h3 className="text-lg font-bold">Gündem</h3>
+        <h3 className="text-lg font-bold">{t('trending')}</h3>
       </div>
       <div className="space-y-1">
         {articles.map((article, index) => (
