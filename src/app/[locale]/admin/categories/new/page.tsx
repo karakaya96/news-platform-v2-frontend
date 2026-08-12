@@ -139,10 +139,10 @@ export default function NewCategoryPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Ad *</Label>
+              <Label htmlFor="name">{t('nameLabel')}</Label>
               <Input
                 id="name"
-                placeholder="Kategori adı..."
+                placeholder={t('namePlaceholder')}
                 {...register('name')}
                 className={cn(errors.name && 'border-red-500')}
               />
@@ -161,17 +161,17 @@ export default function NewCategoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Açıklama</Label>
+              <Label htmlFor="description">{t('descriptionLabel')}</Label>
               <Textarea
                 id="description"
-                placeholder="Kategorinin kısa açıklaması..."
+                placeholder={t('descriptionPlaceholder')}
                 rows={3}
                 {...register('description')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="sortOrder">Sıralama</Label>
+              <Label htmlFor="sortOrder">{t('orderLabel')}</Label>
               <Input
                 id="sortOrder"
                 type="number"
@@ -181,7 +181,7 @@ export default function NewCategoryPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Renk</Label>
+              <Label>{t('colorLabel')}</Label>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
