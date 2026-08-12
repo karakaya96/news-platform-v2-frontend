@@ -452,8 +452,8 @@ export default function DashboardPage() {
           {(!stats?.recentNews || stats.recentNews.length === 0) && (
             <div className="text-center py-12 text-slate-400 dark:text-slate-500">
               <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="font-medium">Henüz haber yok</p>
-              <p className="text-sm mt-1">İlk haberinizi oluşturarak başlayın</p>
+              <p className="font-medium">{t('noNews')}</p>
+              <p className="text-sm mt-1">{t('startNews')}</p>
             </div>
           )}
         </CardContent>

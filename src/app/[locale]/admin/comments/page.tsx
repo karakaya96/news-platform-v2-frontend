@@ -102,7 +102,7 @@ export default function CommentsPage() {
         toast.error(t('loadError'));
       }
     } catch {
-      toast.error('Yorumlar yüklenemedi');
+      toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }

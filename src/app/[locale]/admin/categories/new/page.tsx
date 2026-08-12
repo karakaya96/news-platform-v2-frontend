@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -17,9 +18,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
+const t = useTranslations('admin.categoriesForm');
+
 const categorySchema = z.object({
-  name: z.string().min(1, 'Ad zorunludur').max(100),
-  slug: z.string().min(1, 'Slug zorunludur').max(100),
+  name: z.string().min(1, t('nameRequired')).max(100),
+  slug: z.string().min(1, t('slugRequired')).max(100),
   description: z.string().max(500).optional(),
   color: z.string().optional(),
   sortOrder: z.number().int().default(0),
@@ -113,13 +116,13 @@ export default function NewCategoryPage() {
       });
 
       if (res.success) {
-        toast.success('Kategori başarıyla oluşturuldu');
+        toast.success(t('created'));
         router.push('/admin/categories');
       } else {
-        toast.error(res.error || 'Kategori oluşturulamadı');
+        toast.error(res.error || t('saveFailed'));
       }
     } catch {
-      toast.error('Kategori oluşturulamadı');
+      toast.error(t('saveError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -127,12 +130,12 @@ export default function NewCategoryPage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">Yeni Kategori Oluştur</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('newCategoryTitle')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Kategori Detayları</CardTitle>
+            <CardTitle className="text-lg">{t('categoryDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -209,10 +212,10 @@ export default function NewCategoryPage() {
         <div className="flex gap-3">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Kategori Oluştur
+            {t('createButton')}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.push('/admin/categories')}>
-            İptal
+            {t('cancelButton')}
           </Button>
         </div>
       </form>

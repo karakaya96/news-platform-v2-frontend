@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateWithTime } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import type { News } from '@/types';
 
 interface RecentArticlesTableProps {
@@ -18,10 +19,12 @@ const statusColors: Record<string, string> = {
 };
 
 export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
+  const t = useTranslations('admin.recentArticlesTable');
+
   if (articles.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        Henüz haber yok. İlk haberinizi oluşturun!
+        {t('noNews')}
       </div>
     );
   }

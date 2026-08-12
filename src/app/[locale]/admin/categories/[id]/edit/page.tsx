@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -21,9 +22,11 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
 
+const t = useTranslations('admin.categoriesForm');
+
 const categorySchema = z.object({
-  name: z.string().min(1, 'Ad zorunludur').max(100),
-  slug: z.string().min(1, 'Slug zorunludur').max(100),
+  name: z.string().min(1, t('nameRequired')).max(100),
+  slug: z.string().min(1, t('slugRequired')).max(100),
   description: z.string().max(500).optional(),
   color: z.string().optional(),
   sortOrder: z.number().int().default(0),
@@ -112,11 +115,11 @@ export default function EditCategoryPage() {
             sortOrder: cat.sortOrder ?? 0,
           });
         } else {
-          toast.error('Kategori bulunamadı');
+          toast.error(t('notFound'));
           router.push('/admin/categories');
         }
       } catch {
-        toast.error('Kategori yüklenemedi');
+        toast.error(t('loadError'));
         router.push('/admin/categories');
       } finally {
         setLoading(false);
@@ -137,13 +140,13 @@ export default function EditCategoryPage() {
       });
 
       if (res.success) {
-        toast.success('Kategori başarıyla güncellendi');
+        toast.success(t('updated'));
         router.push('/admin/categories');
       } else {
-        toast.error(res.error || 'Kategori güncellenemedi');
+        toast.error(res.error || t('saveFailed'));
       }
     } catch {
-      toast.error('Kategori güncellenemedi');
+      toast.error(t('saveError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -169,12 +172,12 @@ export default function EditCategoryPage() {
 
   return (
     <div className="max-w-2xl">
-      <h2 className="text-2xl font-bold mb-6">Kategoriyi Düzenle</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('editCategoryTitle')}</h2>
 
       <form onSubmit={onSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Kategori Detayları</CardTitle>
+            <CardTitle className="text-lg">{t('categoryDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -251,10 +254,10 @@ export default function EditCategoryPage() {
         <div className="flex gap-3">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Kategoriyi Güncelle
+            {t('updateButton')}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.push('/admin/categories')}>
-            İptal
+            {t('cancelButton')}
           </Button>
         </div>
       </form>
