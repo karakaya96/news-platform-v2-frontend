@@ -6,7 +6,6 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import sanitizeHtml from 'sanitize-html';
 import { ArticleContent } from '@/components/news/article-content';
@@ -219,9 +218,9 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const article = await getArticle(slug);
-  const t = useTranslations('news');
+  const t = await getTranslations({ locale, namespace: 'news' });
 
   if (!article) {
     notFound();
