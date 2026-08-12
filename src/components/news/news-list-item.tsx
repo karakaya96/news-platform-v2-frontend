@@ -1,7 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { translateCategoryName } from '@/lib/constants';
 import { formatRelativeDate } from '@/lib/utils';
+import { useLocale } from 'next-intl';
 import type { News } from '@/types';
 
 interface NewsListItemProps {
@@ -10,6 +13,7 @@ interface NewsListItemProps {
 }
 
 export function NewsListItem({ article, showImage = true }: NewsListItemProps) {
+  const locale = useLocale();
   return (
     <Link
       href={`/news/${article.slug}`}
@@ -45,7 +49,7 @@ export function NewsListItem({ article, showImage = true }: NewsListItemProps) {
         <div className="flex items-center text-xs text-muted-foreground mt-2">
           {article.categoryName && (
             <span className="mr-2 font-medium">
-              {translateCategoryName(article.categorySlug || '', article.categoryName)}
+              {translateCategoryName(article.categorySlug || '', article.categoryName, locale)}
             </span>
           )}
           <time dateTime={article.publishedAt || undefined}>
