@@ -173,8 +173,12 @@ export default function SettingsPage() {
         setSaved(true);
         reset(data);
         
-        if (data.site_language && data.site_language !== locale) {
-          router.replace(pathname, { locale: data.site_language });
+        if (data.site_language) {
+          document.cookie = `SITE_DEFAULT_LOCALE=${data.site_language}; path=/; max-age=31536000; SameSite=Lax`;
+          
+          if (data.site_language !== locale) {
+            router.replace(pathname, { locale: data.site_language });
+          }
         }
         
         setTimeout(() => setSaved(false), 2000);
