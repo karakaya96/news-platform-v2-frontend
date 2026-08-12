@@ -21,6 +21,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
+import { sanitizeArticleContent } from '@/lib/sanitize';
 import { cn } from '@/lib/utils';
 import type { Category, News } from '@/types';
 
@@ -461,7 +462,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
               )}
               <div
                 className="prose max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeArticleContent(content) }}
               />
             </div>
           </div>

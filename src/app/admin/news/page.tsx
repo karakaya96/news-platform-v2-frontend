@@ -19,8 +19,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -69,7 +69,6 @@ interface CategoryOption {
 }
 
 export default function NewsListPage() {
-  const _router = useRouter();
   const searchParams = useSearchParams();
 
   const [articles, setArticles] = useState<News[]>([]);
@@ -83,6 +82,8 @@ export default function NewsListPage() {
   const [status, setStatus] = useState(searchParams.get('status') || 'all');
   const [category, setCategory] = useState(searchParams.get('category') || 'all');
   const [search, setSearch] = useState(searchParams.get('search') || '');
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [featured, setFeatured] = useState(searchParams.get('featured') || 'all');
   const [breaking, setBreaking] = useState(searchParams.get('breaking') || 'all');
   const [dateFrom, setDateFrom] = useState(searchParams.get('dateFrom') || '');
@@ -108,6 +109,18 @@ export default function NewsListPage() {
     fetchCategories();
   }, [fetchCategories]);
 
+  // Debounce search input (300ms)
+  useEffect(() => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => {
+      if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    };
+  }, [search]);
+
   const fetchArticles = useCallback(async () => {
     setLoading(true);
     try {
@@ -116,7 +129,7 @@ export default function NewsListPage() {
       params.set('limit', '20');
       if (status) params.set('status', status);
       if (category && category !== 'all') params.set('category', category);
-      if (search) params.set('search', search);
+      if (debouncedSearch) params.set('search', debouncedSearch);
       if (featured && featured !== 'all') params.set('featured', featured);
       if (breaking && breaking !== 'all') params.set('breaking', breaking);
       if (dateFrom) params.set('dateFrom', dateFrom);
@@ -136,7 +149,7 @@ export default function NewsListPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, status, category, search, featured, breaking, dateFrom, dateTo, sortBy]);
+  }, [page, status, category, debouncedSearch, featured, breaking, dateFrom, dateTo, sortBy]);
 
   useEffect(() => {
     fetchArticles();
@@ -234,10 +247,7 @@ export default function NewsListPage() {
               <Input
                 placeholder="Haber ara..."
                 value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
+                onChange={(e) => setSearch(e.target.value)}
                 className="pl-10 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
               />
             </div>

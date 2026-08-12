@@ -258,9 +258,9 @@ export default function CommentsPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-6 space-y-3">
-              {Array.from({ length: 5 }).map((_, _i) => (
+              {Array.from({ length: 5 }).map((_, i) => (
                 <Skeleton
-                  key={`skeleton-comment-${Math.random()}`}
+                  key={`skeleton-comment-${i}`}
                   className="h-24 w-full rounded-xl"
                 />
               ))}

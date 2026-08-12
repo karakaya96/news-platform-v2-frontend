@@ -134,11 +134,11 @@ export default function NotificationsPage() {
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, _i) => (
-            <Skeleton key={`stat-${Math.random()}`} className="h-24 rounded-2xl" />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={`stat-${i}`} className="h-24 rounded-2xl" />
           ))}
         </div>
-        <Skeleton key={'chart-Math.random()}'} className="h-64 rounded-2xl" />
+        <Skeleton key="chart-skeleton" className="h-64 rounded-2xl" />
       </div>
     );
   }

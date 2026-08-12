@@ -86,8 +86,8 @@ export default function KategorilerPage() {
         <CardContent className="p-0">
           {loading ? (
             <div className="p-6 space-y-3">
-              {Array.from({ length: 5 }).map((_, _i) => (
-                <Skeleton key={`skeleton-cat-${Math.random()}`} className="h-12 w-full" />
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={`skeleton-cat-${i}`} className="h-12 w-full" />
               ))}
             </div>
           ) : categories.length === 0 ? (

@@ -130,9 +130,9 @@ export default function DashboardPage() {
     return (
       <div className="space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {Array.from({ length: 7 }).map((_, _i) => (
+          {Array.from({ length: 7 }).map((_, i) => (
             <Card
-              key={`skeleton-statcard-${Math.random()}`}
+              key={`skeleton-statcard-${i}`}
               className="border-0 shadow-md rounded-2xl"
             >
               <CardContent className="p-6">
@@ -146,9 +146,9 @@ export default function DashboardPage() {
         <Card className="border-0 shadow-md rounded-2xl">
           <CardContent className="p-6">
             <Skeleton className="h-6 w-40 mb-6" />
-            {Array.from({ length: 5 }).map((_, _i) => (
+            {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton
-                key={`skeleton-stat-${Math.random()}`}
+                key={`skeleton-stat-${i}`}
                 className="h-14 w-full mb-3 rounded-xl"
               />
             ))}
