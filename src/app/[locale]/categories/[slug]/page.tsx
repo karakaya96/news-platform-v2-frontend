@@ -2,7 +2,6 @@ export const revalidate = 60;
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 import { NewsGrid } from '@/components/news/news-grid';
 import { Pagination } from '@/components/shared/pagination';
@@ -77,11 +76,11 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const { page: pageParam } = await searchParams;
   const page = Number.parseInt(pageParam || '1', 10);
   const category = await getCategory(slug);
-  const t = useTranslations('categories');
+  const t = await getTranslations({ locale, namespace: 'categories' });
 
   if (!category) {
     notFound();
