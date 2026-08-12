@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Menu, Search, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
@@ -23,11 +23,12 @@ interface Suggestion {
 
 interface HeaderProps {
   settings: PublicSettings;
-  navigation: { name: string; href: string }[];
+  navigation: { name: string; nameEn: string; href: string }[];
 }
 
 export function Header({ settings, navigation }: HeaderProps) {
   const t = useTranslations('layout');
+  const locale = useLocale();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -119,7 +120,7 @@ export function Header({ settings, navigation }: HeaderProps) {
                 href={item.href}
                 className="px-3 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent"
               >
-                {item.name}
+                {locale === 'en' ? item.nameEn : item.name}
               </Link>
             ))}
           </nav>
@@ -206,7 +207,7 @@ export function Header({ settings, navigation }: HeaderProps) {
                   className="px-3 py-2 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:text-foreground hover:bg-accent"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item.name}
+                  {locale === 'en' ? item.nameEn : item.name}
                 </Link>
               ))}
             </nav>

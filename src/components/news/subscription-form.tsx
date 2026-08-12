@@ -116,10 +116,10 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
         setBrowserSubscribed(true);
         setMessage({
           type: 'success',
-          text: data.data?.message || t('browserSubscribedSuccess'),
+          text: data.data?.message || t('subscribedSuccess'),
         });
       } else {
-        setMessage({ type: 'error', text: data.error || t('subscribeError') });
+        setMessage({ type: 'error', text: data.error || t('subscribeFailed') });
       }
     } catch {
       setMessage({ type: 'error', text: t('genericError') });
@@ -150,10 +150,10 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
           body: JSON.stringify({ endpoint }),
         });
 
-        setMessage({ type: 'success', text: t('browserUnsubscribed') });
+        setMessage({ type: 'success', text: t('unsubscribed') });
       } else {
         setBrowserSubscribed(false);
-        setMessage({ type: 'success', text: t('browserUnsubscribed') });
+        setMessage({ type: 'success', text: t('unsubscribed') });
       }
     } catch {
       setMessage({ type: 'error', text: t('genericError') });
@@ -192,7 +192,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
         setEmail('');
         setSelectedCategories([]);
       } else {
-        setMessage({ type: 'error', text: data.error || t('subscribeError') });
+        setMessage({ type: 'error', text: data.error || t('subscribeFailed') });
       }
     } catch {
       setMessage({ type: 'error', text: t('genericError') });
@@ -226,7 +226,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
       {/* Category Selection */}
       <div className="mb-6">
         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
-          {t('selectCategories')}
+          {t('selectCategory')}
         </p>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
@@ -268,7 +268,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
                 ) : (
                   <>
                     <X className="w-4 h-4" />
-                    {t('unsubscribeBrowser')}
+                    {t('unsubscribeButton')}
                   </>
                 )}
               </button>
@@ -289,7 +289,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
                 ) : (
                   <>
                     <Bell className="w-4 h-4" />
-                    {t('enableBrowserPush')}
+                    {t('subscribeBrowser')}
                   </>
                 )}
               </button>
@@ -300,7 +300,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
               )}
               {permission === 'default' && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
-                  {t('permissionWillBeAsked')}
+                  {t('permissionInfo')}
                 </p>
               )}
             </>
@@ -313,7 +313,7 @@ export function SubscriptionForm({ categories, showBrowserPush = true, showEmail
           <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800">
             <BellOff className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
             <p className="text-xs text-amber-700 dark:text-amber-400">
-              {t('permissionDeniedDetail')}
+              {t('permissionDeniedWarning')}
             </p>
           </div>
         </div>

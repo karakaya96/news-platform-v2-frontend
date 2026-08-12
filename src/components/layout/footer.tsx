@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { CATEGORY_TRANSLATIONS, NAVIGATION } from '@/lib/constants';
 import type { PublicSettings } from '@/lib/settings';
 import { getSiteName, getSiteDescription, getSocialLinks } from '@/lib/settings';
@@ -13,6 +13,7 @@ interface FooterProps {
 
 export function Footer({ settings, navigation }: FooterProps) {
   const t = useTranslations('layout');
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
   const siteName = getSiteName(settings);
   const siteDescription = getSiteDescription(settings);
@@ -20,7 +21,7 @@ export function Footer({ settings, navigation }: FooterProps) {
 
   const footerCategories = Object.entries(CATEGORY_TRANSLATIONS).map(([slug, info]) => ({
     slug,
-    name: info.name,
+    name: locale === 'en' ? info.nameEn : info.name,
   }));
 
   const socialEntries = Object.entries(socialLinks).filter(([, url]) => url);
@@ -47,7 +48,7 @@ export function Footer({ settings, navigation }: FooterProps) {
                   href={item.href}
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  {item.name}
+                  {locale === 'en' ? item.nameEn : item.name}
                 </Link>
               ))}
             </nav>

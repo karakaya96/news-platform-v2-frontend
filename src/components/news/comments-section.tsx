@@ -30,7 +30,7 @@ export function CommentsSection({
   commentsEnabled = true,
   commentsMaxLength = 5000,
 }: CommentsSectionProps) {
-  const t = useTranslations('newsPage.comments');
+  const t = useTranslations('comments');
   const locale = useLocale();
   const [comments, _setComments] = useState<Comment[]>(initialComments);
   const [count, _setCount] = useState(initialCount);

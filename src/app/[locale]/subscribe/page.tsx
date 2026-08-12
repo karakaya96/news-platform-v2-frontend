@@ -1,40 +1,56 @@
 export const runtime = 'edge';
 
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { SubscriptionForm } from '@/components/news/subscription-form';
 import { UnsubscribeHandler } from '@/components/news/unsubscribe-handler';
 import { CATEGORY_TRANSLATIONS } from '@/lib/constants';
 import { getPublicSettings, getSiteName } from '@/lib/settings';
 
-export async function generateMetadata(): Promise<Metadata> {
+interface SubscribePageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: SubscribePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'subscribe' });
   const settings = await getPublicSettings();
   const siteName = getSiteName(settings);
   return {
-    title: `Bildirim Aboneliği — ${siteName}`,
-    description:
-      'Yeni haberlerden anında haberdar olun. Tarayıcı bildirimi veya e-posta ile abone olun.',
+    title: `${t('title')} — ${siteName}`,
+    description: t('description'),
   };
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
-async function getCategories() {
+async function getCategories(locale: string) {
   try {
     const res = await fetch(`${API_URL}/api/categories`, { cache: 'no-store' });
-    if (!res.ok) return Object.entries(CATEGORY_TRANSLATIONS).map(([slug, t]) => ({ slug, name: t.name, description: t.description }));
+    if (!res.ok) {
+      return Object.entries(CATEGORY_TRANSLATIONS).map(([slug, info]) => ({
+        slug,
+        name: locale === 'en' ? info.nameEn : info.name,
+        description: locale === 'en' ? info.descriptionEn : info.description,
+        color: '#6366f1',
+      }));
+    }
     const data = await res.json();
     return data.data || [];
   } catch {
-    return Object.entries(CATEGORY_TRANSLATIONS).map(([slug, t]) => ({
+    return Object.entries(CATEGORY_TRANSLATIONS).map(([slug, info]) => ({
       slug,
-      name: t.name,
-      description: t.description,
+      name: locale === 'en' ? info.nameEn : info.name,
+      description: locale === 'en' ? info.descriptionEn : info.description,
+      color: '#6366f1',
     }));
   }
 }
 
-export default async function SubscribePage() {
-  const [categories, settings] = await Promise.all([getCategories(), getPublicSettings()]);
+export default async function SubscribePage({ params }: SubscribePageProps) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'subscribe' });
+  const [categories, settings] = await Promise.all([getCategories(locale), getPublicSettings()]);
 
   const notificationsEnabled = settings.notifications_enabled !== 'false';
   const emailEnabled = settings.notifications_email_enabled !== 'false';
@@ -42,8 +58,8 @@ export default async function SubscribePage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-2xl">
       <div className="text-center mb-10">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3 font-serif">Bildirim Aboneliği</h1>
-        <p className="text-lg text-muted-foreground">Yeni haberlerden anında haberdar olun</p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3 font-serif">{t('title')}</h1>
+        <p className="text-lg text-muted-foreground">{t('description')}</p>
       </div>
 
       <UnsubscribeHandler />
@@ -61,18 +77,17 @@ export default async function SubscribePage() {
       ) : (
         <div className="bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 text-center">
           <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">
-            Bildirimler devre dışıdır
+            {t('disabled')}
           </p>
           <p className="text-sm text-slate-400 dark:text-slate-500 mt-2">
-            Yönetici tarafından bildirimler kapatılmıştır. Daha sonra tekrar deneyin.
+            {t('disabledDetail')}
           </p>
         </div>
       )}
 
       <div className="mt-8 text-center text-sm text-muted-foreground">
         <p>
-          Abonelikten çıkmak istediğinizde, e-posta bildirimlerindeki &quot;Aboneliği İptal Et&quot;
-          linkini kullanabilirsiniz.
+          {t('unsubscribeInfo')}
         </p>
       </div>
     </div>
