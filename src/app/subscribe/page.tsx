@@ -33,17 +33,6 @@ async function getCategories() {
   }
 }
 
-async function getPublicSettings() {
-  try {
-    const res = await fetch(`${API_URL}/api/settings/public/all`, { cache: 'no-store' });
-    if (!res.ok) return { notifications_enabled: 'true', notifications_email_enabled: 'true' };
-    const data = await res.json();
-    return data.data || { notifications_enabled: 'true', notifications_email_enabled: 'true' };
-  } catch {
-    return { notifications_enabled: 'true', notifications_email_enabled: 'true' };
-  }
-}
-
 export default async function SubscribePage() {
   const [categories, settings] = await Promise.all([getCategories(), getPublicSettings()]);
 

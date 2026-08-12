@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { GOOGLE_SITE_VERIFICATION, NAVIGATION } from '@/lib/constants';
-import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl, getSiteDescription, getSocialLinks } from '@/lib/settings';
+import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl, getFaviconUrl, getSiteDescription, getSocialLinks } from '@/lib/settings';
 import { inter } from '@/lib/fonts';
 import './globals.css';
 
