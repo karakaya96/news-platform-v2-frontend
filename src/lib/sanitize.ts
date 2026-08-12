@@ -42,6 +42,7 @@ export const sanitizeArticleContent = (content: string): string => {
       'aside',
       'header',
       'footer',
+      'mark',
     ],
     allowedAttributes: {
       '*': [
@@ -68,8 +69,17 @@ export const sanitizeArticleContent = (content: string): string => {
         'data-video-src',
         'data-video-type',
         'data-video-title',
+        'data-video-embed',
+        'loading',
       ],
-      div: ['data-video-src', 'data-video-type', 'data-video-title'],
+      div: [
+        'data-video-src',
+        'data-video-type',
+        'data-video-title',
+        'data-video-embed',
+        'class',
+        'style',
+      ],
     },
     allowedSchemes: ['http', 'https', 'mailto', 'tel', 'data'],
     allowedIframeHostnames: [
