@@ -46,7 +46,7 @@ import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 const statusColors: Record<string, string> = {
   published:
@@ -71,6 +71,7 @@ interface CategoryOption {
 
 export default function NewsListPage() {
   const t = useTranslations('admin.newsPage');
+  const locale = useLocale();
   const searchParams = useSearchParams();
 
   const [articles, setArticles] = useState<News[]>([]);
@@ -476,7 +477,8 @@ export default function NewsListPage() {
                           <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                             {translateCategoryName(
                               article.categorySlug ?? '',
-                              article.categoryName
+                              article.categoryName,
+                              locale
                             )}
                           </span>
                         ) : (
