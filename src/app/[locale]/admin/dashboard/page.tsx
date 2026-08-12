@@ -17,8 +17,9 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -60,12 +61,6 @@ const statusColors: Record<string, string> = {
     'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
 };
 
-const statusLabels: Record<string, string> = {
-  published: 'Yayında',
-  draft: 'Taslak',
-  archived: 'Arşiv',
-};
-
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
 
@@ -94,8 +89,15 @@ function AnimatedNumber({ value }: { value: number }) {
 }
 
 export default function DashboardPage() {
+  const t = useTranslations('admin.dashboardPage');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const statusLabels: Record<string, string> = {
+    published: t('published'),
+    draft: t('draft'),
+    archived: t('archived'),
+  };
 
   useEffect(() => {
     async function loadStats() {
@@ -104,16 +106,16 @@ export default function DashboardPage() {
         if (res.success && res.data) {
           setStats(res.data);
         } else {
-          toast.error('Panel verileri yüklenemedi');
+          toast.error(t('dataLoadError'));
         }
       } catch (_err) {
-        toast.error('Panel verileri yüklenemedi');
+        toast.error(t('dataLoadError'));
       } finally {
         setLoading(false);
       }
     }
     loadStats();
-  }, []);
+  }, [t]);
 
   const publishedCount = stats?.publishedCount ?? 0;
   const draftCount = stats?.draftCount ?? 0;
@@ -160,61 +162,61 @@ export default function DashboardPage() {
 
   const statCards = [
     {
-      title: 'Toplam Haber',
+      title: t('totalNews'),
       value: stats?.totalNews ?? 0,
       icon: FileText,
       gradient: 'from-indigo-500 via-indigo-600 to-violet-600',
       iconBg: 'bg-white/20',
-      subtitle: `${thisWeekNews} bu hafta`,
+      subtitle: `${thisWeekNews} ${t('thisWeek')}`,
     },
     {
-      title: 'Yayında',
+      title: t('published'),
       value: publishedCount,
       icon: CheckCircle2,
       gradient: 'from-emerald-500 via-emerald-600 to-teal-600',
       iconBg: 'bg-white/20',
-      subtitle: `${totalViews} toplam görüntülenme`,
+      subtitle: `${totalViews} ${t('totalViews')}`,
     },
     {
-      title: 'Taslak',
+      title: t('draft'),
       value: draftCount,
       icon: FileEdit,
       gradient: 'from-amber-500 via-amber-600 to-orange-600',
       iconBg: 'bg-white/20',
-      subtitle: 'Yayınlanmayı bekliyor',
+      subtitle: t('waitingPublish'),
     },
     {
-      title: 'Arşiv',
+      title: t('archived'),
       value: stats?.archivedCount ?? 0,
       icon: Archive,
       gradient: 'from-slate-500 via-slate-600 to-gray-600',
       iconBg: 'bg-white/20',
-      subtitle: 'Arşivlenmiş haber',
+      subtitle: t('archivedNews'),
     },
     {
-      title: 'Kategoriler',
+      title: t('activeCategories', { fallback: 'Kategoriler' }),
       value: stats?.totalCategories ?? 0,
       icon: FolderOpen,
       gradient: 'from-violet-500 via-purple-600 to-fuchsia-600',
       iconBg: 'bg-white/20',
-      subtitle: 'Aktif kategori',
+      subtitle: t('activeCategories'),
     },
     {
-      title: 'Bekleyen Yorumlar',
+      title: t('pendingComments'),
       value: stats?.pendingComments ?? 0,
       icon: MessageCircle,
       gradient: 'from-rose-500 via-pink-600 to-red-600',
       iconBg: 'bg-white/20',
-      subtitle: 'Onay bekliyor',
+      subtitle: t('awaitingApproval'),
       href: '/admin/comments',
     },
     {
-      title: 'Aktif Aboneler',
+      title: t('activeSubscribers'),
       value: stats?.activeSubscriptions ?? 0,
       icon: Bell,
       gradient: 'from-blue-500 via-blue-600 to-cyan-600',
       iconBg: 'bg-white/20',
-      subtitle: `${stats?.browserSubscriptions ?? 0} tarayıcı, ${stats?.emailSubscriptions ?? 0} e-posta`,
+      subtitle: `${stats?.browserSubscriptions ?? 0} ${t('browser')}, ${stats?.emailSubscriptions ?? 0} ${t('emailLabel')}`,
       href: '/admin/notifications',
     },
   ];
@@ -251,12 +253,12 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Quick Actions + Bu Hafta */}
+      {/* Quick Actions */}
       <div className="flex flex-wrap gap-3">
         <Link href="/admin/news/new">
           <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-md shadow-indigo-500/25 hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-200 rounded-xl px-5">
             <Plus className="mr-2 h-4 w-4" />
-            Yeni Haber
+            {t('newNewsButton')}
           </Button>
         </Link>
         <Link href="/admin/categories">
@@ -265,7 +267,7 @@ export default function DashboardPage() {
             className="border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300 rounded-xl px-5 transition-all duration-200"
           >
             <Settings className="mr-2 h-4 w-4" />
-            Kategorileri Yönet
+            {t('manageCategories')}
           </Button>
         </Link>
       </div>
@@ -276,7 +278,7 @@ export default function DashboardPage() {
           <CardHeader className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50 px-6 py-4">
             <CardTitle className="text-lg font-bold flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-violet-500" />
-              Kategori Dağılımı
+              {t('categoryDistribution')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -304,7 +306,7 @@ export default function DashboardPage() {
           <CardHeader className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50 px-6 py-4">
             <CardTitle className="text-lg font-bold flex items-center gap-2">
               <Activity className="h-5 w-5 text-emerald-500" />
-              Son Aktivite
+              {t('recentActivity')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
@@ -334,7 +336,7 @@ export default function DashboardPage() {
                       </span>
                       {article.authorName && (
                         <span className="text-xs text-slate-400 dark:text-slate-500">
-                          yazan: {article.authorName}
+                          {article.authorName}
                         </span>
                       )}
                     </div>
@@ -352,7 +354,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-bold flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-indigo-500" />
-              Son Haberler
+              {t('recentNews')}
             </CardTitle>
             <Link href="/admin/news">
               <Button
@@ -360,7 +362,7 @@ export default function DashboardPage() {
                 size="sm"
                 className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:text-indigo-300 dark:hover:bg-indigo-950 rounded-lg"
               >
-                Tümünü Gör
+                {t('seeAll')}
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
@@ -372,16 +374,16 @@ export default function DashboardPage() {
               <thead>
                 <tr className="border-b border-slate-100 dark:border-slate-800">
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Haber
+                    {t('tableNews')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden md:table-cell">
-                    Kategori
+                    {t('tableCategory')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Durum
+                    {t('tableStatus')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden lg:table-cell">
-                    Tarih
+                    {t('tableDate')}
                   </th>
                 </tr>
               </thead>
@@ -414,7 +416,7 @@ export default function DashboardPage() {
                             {article.title}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            yazan: {article.authorName || 'Bilinmiyor'}
+                            {article.authorName || 'Unknown'}
                           </p>
                         </div>
                       </div>

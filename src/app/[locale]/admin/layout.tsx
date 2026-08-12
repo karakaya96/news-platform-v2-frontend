@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AdminHeader } from '@/components/admin/admin-header';
@@ -7,27 +8,25 @@ import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { getAuthToken, setAuthToken } from '@/lib/api';
 import { isAuthenticated } from '@/lib/auth';
 
-const pageTitles: Record<string, string> = {
-  '/admin/dashboard': 'Gösterge Paneli',
-  '/admin/news': 'Haberler',
-  '/admin/news/new': 'Yeni Haber',
-  '/admin/categories': 'Kategoriler',
-  '/admin/categories/new': 'Yeni Kategori',
-  '/admin/comments': 'Yorumlar',
-  '/admin/notifications': 'Bildirimler',
-};
-
-function getPageTitle(pathname: string): string {
-  if (pageTitles[pathname]) return pageTitles[pathname];
-  if (pathname.includes('/edit')) return 'Haberi Düzenle';
-  return 'Yönetim';
-}
-
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('admin');
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checking, setChecking] = useState(true);
+
+  const getPageTitle = (path: string): string => {
+    if (path === '/admin/dashboard') return t('dashboard');
+    if (path === '/admin/news') return t('news');
+    if (path === '/admin/news/new') return t('newNews');
+    if (path === '/admin/categories') return t('categories');
+    if (path === '/admin/categories/new') return t('newCategory');
+    if (path === '/admin/comments') return t('comments');
+    if (path === '/admin/notifications') return t('notifications');
+    if (path === '/admin/settings') return t('settings');
+    if (path.includes('/edit')) return t('editNews');
+    return t('management');
+  };
 
   useEffect(() => {
     // Don't check auth on login page

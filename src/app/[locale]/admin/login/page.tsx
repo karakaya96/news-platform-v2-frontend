@@ -9,8 +9,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { api, setAuthToken as setApiAuthToken } from '@/lib/api';
 import { setToken } from '@/lib/auth';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
+  const t = useTranslations('admin.login');
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,10 +35,10 @@ export default function LoginPage() {
         setApiAuthToken(res.data.token);
         router.push('/admin/dashboard');
       } else {
-        setError(res.error || 'Geçersiz kimlik bilgileri');
+        setError(res.error || t('invalidCredentials'));
       }
     } catch (_err) {
-      setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+      setError(t('loginError'));
     } finally {
       setLoading(false);
     }
@@ -52,8 +54,8 @@ export default function LoginPage() {
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl">Hoş Geldiniz</CardTitle>
-            <CardDescription>NewsHaberGlobal yönetim paneline giriş yapın</CardDescription>
+            <CardTitle className="text-2xl">{t('welcome')}</CardTitle>
+            <CardDescription>{t('adminPanelLogin')}</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
@@ -65,7 +67,7 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">E-posta</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -78,7 +80,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Şifre</Label>
+              <Label htmlFor="password">{t('password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -91,7 +93,7 @@ export default function LoginPage() {
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Giriş Yap
+              {t('loginButton')}
             </Button>
           </form>
         </CardContent>

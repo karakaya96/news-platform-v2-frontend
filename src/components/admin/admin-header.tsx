@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -14,6 +15,7 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
+  const t = useTranslations('admin');
   const router = useRouter();
   const user = getUser();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -85,7 +87,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           size="icon"
           className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
           onClick={() => router.push('/admin/settings')}
-          title="Ayarlar"
+          title={t('settings')}
         >
           <Settings className="h-5 w-5" />
         </Button>
@@ -111,7 +113,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
             <div className="absolute right-0 top-full mt-2 w-80 rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  Son Yayınlanan Haberler
+                  {t('newsPage.recentNews', { fallback: 'Son Yayınlanan Haberler' })}
                 </h3>
               </div>
               <div className="max-h-80 overflow-y-auto">
@@ -136,13 +138,13 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                           {article.isFeatured && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
                               <Star className="h-2.5 w-2.5" />
-                              Öne Çıkan
+                              {t('newsPage.featured', { fallback: 'Öne Çıkan' })}
                             </span>
                           )}
                           {article.isBreaking && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
                               <Zap className="h-2.5 w-2.5" />
-                              Son Dakika
+                              {t('newsPage.breakingNews', { fallback: 'Son Dakika' })}
                             </span>
                           )}
                           <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
@@ -151,7 +153,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                               ? new Date(article.publishedAt).toLocaleDateString('tr-TR', {
                                   timeZone: 'Europe/Istanbul',
                                 })
-                              : 'Tarih yok'}
+                              : '-'}
                           </span>
                         </div>
                       </div>
@@ -160,7 +162,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                 ) : (
                   <div className="px-4 py-8 text-center">
                     <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Henüz haber yok</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{t('newsPage.noNews', { fallback: 'Henüz haber yok' })}</p>
                   </div>
                 )}
               </div>
@@ -172,7 +174,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                   }}
                   className="w-full text-center text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
                 >
-                  Tüm Haberleri Gör →
+                  {t('newsPage.seeAll', { fallback: 'Tüm Haberleri Gör →' })}
                 </button>
               </div>
             </div>
@@ -188,7 +190,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               {user?.name || 'Admin'}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">Yönetici</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('admin', { fallback: 'Yönetici' })}</p>
           </div>
         </div>
 
@@ -200,7 +202,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           className="text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400 dark:hover:bg-red-950 rounded-xl ml-1"
         >
           <LogOut className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Çıkış</span>
+          <span className="hidden sm:inline">{t('logout', { fallback: 'Çıkış' })}</span>
         </Button>
       </div>
     </header>

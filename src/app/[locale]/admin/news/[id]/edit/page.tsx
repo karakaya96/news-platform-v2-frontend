@@ -11,8 +11,10 @@ import { NewsForm } from '@/components/admin/news-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/lib/api';
 import type { News } from '@/types';
+import { useTranslations } from 'next-intl';
 
 export default function EditArticlePage() {
+  const t = useTranslations('admin.editNewsPage');
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
@@ -28,11 +30,11 @@ export default function EditArticlePage() {
         if (res.success && res.data) {
           setArticle(res.data);
         } else {
-          toast.error('Haber bulunamadı');
+          toast.error(t('notFound'));
           router.push('/admin/news');
         }
       } catch {
-        toast.error('Haber yüklenemedi');
+        toast.error(t('loadError'));
         router.push('/admin/news');
       } finally {
         setLoading(false);
@@ -55,7 +57,7 @@ export default function EditArticlePage() {
     seoDescription?: string;
   }) => {
     if (!data.content) {
-      toast.error('İçerik zorunludur');
+      toast.error(t('contentRequired'));
       return;
     }
 
@@ -76,13 +78,13 @@ export default function EditArticlePage() {
       });
 
       if (res.success) {
-        toast.success('Haber başarıyla güncellendi');
+        toast.success(t('updated'));
         router.push('/admin/news');
       } else {
-        toast.error(res.error || 'Haber güncellenemedi');
+        toast.error(res.error || t('updateFailed'));
       }
     } catch {
-      toast.error('Haber güncellenemedi');
+      toast.error(t('updateFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -110,7 +112,7 @@ export default function EditArticlePage() {
 
   return (
     <div className="max-w-5xl">
-      <h2 className="text-2xl font-bold mb-6">Haberi Düzenle</h2>
+      <h2 className="text-2xl font-bold mb-6">{t('title')}</h2>
       <NewsForm article={article} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </div>
   );

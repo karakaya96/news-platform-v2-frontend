@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import {
   Bell,
   ExternalLink,
@@ -12,9 +13,9 @@ import {
   Sparkles,
   X,
 } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 
 interface AdminSidebarProps {
@@ -22,17 +23,18 @@ interface AdminSidebarProps {
   onClose: () => void;
 }
 
-const navigation = [
-  { name: 'Gösterge Paneli', href: '/admin/dashboard', icon: LayoutDashboard },
-  { name: 'Haberler', href: '/admin/news', icon: Newspaper },
-  { name: 'Kategoriler', href: '/admin/categories', icon: FolderOpen },
-  { name: 'Yorumlar', href: '/admin/comments', icon: MessageCircle },
-  { name: 'Bildirimler', href: '/admin/notifications', icon: Bell },
-  { name: 'Ayarlar', href: '/admin/settings', icon: Settings },
-];
-
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
+  const t = useTranslations('admin');
   const pathname = usePathname();
+
+  const navigation = [
+    { name: t('dashboard'), href: '/admin/dashboard', icon: LayoutDashboard },
+    { name: t('news'), href: '/admin/news', icon: Newspaper },
+    { name: t('categories'), href: '/admin/categories', icon: FolderOpen },
+    { name: t('comments'), href: '/admin/comments', icon: MessageCircle },
+    { name: t('notifications'), href: '/admin/notifications', icon: Bell },
+    { name: t('settings'), href: '/admin/settings', icon: Settings },
+  ];
 
   return (
     <>
@@ -60,7 +62,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div>
               <span className="text-lg font-bold text-white tracking-tight">NewsHaberGlobal</span>
               <span className="block text-[10px] font-medium text-indigo-400 uppercase tracking-widest">
-                Yönetim Paneli
+                {t('management')}
               </span>
             </div>
           </Link>
@@ -77,7 +79,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 space-y-1.5 px-4 py-6">
           <p className="px-3 mb-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            Menü
+            {t('menu', { fallback: 'Menu' })}
           </p>
           {navigation.map((item) => {
             const isActive =
@@ -120,7 +122,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
               <ExternalLink className="h-4 w-4" />
             </div>
-            Siteyi Görüntüle
+            {t('viewSite')}
           </Link>
         </div>
 

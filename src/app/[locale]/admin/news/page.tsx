@@ -46,6 +46,7 @@ import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
+import { useTranslations } from 'next-intl';
 
 const statusColors: Record<string, string> = {
   published:
@@ -69,6 +70,7 @@ interface CategoryOption {
 }
 
 export default function NewsListPage() {
+  const t = useTranslations('admin.newsPage');
   const searchParams = useSearchParams();
 
   const [articles, setArticles] = useState<News[]>([]);
@@ -142,10 +144,10 @@ export default function NewsListPage() {
         setTotalPages(res.pagination?.totalPages || 1);
         setTotal(res.pagination?.total || 0);
       } else {
-        toast.error('Haberler yüklenemedi');
+        toast.error(t('loadError'));
       }
     } catch {
-      toast.error('Haberler yüklenemedi');
+      toast.error(t('loadError'));
     } finally {
       setLoading(false);
     }
@@ -161,14 +163,14 @@ export default function NewsListPage() {
     try {
       const res = await api.delete(`/api/news/${deleteId}`);
       if (res.success) {
-        toast.success('Haber silindi');
+        toast.success(t('deleted'));
         setArticles((prev) => prev.filter((a) => a.id !== deleteId));
         setTotal((prev) => prev - 1);
       } else {
-        toast.error(res.error || 'Silme başarısız');
+        toast.error(res.error || t('deleteFailed'));
       }
     } catch {
-      toast.error('Haber silinemedi');
+      toast.error(t('deleteError'));
     } finally {
       setDeleting(false);
       setDeleteId(null);
@@ -226,13 +228,13 @@ export default function NewsListPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            Haberler
+            {t('title')}
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} toplam haber</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} {t('totalNews')}</p>
         </div>
         <Link href="/admin/news/new">
           <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-600 text-white shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 rounded-xl px-5">
-            <Plus className="mr-2 h-4 w-4" /> Yeni Haber
+            <Plus className="mr-2 h-4 w-4" /> {t('newNewsButton')}
           </Button>
         </Link>
       </div>
@@ -245,7 +247,7 @@ export default function NewsListPage() {
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
-                placeholder="Haber ara..."
+                placeholder={t('searchPlaceholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
@@ -259,13 +261,13 @@ export default function NewsListPage() {
               }}
             >
               <SelectTrigger className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                <SelectValue placeholder="Durum" />
+                <SelectValue placeholder={t('statusPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="all">Tüm Durumlar</SelectItem>
-                <SelectItem value="published">Yayında</SelectItem>
-                <SelectItem value="draft">Taslak</SelectItem>
-                <SelectItem value="archived">Arşiv</SelectItem>
+                <SelectItem value="all">{t('allStatus')}</SelectItem>
+                <SelectItem value="published">{t('published')}</SelectItem>
+                <SelectItem value="draft">{t('draft')}</SelectItem>
+                <SelectItem value="archived">{t('archived')}</SelectItem>
               </SelectContent>
             </Select>
             <Select
@@ -276,12 +278,12 @@ export default function NewsListPage() {
               }}
             >
               <SelectTrigger className="w-[170px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                <SelectValue placeholder="Sıralama" />
+                <SelectValue placeholder={t('sortPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="newest">En Yeni</SelectItem>
-                <SelectItem value="oldest">En Eski</SelectItem>
-                <SelectItem value="views">En Çok Görüntülenen</SelectItem>
+                <SelectItem value="newest">{t('newest')}</SelectItem>
+                <SelectItem value="oldest">{t('oldest')}</SelectItem>
+                <SelectItem value="views">{t('mostViewed')}</SelectItem>
                 <SelectItem value="title_asc">A-Z</SelectItem>
                 <SelectItem value="title_desc">Z-A</SelectItem>
               </SelectContent>
@@ -298,10 +300,10 @@ export default function NewsListPage() {
               }}
             >
               <SelectTrigger className="w-[160px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                <SelectValue placeholder="Tüm Kategoriler" />
+                <SelectValue placeholder={t('categoryPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="all">Tüm Kategoriler</SelectItem>
+                <SelectItem value="all">{t('categoryPlaceholder')}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat.slug} value={cat.slug}>
                     {translateCategoryName(cat.slug, cat.name)}
@@ -318,12 +320,12 @@ export default function NewsListPage() {
               }}
             >
               <SelectTrigger className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                <SelectValue placeholder="Öne Çıkan" />
+                <SelectValue placeholder={t('featuredPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="all">Tümü</SelectItem>
-                <SelectItem value="1">Öne Çıkan</SelectItem>
-                <SelectItem value="0">Öne Çıkan Değil</SelectItem>
+                <SelectItem value="all">{t('all')}</SelectItem>
+                <SelectItem value="1">{t('featured')}</SelectItem>
+                <SelectItem value="0">{t('notFeatured')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -335,12 +337,12 @@ export default function NewsListPage() {
               }}
             >
               <SelectTrigger className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                <SelectValue placeholder="Son Dakika" />
+                <SelectValue placeholder={t('breakingPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
-                <SelectItem value="all">Tümü</SelectItem>
-                <SelectItem value="1">Son Dakika</SelectItem>
-                <SelectItem value="0">Son Dakika Değil</SelectItem>
+                <SelectItem value="all">{t('all')}</SelectItem>
+                <SelectItem value="1">{t('breakingNews')}</SelectItem>
+                <SelectItem value="0">{t('notBreaking')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -352,7 +354,7 @@ export default function NewsListPage() {
                 setPage(1);
               }}
               className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              placeholder="Tarihten"
+              placeholder={t('fromDate')}
             />
             <Input
               type="date"
@@ -362,7 +364,7 @@ export default function NewsListPage() {
                 setPage(1);
               }}
               className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-              placeholder="Tarihe"
+              placeholder={t('toDate')}
             />
 
             {activeFilterCount > 0 && (
@@ -372,7 +374,7 @@ export default function NewsListPage() {
                 onClick={resetFilters}
                 className="rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
               >
-                Filtreleri Temizle ({activeFilterCount})
+                {t('clearFilters')} ({activeFilterCount})
               </Button>
             )}
           </div>
@@ -396,10 +398,10 @@ export default function NewsListPage() {
             <div className="text-center py-16">
               <FileText className="h-16 w-16 mx-auto mb-4 text-slate-300 dark:text-slate-600" />
               <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
-                Haber bulunamadı
+                {t('noNews')}
               </p>
               <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                Filtrelerinizi değiştirmeyi veya yeni bir haber oluşturmayı deneyin
+                {t('noNewsDetail')}
               </p>
             </div>
           ) : (
@@ -408,19 +410,19 @@ export default function NewsListPage() {
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50">
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      Başlık
+                      {t('tableTitle')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase hidden md:table-cell">
-                      Kategori
+                      {t('tableCategory')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      Durum
+                      {t('tableStatus')}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase hidden lg:table-cell">
-                      Tarih & Saat
+                      {t('tableDate')}
                     </th>
                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      İşlemler
+                      {t('tableActions')}
                     </th>
                   </tr>
                 </thead>
@@ -456,13 +458,13 @@ export default function NewsListPage() {
                               {article.isFeatured && (
                                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-100 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
                                   <Star className="h-2.5 w-2.5" />
-                                  Öne Çıkan
+                                  {t('featured')}
                                 </span>
                               )}
                               {article.isBreaking && (
                                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
                                   <Zap className="h-2.5 w-2.5" />
-                                  Son Dakika
+                                  {t('breakingNews')}
                                 </span>
                               )}
                             </div>
@@ -490,11 +492,11 @@ export default function NewsListPage() {
                             className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${statusDots[article.status] || 'bg-slate-400'}`}
                           />
                           {article.status === 'published'
-                            ? 'Yayında'
+                            ? t('published')
                             : article.status === 'draft'
-                              ? 'Taslak'
+                              ? t('draft')
                               : article.status === 'archived'
-                                ? 'Arşiv'
+                                ? t('archived')
                                 : article.status}
                         </Badge>
                       </td>
@@ -512,7 +514,7 @@ export default function NewsListPage() {
                               className="h-8 px-3 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 dark:text-slate-400 dark:hover:text-indigo-400 dark:hover:bg-indigo-950 rounded-lg transition-colors"
                             >
                               <Edit className="h-3.5 w-3.5 mr-1.5" />
-                              Düzenle
+                              {t('editButton')}
                             </Button>
                           </Link>
                           <Button
@@ -522,7 +524,7 @@ export default function NewsListPage() {
                             onClick={() => setDeleteId(article.id)}
                           >
                             <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                            Sil
+                            {t('deleteButton')}
                           </Button>
                         </div>
                       </td>
@@ -539,9 +541,9 @@ export default function NewsListPage() {
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Sayfa <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
+            {t('page')} <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
             <span className="font-semibold text-slate-700 dark:text-slate-300">{totalPages}</span> (
-            {total} haber)
+            {total} {t('newsCount')})
           </p>
           <div className="flex items-center gap-1">
             {/* First */}
@@ -611,7 +613,7 @@ export default function NewsListPage() {
 
             {/* Jump to page */}
             <div className="flex items-center gap-1 ml-2">
-              <span className="text-xs text-slate-400 mr-1">Git:</span>
+              <span className="text-xs text-slate-400 mr-1">{t('goto')}</span>
               <Input
                 type="number"
                 min={1}
@@ -646,9 +648,9 @@ export default function NewsListPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="text-lg dark:text-slate-100">Haberi Sil</DialogTitle>
+            <DialogTitle className="text-lg dark:text-slate-100">{t('deleteDialog.title')}</DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
-              Bu haberi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+              {t('deleteDialog.description')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
@@ -657,7 +659,7 @@ export default function NewsListPage() {
               onClick={() => setDeleteId(null)}
               className="dark:border-slate-700 dark:hover:bg-slate-800 dark:text-slate-300"
             >
-              İptal
+              {t('deleteDialog.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -665,7 +667,7 @@ export default function NewsListPage() {
               disabled={deleting}
               className="rounded-xl"
             >
-              {deleting ? 'Siliniyor...' : 'Sil'}
+              {deleting ? t('deleteDialog.deleting') : t('deleteDialog.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>
