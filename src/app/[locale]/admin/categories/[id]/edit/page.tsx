@@ -22,57 +22,14 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import type { Category } from '@/types';
 
-const t = useTranslations('admin.editCategoryPage');
-
-const categorySchema = z.object({
-  name: z.string().min(1, t('nameRequired')).max(100),
-  slug: z.string().min(1, t('slugRequired')).max(100),
-  description: z.string().max(500).optional(),
-  color: z.string().optional(),
-  sortOrder: z.number().int().default(0),
-});
-
-type CategoryFormData = z.infer<typeof categorySchema>;
-
-function _slugify(text: string): string {
-  const turkishMap: Record<string, string> = {
-    ç: 'c',
-    ğ: 'g',
-    ı: 'i',
-    ö: 'o',
-    ş: 's',
-    ü: 'u',
-    Ç: 'c',
-    Ğ: 'g',
-    İ: 'i',
-    Ö: 'o',
-    Ş: 's',
-    Ü: 'u',
-  };
-  return text
-    .toLowerCase()
-    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => turkishMap[c] || c)
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
 const presetColors = [
-  '#3b82f6',
-  '#ef4444',
-  '#10b981',
-  '#f59e0b',
-  '#8b5cf6',
-  '#ec4899',
-  '#06b6d4',
-  '#f97316',
-  '#6366f1',
-  '#14b8a6',
-  '#84cc16',
-  '#64748b',
+  '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+  '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6',
+  '#84cc16', '#64748b',
 ];
 
 export default function EditCategoryPage() {
+  const t = useTranslations('admin.editCategoryPage');
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
@@ -80,6 +37,16 @@ export default function EditCategoryPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [category, setCategory] = useState<Category | null>(null);
+
+  const categorySchema = z.object({
+    name: z.string().min(1, t('nameRequired')).max(100),
+    slug: z.string().min(1, t('slugRequired')).max(100),
+    description: z.string().max(500).optional(),
+    color: z.string().optional(),
+    sortOrder: z.number().int().default(0),
+  });
+
+  type CategoryFormData = z.infer<typeof categorySchema>;
 
   const {
     register,
@@ -126,7 +93,7 @@ export default function EditCategoryPage() {
       }
     }
     loadCategory();
-  }, [id, router, reset]);
+  }, [id, router, reset, t]);
 
   const onSubmit = handleSubmit(async (data) => {
     setIsSubmitting(true);

@@ -18,32 +18,25 @@ import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
-const t = useTranslations('admin.newCategoryPage');
-
-const categorySchema = z.object({
-  name: z.string().min(1, t('nameRequired')).max(100),
-  slug: z.string().min(1, t('slugRequired')).max(100),
-  description: z.string().max(500).optional(),
-  color: z.string().optional(),
-  sortOrder: z.number().int().default(0),
-});
-
-type CategoryFormData = z.infer<typeof categorySchema>;
+const presetColors = [
+  '#3b82f6',
+  '#ef4444',
+  '#10b981',
+  '#f59e0b',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#f97316',
+  '#6366f1',
+  '#14b8a6',
+  '#84cc16',
+  '#64748b',
+];
 
 function slugify(text: string): string {
   const turkishMap: Record<string, string> = {
-    ç: 'c',
-    ğ: 'g',
-    ı: 'i',
-    ö: 'o',
-    ş: 's',
-    ü: 'u',
-    Ç: 'c',
-    Ğ: 'g',
-    İ: 'i',
-    Ö: 'o',
-    Ş: 's',
-    Ü: 'u',
+    ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u',
+    Ç: 'c', Ğ: 'g', İ: 'i', Ö: 'o', Ş: 's', Ü: 'u',
   };
   return text
     .toLowerCase()
@@ -53,24 +46,20 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-const presetColors = [
-  '#3b82f6', // blue
-  '#ef4444', // red
-  '#10b981', // green
-  '#f59e0b', // amber
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#f97316', // orange
-  '#6366f1', // indigo
-  '#14b8a6', // teal
-  '#84cc16', // lime
-  '#64748b', // slate
-];
-
 export default function NewCategoryPage() {
+  const t = useTranslations('admin.newCategoryPage');
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const categorySchema = z.object({
+    name: z.string().min(1, t('nameRequired')).max(100),
+    slug: z.string().min(1, t('slugRequired')).max(100),
+    description: z.string().max(500).optional(),
+    color: z.string().optional(),
+    sortOrder: z.number().int().default(0),
+  });
+
+  type CategoryFormData = z.infer<typeof categorySchema>;
 
   const {
     register,
@@ -92,7 +81,6 @@ export default function NewCategoryPage() {
   const name = watch('name');
   const color = watch('color');
 
-  // Auto-generate slug from name
   const generateSlug = useCallback(() => {
     if (name) {
       setValue('slug', slugify(name));
