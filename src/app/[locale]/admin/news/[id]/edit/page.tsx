@@ -68,13 +68,13 @@ export default function EditArticlePage() {
         slug: data.slug,
         content: data.content,
         excerpt: data.excerpt || '',
-        categoryId: Number.parseInt(data.categoryId, 10),
-        imageUrl: data.imageUrl || '',
+        category_id: Number.parseInt(data.categoryId, 10),
+        image_url: data.imageUrl || '',
         status: data.status,
-        isFeatured: data.isFeatured,
-        isBreaking: data.isBreaking,
-        seoTitle: data.seoTitle || '',
-        seoDescription: data.seoDescription || '',
+        is_featured: data.isFeatured,
+        is_breaking: data.isBreaking,
+        seo_title: data.seoTitle || '',
+        seo_description: data.seoDescription || '',
       });
 
       if (res.success) {
