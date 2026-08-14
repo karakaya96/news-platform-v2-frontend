@@ -3,8 +3,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import Script from 'next/script';
 import { VercelAnalytics } from '@/components/analytics/vercel-analytics';
-import { Footer } from '@/components/layout/footer';
-import { Header } from '@/components/layout/header';
+import { LayoutShell } from '@/components/layout/layout-shell';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { GOOGLE_SITE_VERIFICATION, NAVIGATION } from '@/lib/constants';
 import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl, getFaviconUrl, getSiteDescription, getSocialLinks } from '@/lib/settings';
@@ -166,12 +165,10 @@ export default async function LocaleLayout({
         />
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <Header settings={settings} navigation={NAVIGATION} />
-              <main className="flex-1">{children}</main>
-              <Footer settings={settings} navigation={NAVIGATION} />
-              <VercelAnalytics />
-            </div>
+            <LayoutShell settings={settings} navigation={NAVIGATION}>
+              {children}
+            </LayoutShell>
+            <VercelAnalytics />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

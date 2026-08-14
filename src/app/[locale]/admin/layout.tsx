@@ -16,21 +16,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [checking, setChecking] = useState(true);
 
   const getPageTitle = (path: string): string => {
-    if (path === '/admin/dashboard') return t('dashboard');
-    if (path === '/admin/news') return t('news');
-    if (path === '/admin/news/new') return t('newNews');
-    if (path === '/admin/categories') return t('categories');
-    if (path === '/admin/categories/new') return t('newCategory');
-    if (path === '/admin/comments') return t('comments');
-    if (path === '/admin/notifications') return t('notifications');
-    if (path === '/admin/settings') return t('settings');
+    if (path.endsWith('/admin/dashboard')) return t('dashboard');
+    if (path.endsWith('/admin/news') || path.endsWith('/admin/news/')) return t('news');
+    if (path.endsWith('/admin/news/new')) return t('newNews');
+    if (path.endsWith('/admin/categories') || path.endsWith('/admin/categories/')) return t('categories');
+    if (path.endsWith('/admin/categories/new')) return t('newCategory');
+    if (path.endsWith('/admin/comments')) return t('comments');
+    if (path.endsWith('/admin/notifications')) return t('notifications');
+    if (path.endsWith('/admin/settings')) return t('settings');
     if (path.includes('/edit')) return t('editNews');
     return t('management');
   };
 
+  const isLoginPage = pathname.endsWith('/admin/login');
+
   useEffect(() => {
     // Don't check auth on login page
-    if (pathname === '/admin/login') {
+    if (isLoginPage) {
       setChecking(false);
       return;
     }
@@ -52,10 +54,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
 
     setChecking(false);
-  }, [pathname, router]);
+  }, [isLoginPage, router]);
 
   // Login page doesn't need the admin layout
-  if (pathname === '/admin/login') {
+  if (isLoginPage) {
     return <>{children}</>;
   }
 
