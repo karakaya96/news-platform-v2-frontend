@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronUp, Loader2, Star, Zap } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslations } from 'next-intl';
@@ -26,6 +27,7 @@ import type { Category, ScrapedNews } from '@/types';
 
 interface NewsFetchPreviewProps {
   scrapedData: ScrapedNews;
+  // biome-ignore lint/suspicious/noExplicitAny: consistent with news-form.tsx
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -91,7 +93,6 @@ export function NewsFetchPreview({
     },
   });
 
-  const title = watch('title');
   const imageUrl = watch('imageUrl');
   const status = watch('status');
   const isFeatured = watch('isFeatured');
@@ -396,7 +397,7 @@ export function NewsFetchPreview({
                         value={String(category.id)}
                         className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
                       >
-                        {translateCategoryName(category.name)}
+                        {translateCategoryName(category.slug, category.name)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -424,10 +425,11 @@ export function NewsFetchPreview({
               </div>
               {imageUrl && (
                 <div className="relative aspect-video rounded-lg overflow-hidden border dark:border-slate-600">
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Preview"
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
               )}
