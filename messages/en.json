@@ -168,6 +168,7 @@
   "admin": {
     "dashboard": "Dashboard",
     "news": "News",
+    "fetchNews": "Fetch News",
     "newNews": "New Article",
     "categories": "Categories",
     "newCategory": "New Category",
@@ -176,6 +177,7 @@
     "settings": "Settings",
     "editNews": "Edit Article",
     "management": "Management",
+    "viewSite": "View Site",
     "login": {
       "welcome": "Welcome",
       "description": "Sign in to the NewsHaberGlobal admin panel",

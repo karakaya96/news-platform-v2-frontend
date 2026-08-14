@@ -168,6 +168,7 @@
   "admin": {
     "dashboard": "Gösterge Paneli",
     "news": "Haberler",
+    "fetchNews": "Haber Çek",
     "newNews": "Yeni Haber",
     "categories": "Kategoriler",
     "newCategory": "Yeni Kategori",
@@ -176,6 +177,7 @@
     "settings": "Ayarlar",
     "editNews": "Haberi Düzenle",
     "management": "Yönetim",
+    "viewSite": "Siteyi Görüntüle",
     "login": {
       "welcome": "Hoş Geldiniz",
       "description": "NewsHaberGlobal yönetim paneline giriş yapın",
