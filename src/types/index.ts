@@ -151,3 +151,16 @@ export interface CommentStats {
   rejected: number;
   spam: number;
 }
+
+// Scraper types
+export interface ScrapedNews {
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  image_url: string | null;
+  category_id: number;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string;
+}

@@ -5,6 +5,7 @@ import {
   Bell,
   ExternalLink,
   FolderOpen,
+  Globe,
   LayoutDashboard,
   MessageCircle,
   Newspaper,
@@ -30,6 +31,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const navigation = [
     { name: t('dashboard'), href: '/admin/dashboard', icon: LayoutDashboard },
     { name: t('news'), href: '/admin/news', icon: Newspaper },
+    { name: t('fetchNews', { fallback: 'Haber Çek' }), href: '/admin/news/fetch', icon: Globe },
     { name: t('categories'), href: '/admin/categories', icon: FolderOpen },
     { name: t('comments'), href: '/admin/comments', icon: MessageCircle },
     { name: t('notifications'), href: '/admin/notifications', icon: Bell },
