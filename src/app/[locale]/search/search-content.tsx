@@ -310,6 +310,7 @@ function SearchContent() {
               </label>
               <Input
                 type="date"
+                lang={locale}
                 className="h-9"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
@@ -321,6 +322,7 @@ function SearchContent() {
               </label>
               <Input
                 type="date"
+                lang={locale}
                 className="h-9"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}

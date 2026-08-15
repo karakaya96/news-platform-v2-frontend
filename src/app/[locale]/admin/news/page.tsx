@@ -349,6 +349,7 @@ export default function NewsListPage() {
 
             <Input
               type="date"
+              lang={locale}
               value={dateFrom}
               onChange={(e) => {
                 setDateFrom(e.target.value);
@@ -359,6 +360,7 @@ export default function NewsListPage() {
             />
             <Input
               type="date"
+              lang={locale}
               value={dateTo}
               onChange={(e) => {
                 setDateTo(e.target.value);
