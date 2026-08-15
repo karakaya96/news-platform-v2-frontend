@@ -1,6 +1,6 @@
 'use client';
 
-import { Image as ImageIcon, Loader2, Trash2, Upload } from 'lucide-react';
+import { Check, Copy, Image as ImageIcon, Loader2, Trash2, Upload, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -44,6 +44,7 @@ export function MediaLibrary() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [previewFile, setPreviewFile] = useState<MediaFile | null>(null);
 
   useEffect(() => {
     fetchFiles();
@@ -254,7 +255,8 @@ export function MediaLibrary() {
             {files.map((file) => (
               <div
                 key={file.id}
-                className={`relative aspect-square rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 transition-all ${
+                onClick={() => setPreviewFile(file)}
+                className={`group relative aspect-square rounded-lg overflow-hidden bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer hover:ring-2 hover:ring-indigo-300 dark:hover:ring-indigo-700 ${
                   selectedFiles.has(file.id)
                     ? 'ring-2 ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900'
                     : ''
@@ -274,7 +276,8 @@ export function MediaLibrary() {
                   )}
                 </div>
 
-                <div className="absolute top-1 right-1 flex gap-1">
+                {/* Selection checkbox */}
+                <div className="absolute top-1.5 left-1.5 z-10">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -288,10 +291,10 @@ export function MediaLibrary() {
                         setSelectedFiles((prev) => new Set(prev).add(file.id));
                       }
                     }}
-                    className={`p-1.5 rounded-full transition-colors ${
+                    className={`flex items-center justify-center w-5 h-5 rounded-md border transition-colors ${
                       selectedFiles.has(file.id)
-                        ? 'bg-indigo-500 text-white'
-                        : 'bg-white/80 dark:bg-slate-800/80 hover:bg-indigo-100 dark:hover:bg-indigo-900/50'
+                        ? 'bg-indigo-500 border-indigo-500 text-white'
+                        : 'bg-white/80 dark:bg-slate-800/80 border-slate-300 dark:border-slate-600 hover:border-indigo-400'
                     }`}
                     title={
                       selectedFiles.has(file.id)
@@ -299,9 +302,22 @@ export function MediaLibrary() {
                         : t('mediaLibrary.select')
                     }
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
+                    {selectedFiles.has(file.id) && <Check className="h-3 w-3" />}
                   </button>
                 </div>
+
+                {/* Delete button - only visible on hover */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(file.key);
+                  }}
+                  disabled={deleting.has(file.id)}
+                  className="absolute top-1.5 right-1.5 z-10 p-1.5 rounded-full bg-red-500/90 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  title={t('mediaLibrary.delete')}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
 
                 <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/60 text-white text-xs">
                   <div className="truncate font-medium">
@@ -313,22 +329,8 @@ export function MediaLibrary() {
                   </div>
                 </div>
 
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(file.key);
-                  }}
-                  disabled={deleting.has(file.id)}
-                  className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity"
-                  title={t('mediaLibrary.delete')}
-                >
-                  <div className="absolute top-1 right-1 p-1.5 bg-red-500/90 text-white rounded-full">
-                    <Trash2 className="h-4 w-4" />
-                  </div>
-                </button>
-
                 {deleting.has(file.id) && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-20">
                     <Loader2 className="h-6 w-6 text-white animate-spin" />
                   </div>
                 )}
@@ -382,6 +384,96 @@ export function MediaLibrary() {
           </div>
         )}
       </CardContent>
+
+      {/* Image Preview Modal */}
+      {previewFile && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          onClick={() => setPreviewFile(null)}
+        >
+          <div
+            className="relative bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setPreviewFile(null)}
+              className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Image */}
+            <div
+              className="flex items-center justify-center bg-slate-100 dark:bg-slate-800 p-4"
+              style={{ minHeight: 300 }}
+            >
+              {isImage(previewFile.mimeType) ? (
+                // biome-ignore lint/performance/noImgElement: <explanation>Preview modal for user media</explanation>
+                <img
+                  src={previewFile.url}
+                  alt={previewFile.alt || previewFile.key.split('/').pop() || ''}
+                  className="max-h-[60vh] max-w-full object-contain rounded-lg"
+                />
+              ) : (
+                <ImageIcon className="h-24 w-24 text-slate-400" />
+              )}
+            </div>
+
+            {/* Details */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-medium text-slate-900 dark:text-slate-100 truncate">
+                    {previewFile.alt || previewFile.key.split('/').pop() || 'Unknown'}
+                  </h3>
+                  <div className="mt-2 grid grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-slate-500 dark:text-slate-400">
+                    <div>
+                      <span className="text-slate-400 dark:text-slate-500">Tip:</span>{' '}
+                      {previewFile.mimeType}
+                    </div>
+                    <div>
+                      <span className="text-slate-400 dark:text-slate-500">Boyut:</span>{' '}
+                      {formatBytes(previewFile.size)}
+                    </div>
+                    <div>
+                      <span className="text-slate-400 dark:text-slate-500">Yüklenme:</span>{' '}
+                      {formatDateWithTime(previewFile.createdAt, 'tr')}
+                    </div>
+                    <div>
+                      <span className="text-slate-400 dark:text-slate-500">Key:</span>{' '}
+                      <span className="font-mono text-xs">{previewFile.key}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(previewFile.url);
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-1" />
+                    URL Kopyala
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      setPreviewFile(null);
+                      handleDelete(previewFile.key);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    {t('mediaLibrary.delete')}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
