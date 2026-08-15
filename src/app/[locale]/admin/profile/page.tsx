@@ -58,8 +58,6 @@ export default function ProfilePage() {
 
   const handleAvatarChange = (url: string) => {
     setForm(prev => ({ ...prev, avatar_url: url }));
-    // Refresh profile to update header etc.
-    fetchProfile();
   };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
@@ -73,12 +71,8 @@ export default function ProfilePage() {
       if (res.success && res.data) {
         setProfile(res.data);
         setSuccess(t('profilePage.profileUpdated'));
-        // Update cached user
-        const cachedUser = getUser();
-        if (cachedUser) {
-          cachedUser.name = res.data.name;
-          localStorage.setItem('admin_user', JSON.stringify(cachedUser));
-        }
+        // Reload to update header avatar
+        setTimeout(() => window.location.reload(), 500);
       } else {
         setError(res.error || t('profilePage.updateError'));
       }

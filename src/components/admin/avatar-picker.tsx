@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Camera, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
 import { getAvatarUrl } from '@/lib/utils';
 
 const DEFAULT_AVATARS = [
@@ -34,37 +33,19 @@ interface AvatarPickerProps {
 export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: AvatarPickerProps) {
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(currentAvatar);
   const [showPicker, setShowPicker] = useState(false);
-  const [saving, setSaving] = useState(false);
 
-  const handleSelectDefault = async (styleId: string) => {
+  const handleSelectDefault = (styleId: string) => {
     const url = getStyleAvatarUrl(styleId, userName);
     setSelectedAvatar(url);
-    setSaving(true);
-
-    try {
-      const res = await api.put('/api/users/profile/update', { avatar_url: url });
-      if (res.success) {
-        onAvatarChange(url);
-      }
-    } catch (err) {
-      console.error('Avatar save error:', err);
-    }
-    setSaving(false);
-    setShowPicker(false);
+    onAvatarChange(url);
   };
 
-  const handleRemove = async () => {
-    setSaving(true);
-    try {
-      const res = await api.put('/api/users/profile/update', { avatar_url: '' });
-      if (res.success) {
-        setSelectedAvatar(null);
-        onAvatarChange('');
-      }
-    } catch (err) {
-      console.error('Avatar remove error:', err);
-    }
-    setSaving(false);
+  const handleRemove = () => {
+    setSelectedAvatar(null);
+    onAvatarChange('');
+  };
+
+  const handleConfirm = () => {
     setShowPicker(false);
   };
 
@@ -95,7 +76,6 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
           >
             {showPicker ? 'Kapat' : 'Avatar Değiştir'}
           </Button>
-          {saving && <span className="text-xs text-slate-500 ml-2">Kaydediliyor...</span>}
         </div>
       </div>
 
@@ -114,7 +94,6 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
                     key={avatar.id}
                     type="button"
                     onClick={() => handleSelectDefault(avatar.id)}
-                    disabled={saving}
                     className={`relative rounded-full overflow-hidden ring-2 transition-all hover:scale-110 ${
                       isSelected
                         ? 'ring-indigo-500 ring-offset-2'
@@ -134,20 +113,29 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
             </div>
           </div>
 
-          {/* Remove Avatar */}
-          {selectedAvatar && (
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            {selectedAvatar && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleRemove}
+                className="text-red-500 hover:text-red-600"
+              >
+                <X className="h-4 w-4 mr-1" />
+                Varsayılanı Kullan
+              </Button>
+            )}
             <Button
               type="button"
-              variant="ghost"
               size="sm"
-              onClick={handleRemove}
-              disabled={saving}
-              className="text-red-500 hover:text-red-600"
+              onClick={handleConfirm}
+              className="ml-auto"
             >
-              <X className="h-4 w-4 mr-1" />
-              Varsayılanı Kullan
+              Tamam
             </Button>
-          )}
+          </div>
         </div>
       )}
     </div>
