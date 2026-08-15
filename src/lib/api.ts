@@ -85,6 +85,7 @@ export const api = {
   put: <T>(endpoint: string, body: unknown) =>
     fetchApi<T>(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
   delete: <T>(endpoint: string) => fetchApi<T>(endpoint, { method: 'DELETE' }),
+  getBaseUrl: () => BASE_URL,
 };
 
 export default api;

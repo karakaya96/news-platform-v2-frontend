@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Save, Shield, Edit3, PenTool, Eye, Lock, User as UserIcon } from 'lucide-react';
+import { AvatarPicker } from '@/components/admin/avatar-picker';
 
 const ROLE_BADGES: Record<string, { color: string; icon: typeof Shield; tr: string; en: string }> = {
   admin: { color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400', icon: Shield, tr: 'Yönetici', en: 'Admin' },
@@ -151,10 +152,23 @@ export default function ProfilePage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Avatar Picker */}
+          <div className="mb-6">
+            <AvatarPicker
+              currentAvatar={profile?.avatarUrl || null}
+              userName={profile?.name || 'User'}
+              onAvatarChange={(url) => setForm({ ...form, avatar_url: url })}
+            />
+          </div>
+
           {/* Role badge display */}
           <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-xl font-bold">
-              {profile?.name?.charAt(0).toUpperCase()}
+            <div className="h-14 w-14 rounded-full overflow-hidden bg-gradient-to-br from-indigo-500 to-violet-600">
+              <img
+                src={profile?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile?.name || 'User')}`}
+                alt={profile?.name || 'User'}
+                className="h-full w-full object-cover"
+              />
             </div>
             <div>
               <h3 className="font-semibold text-slate-900 dark:text-slate-100">{profile?.name}</h3>

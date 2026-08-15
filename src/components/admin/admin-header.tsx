@@ -231,9 +231,16 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
 
         {/* User Info */}
         <div className="hidden sm:flex items-center gap-3 ml-2 pl-3 border-l border-slate-200 dark:border-slate-700">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm">
-            <User className="h-4 w-4 text-white" />
-          </div>
+          <button
+            onClick={() => router.push('/admin/profile')}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm overflow-hidden hover:ring-2 hover:ring-indigo-300 transition-all"
+          >
+            <img
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.name || 'Admin')}`}
+              alt={user?.name || 'Admin'}
+              className="h-full w-full object-cover"
+            />
+          </button>
           <div className="hidden md:block">
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               {user?.name || 'Admin'}
