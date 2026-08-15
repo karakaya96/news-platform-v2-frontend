@@ -65,7 +65,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         )}
       >
         {/* Logo */}
-        <div className="flex h-18 items-center justify-between px-6 py-4 border-b border-white/10">
+        <div className="flex h-16 items-center justify-between px-6 py-4 border-b border-white/10">
           <Link href="/admin/dashboard" className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25 group-hover:shadow-indigo-500/40 transition-shadow">
               <NewspaperIcon className="h-5 w-5 text-white" />
