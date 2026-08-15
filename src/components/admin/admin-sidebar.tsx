@@ -19,6 +19,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import { usePathname } from '@/i18n/navigation';
+import { getUser } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 interface AdminSidebarProps {
@@ -29,17 +30,22 @@ interface AdminSidebarProps {
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const t = useTranslations('admin');
   const pathname = usePathname();
+  const user = getUser();
+  const role = user?.role || 'viewer';
+  const isAdmin = role === 'admin';
+  const isEditor = role === 'editor' || isAdmin;
+  const isAuthor = role === 'author' || isEditor;
 
   const navigation = [
-    { name: t('dashboard'), href: '/admin/dashboard', icon: LayoutDashboard },
-    { name: t('news'), href: '/admin/news', icon: Newspaper },
-    { name: t('fetchNews', { fallback: 'Haber Çek' }), href: '/admin/news/fetch', icon: Globe },
-    { name: t('categories'), href: '/admin/categories', icon: FolderOpen },
-    { name: t('comments'), href: '/admin/comments', icon: MessageCircle },
-    { name: t('notifications'), href: '/admin/notifications', icon: Bell },
-    { name: t('users', { fallback: 'Kullanıcılar' }), href: '/admin/users', icon: Users },
-    { name: t('settings'), href: '/admin/settings', icon: Settings },
-  ];
+    { name: t('dashboard'), href: '/admin/dashboard', icon: LayoutDashboard, show: true },
+    { name: t('news'), href: '/admin/news', icon: Newspaper, show: isAuthor },
+    { name: t('fetchNews', { fallback: 'Haber Çek' }), href: '/admin/news/fetch', icon: Globe, show: isEditor },
+    { name: t('categories'), href: '/admin/categories', icon: FolderOpen, show: isEditor },
+    { name: t('comments'), href: '/admin/comments', icon: MessageCircle, show: isEditor },
+    { name: t('notifications'), href: '/admin/notifications', icon: Bell, show: isAdmin },
+    { name: t('users', { fallback: 'Kullanıcılar' }), href: '/admin/users', icon: Users, show: isAdmin },
+    { name: t('settings'), href: '/admin/settings', icon: Settings, show: isAdmin },
+  ].filter(item => item.show);
 
   return (
     <>

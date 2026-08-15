@@ -7,7 +7,7 @@ export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: string;
+  role: 'admin' | 'editor' | 'author' | 'viewer';
 }
 
 export function getToken(): string | null {
@@ -54,7 +54,7 @@ export function getUser(): AdminUser | null {
       id: String(payload.sub || payload.id || ''),
       name: String(payload.name || payload.email || 'Admin'),
       email: String(payload.email || ''),
-      role: String(payload.role || 'admin') as 'admin' | 'editor',
+      role: (['admin', 'editor', 'author', 'viewer'].includes(String(payload.role)) ? payload.role : 'viewer') as AdminUser['role'],
     };
     localStorage.setItem(USER_KEY, JSON.stringify(user));
     return user;
