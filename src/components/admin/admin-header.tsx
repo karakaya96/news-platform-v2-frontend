@@ -3,7 +3,7 @@
 import { useTranslations, useLocale } from 'next-intl';
 import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { api, setAuthToken } from '@/lib/api';
 import { getUser, removeToken } from '@/lib/auth';
@@ -14,6 +14,32 @@ interface AdminHeaderProps {
   onMenuToggle: () => void;
 }
 
+const VIEWED_KEY = 'admin_viewed_articles';
+const MAX_VISIBLE = 10;
+
+function getViewedIds(): Set<number> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(VIEWED_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch {
+    return new Set();
+  }
+}
+
+function saveViewedIds(ids: Set<number>) {
+  if (typeof window === 'undefined') return;
+  // Keep only last 200 IDs to prevent localStorage bloat
+  const arr = Array.from(ids).slice(-200);
+  localStorage.setItem(VIEWED_KEY, JSON.stringify(arr));
+}
+
+function formatCount(n: number): string {
+  if (n > 99) return '99+';
+  return String(n);
+}
+
 export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   const t = useTranslations('admin');
   const locale = useLocale();
@@ -22,16 +48,21 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<News[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showAll, setShowAll] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchRecentArticles() {
       try {
-        const res = await api.get<News[]>('/api/news?status=published&limit=5');
+        const res = await api.get<News[]>('/api/news?status=published&limit=50');
         if (res.success && res.data) {
           const articles = Array.isArray(res.data) ? res.data : [];
           setNotifications(articles);
-          setUnreadCount(articles.length);
+
+          // Count unread (not viewed before)
+          const viewed = getViewedIds();
+          const unread = articles.filter(a => !viewed.has(a.id)).length;
+          setUnreadCount(unread);
         }
       } catch {
         // silently fail
@@ -58,10 +89,18 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
+    setShowAll(false);
     if (!showNotifications) {
+      // Mark all as viewed
+      const viewed = getViewedIds();
+      notifications.forEach(a => viewed.add(a.id));
+      saveViewedIds(viewed);
       setUnreadCount(0);
     }
   };
+
+  const visibleNotifications = showAll ? notifications : notifications.slice(0, MAX_VISIBLE);
+  const hasMore = notifications.length > MAX_VISIBLE && !showAll;
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/80 dark:bg-slate-900/80 dark:border-slate-700/80 backdrop-blur-xl px-4 lg:px-8">
@@ -103,23 +142,23 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
-                {unreadCount > 9 ? '9+' : unreadCount}
+              <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900 px-1">
+                {formatCount(unreadCount)}
               </span>
             )}
           </Button>
 
           {/* Notification Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
+            <div className="absolute right-0 top-full mt-2 w-96 rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {t('newsPage.recentNews', { fallback: 'Son Yayınlanan Haberler' })}
+                  {t('recentNews')}
                 </h3>
               </div>
-              <div className="max-h-80 overflow-y-auto">
-                {notifications.length > 0 ? (
-                  notifications.map((article) => (
+              <div className="max-h-96 overflow-y-auto">
+                {visibleNotifications.length > 0 ? (
+                  visibleNotifications.map((article) => (
                     <button
                       key={article.id}
                       onClick={() => {
@@ -167,15 +206,23 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                   </div>
                 )}
               </div>
-              <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+              <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
+                {hasMore && (
+                  <button
+                    onClick={() => setShowAll(true)}
+                    className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                  >
+                    {t('showMore', { fallback: 'Daha Fazla Göster' })} ({notifications.length - MAX_VISIBLE})
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     router.push('/admin/news');
                     setShowNotifications(false);
                   }}
-                  className="w-full text-center text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors"
+                  className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors ml-auto"
                 >
-                  {t('newsPage.seeAll', { fallback: 'Tüm Haberleri Gör →' })}
+                  {t('newsPage.seeAll', { fallback: 'Tümünü Gör →' })}
                 </button>
               </div>
             </div>

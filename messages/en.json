@@ -181,6 +181,8 @@
     "menu": "Menu",
     "logout": "Logout",
     "admin": "Admin",
+    "recentNews": "Recent Articles",
+    "showMore": "Show More",
     "login": {
       "welcome": "Welcome",
       "description": "Sign in to the NewsHaberGlobal admin panel",

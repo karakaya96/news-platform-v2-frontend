@@ -181,6 +181,8 @@
     "menu": "Menü",
     "logout": "Çıkış",
     "admin": "Yönetici",
+    "recentNews": "Son Yayınlanan Haberler",
+    "showMore": "Daha Fazla Göster",
     "login": {
       "welcome": "Hoş Geldiniz",
       "description": "NewsHaberGlobal yönetim paneline giriş yapın",
