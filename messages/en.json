@@ -97,7 +97,13 @@
     "resultsCount": "results found",
     "startSearching": "Start searching for news",
     "startSearchingDetail": "Enter keywords or use filters.",
-    "suggestions": ["election", "economy", "sports", "technology", "world"]
+    "suggestions": [
+      "election",
+      "economy",
+      "sports",
+      "technology",
+      "world"
+    ]
   },
   "subscribe": {
     "title": "Notification Subscription",
@@ -280,7 +286,8 @@
         "cancel": "Cancel",
         "deleting": "Deleting...",
         "delete": "Delete"
-      }
+      },
+      "seeAll": "See All News"
     },
     "newNewsPage": {
       "contentRequired": "Content is required",

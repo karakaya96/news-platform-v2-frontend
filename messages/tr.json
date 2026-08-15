@@ -97,7 +97,13 @@
     "resultsCount": "sonuç bulundu",
     "startSearching": "Haber aramaya başlayın",
     "startSearchingDetail": "Anahtar kelimeler girin veya filtreleri kullanın.",
-    "suggestions": ["seçim", "ekonomi", "spor", "teknoloji", "dünya"]
+    "suggestions": [
+      "seçim",
+      "ekonomi",
+      "spor",
+      "teknoloji",
+      "dünya"
+    ]
   },
   "subscribe": {
     "title": "Bildirim Aboneliği",
@@ -280,7 +286,8 @@
         "cancel": "İptal",
         "deleting": "Siliniyor...",
         "delete": "Sil"
-      }
+      },
+      "seeAll": "Tüm Haberleri Gör"
     },
     "newNewsPage": {
       "contentRequired": "İçerik zorunludur",
