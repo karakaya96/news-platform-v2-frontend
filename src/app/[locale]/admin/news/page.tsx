@@ -44,6 +44,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { DatePicker } from '@/components/ui/date-picker';
 import { api } from '@/lib/api';
+import { getUser } from '@/lib/auth';
 import { translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
@@ -74,6 +75,9 @@ export default function NewsListPage() {
   const t = useTranslations('admin.newsPage');
   const locale = useLocale();
   const searchParams = useSearchParams();
+  const currentUser = getUser();
+  const userRole = currentUser?.role || 'viewer';
+  const userId = currentUser?.id ? Number(currentUser.id) : 0;
 
   const [articles, setArticles] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
@@ -158,6 +162,12 @@ export default function NewsListPage() {
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
+
+  const canDelete = (article: News) => {
+    if (userRole === 'admin' || userRole === 'editor') return true;
+    if (userRole === 'author' && article.authorId === userId) return true;
+    return false;
+  };
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -518,15 +528,17 @@ export default function NewsListPage() {
                               {t('editButton')}
                             </Button>
                           </Link>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 px-3 text-slate-600 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400 dark:hover:bg-red-950 rounded-lg transition-colors"
-                            onClick={() => setDeleteId(article.id)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                            {t('deleteButton')}
-                          </Button>
+                          {canDelete(article) && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 px-3 text-slate-600 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400 dark:hover:bg-red-950 rounded-lg transition-colors"
+                              onClick={() => setDeleteId(article.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                              {t('deleteButton')}
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
