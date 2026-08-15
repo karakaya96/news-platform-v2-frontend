@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { api } from './api';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -83,6 +84,9 @@ export function getAvatarUrl(avatarUrl: string | null | undefined, userName: str
     return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName || 'User')}`;
   }
   if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) return avatarUrl;
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  return `${baseUrl}/api/media/${avatarUrl}`;
+  const apiBaseUrl =
+    typeof window !== 'undefined'
+      ? api.getBaseUrl()
+      : 'https://news-v2-api.karakaya-mk96.workers.dev';
+  return `${apiBaseUrl}/api/media/${avatarUrl}`;
 }
