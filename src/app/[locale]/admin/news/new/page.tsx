@@ -61,7 +61,6 @@ export default function NewArticlePage() {
 
   return (
     <div className="max-w-5xl">
-      <h2 className="text-2xl font-bold mb-6">Yeni Haber Oluştur</h2>
       <NewsForm onSubmit={handleSubmit} isSubmitting={isSubmitting} />
     </div>
   );

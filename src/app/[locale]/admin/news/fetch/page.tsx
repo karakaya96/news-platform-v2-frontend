@@ -124,7 +124,6 @@ export default function FetchNewsPage() {
         >
           <ArrowLeft className="h-4 w-4" />
         </Link>
-        <h2 className="text-2xl font-bold">Haber Çek</h2>
       </div>
 
       {!scrapedData ? (

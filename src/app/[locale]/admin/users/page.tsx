@@ -112,8 +112,7 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t('usersPage.title')}</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('usersPage.subtitle')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('usersPage.subtitle')}</p>
         </div>
         <Button onClick={() => router.push('/admin/users/new')} className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-lg shadow-indigo-500/25">
           <Plus className="h-4 w-4 mr-2" />

@@ -64,7 +64,6 @@ export default function NewUserPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t('usersPage.createUser')}</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">{t('usersPage.createUserSubtitle')}</p>
         </div>
       </div>

@@ -73,7 +73,6 @@ export default function KategorilerPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold dark:text-slate-100">{t('title')}</h2>
           <p className="text-muted-foreground dark:text-slate-400">{categories.length} {t('count')}</p>
         </div>
         <Link href="/admin/categories/new">

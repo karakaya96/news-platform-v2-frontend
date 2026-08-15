@@ -200,10 +200,7 @@ export default function CommentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            {t('title')}
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} {t('count')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{total} {t('count')}</p>
         </div>
       </div>
 

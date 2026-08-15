@@ -239,10 +239,7 @@ export default function NewsListPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-            {t('title')}
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{total} {t('totalNews')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{total} {t('totalNews')}</p>
         </div>
         <Link href="/admin/news/new">
           <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-600 text-white shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 rounded-xl px-5">

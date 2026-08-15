@@ -125,9 +125,6 @@ export default function EditUserPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-            {isSelf ? t('usersPage.editProfile') : t('usersPage.editUser')}
-          </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
         </div>
       </div>
