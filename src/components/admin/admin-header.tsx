@@ -46,6 +46,8 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   const locale = useLocale();
   const router = useRouter();
   const user = getUser();
+  const role = user?.role || 'viewer';
+  const isAdmin = role === 'admin';
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<News[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -66,6 +68,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   }, []);
 
   useEffect(() => {
+    if (!isAdmin) return;
     async function fetchRecentArticles() {
       try {
         const res = await api.get<News[]>('/api/news?status=published&limit=50');
@@ -135,19 +138,22 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Settings */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
-          onClick={() => router.push('/admin/settings')}
-          title={t('settings')}
-        >
-          <Settings className="h-5 w-5" />
-        </Button>
+        {/* Settings - admin only */}
+        {isAdmin && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
+            onClick={() => router.push('/admin/settings')}
+            title={t('settings')}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+        )}
 
-        {/* Notifications */}
-        <div className="relative" ref={dropdownRef}>
+        {/* Notifications - admin only */}
+        {isAdmin && (
+          <div className="relative" ref={dropdownRef}>
           <Button
             variant="ghost"
             size="icon"
@@ -242,6 +248,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
             </div>
           )}
         </div>
+        )}
 
         {/* User Info */}
         <div className="hidden sm:flex items-center gap-3 ml-2 pl-3 border-l border-slate-200 dark:border-slate-700">
