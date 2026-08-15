@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,6 +52,7 @@ interface NotificationLog {
 
 export default function NotificationsPage() {
   const t = useTranslations('admin.notificationsPage');
+  const locale = useLocale();
   const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [notifications, setNotifications] = useState<NotificationLog[]>([]);
@@ -325,7 +326,7 @@ export default function NotificationsPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                        {formatDateWithTime(sub.createdAt)}
+                        {formatDateWithTime(sub.createdAt, locale)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -415,7 +416,7 @@ export default function NotificationsPage() {
                       {notif.type === 'browser' ? t('browserType') : t('emailType')}
                     </Badge>
                     <p className="text-xs text-slate-400 mt-1">
-                      {formatDateWithTime(notif.createdAt)}
+                      {formatDateWithTime(notif.createdAt, locale)}
                     </p>
                   </div>
                   <Button

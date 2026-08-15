@@ -504,7 +504,7 @@ export default function NewsListPage() {
                       </td>
                       <td className="px-4 py-3 hidden lg:table-cell">
                         <span className="text-sm text-slate-500 dark:text-slate-400">
-                          {formatDateWithTime(article.publishedAt || article.updatedAt)}
+                          {formatDateWithTime(article.publishedAt || article.updatedAt, locale)}
                         </span>
                       </td>
                       <td className="px-4 py-3">

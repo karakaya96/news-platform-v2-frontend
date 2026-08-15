@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ interface AdminHeaderProps {
 
 export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   const t = useTranslations('admin');
+  const locale = useLocale();
   const router = useRouter();
   const user = getUser();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -150,7 +151,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                           <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
                             <Clock className="h-2.5 w-2.5" />
                             {article.publishedAt
-                              ? new Date(article.publishedAt).toLocaleDateString('tr-TR', {
+                              ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
                                   timeZone: 'Europe/Istanbul',
                                 })
                               : '-'}

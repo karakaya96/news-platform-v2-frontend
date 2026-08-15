@@ -47,7 +47,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
             <div className="flex items-center text-gray-300 text-xs mt-2">
               {article.authorName && <span className="mr-3">{t('writtenBy')}{article.authorName}</span>}
               <time dateTime={article.publishedAt || undefined}>
-                {formatDateWithTime(article.publishedAt)}
+                {formatDateWithTime(article.publishedAt, locale)}
               </time>
             </div>
           </div>
@@ -94,7 +94,7 @@ export function FeaturedArticle({ article, variant = 'hero' }: FeaturedArticlePr
                 <span className="mr-3 sm:mr-4">{t('writtenBy')}{article.authorName}</span>
               )}
             <time dateTime={article.publishedAt || undefined}>
-              {formatDateWithTime(article.publishedAt)}
+              {formatDateWithTime(article.publishedAt, locale)}
             </time>
           </div>
         </div>

@@ -333,7 +333,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             <time dateTime={article.publishedAt || undefined}>
-              {formatDateWithTime(article.publishedAt || '')}
+              {formatDateWithTime(article.publishedAt || '', locale)}
             </time>
           </div>
           <div className="flex items-center gap-1">

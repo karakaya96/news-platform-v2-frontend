@@ -17,7 +17,7 @@ import {
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -68,6 +68,7 @@ const commentStatusDots: Record<string, string> = {
 
 export default function CommentsPage() {
   const t = useTranslations('admin.commentsPage');
+  const locale = useLocale();
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
@@ -309,7 +310,7 @@ export default function CommentsPage() {
                         </span>
                         <span className="text-xs text-slate-400 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatDateWithTime(comment.createdAt)}
+                          {formatDateWithTime(comment.createdAt, locale)}
                         </span>
                         <Badge
                           variant="outline"

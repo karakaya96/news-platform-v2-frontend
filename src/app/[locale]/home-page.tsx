@@ -125,7 +125,7 @@ export default function HomePageClient({
                             <span className="mr-3">{t('writtenBy')}{article.authorName}</span>
                           )}
                           <time dateTime={article.publishedAt || undefined}>
-                            {formatDateWithTime(article.publishedAt)}
+                            {formatDateWithTime(article.publishedAt, locale)}
                           </time>
                         </div>
                       </div>

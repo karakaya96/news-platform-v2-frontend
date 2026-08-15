@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatDateWithTime } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import type { News } from '@/types';
 
 interface RecentArticlesTableProps {
@@ -20,6 +20,7 @@ const statusColors: Record<string, string> = {
 
 export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
   const t = useTranslations('admin.recentArticlesTable');
+  const locale = useLocale();
 
   if (articles.length === 0) {
     return (
@@ -58,7 +59,7 @@ export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
               </td>
               <td className="py-3 pr-4 hidden md:table-cell">
                 <span className="text-sm text-muted-foreground">
-                  {formatDateWithTime(article.publishedAt || article.updatedAt)}
+                  {formatDateWithTime(article.publishedAt || article.updatedAt, locale)}
                 </span>
               </td>
               <td className="py-3 text-right">

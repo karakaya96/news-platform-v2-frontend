@@ -17,7 +17,7 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { useEffect, useState } from 'react';
@@ -62,6 +62,7 @@ const statusColors: Record<string, string> = {
 };
 
 function AnimatedNumber({ value }: { value: number }) {
+  const locale = useLocale();
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
@@ -85,11 +86,12 @@ function AnimatedNumber({ value }: { value: number }) {
     return () => clearInterval(timer);
   }, [value]);
 
-  return <>{display.toLocaleString('tr-TR')}</>;
+  return <>{display.toLocaleString(locale === 'en' ? 'en-US' : 'tr-TR')}</>;
 }
 
 export default function DashboardPage() {
   const t = useTranslations('admin.dashboardPage');
+  const locale = useLocale();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -332,7 +334,7 @@ export default function DashboardPage() {
                       </Badge>
                       <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {formatDateWithTime(article.publishedAt || article.createdAt)}
+                        {formatDateWithTime(article.publishedAt || article.createdAt, locale)}
                       </span>
                       {article.authorName && (
                         <span className="text-xs text-slate-400 dark:text-slate-500">
@@ -441,7 +443,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
                       <span className="text-sm text-slate-500 dark:text-slate-400">
-                        {formatDateWithTime(article.publishedAt || article.createdAt)}
+                        {formatDateWithTime(article.publishedAt || article.createdAt, locale)}
                       </span>
                     </td>
                   </tr>
