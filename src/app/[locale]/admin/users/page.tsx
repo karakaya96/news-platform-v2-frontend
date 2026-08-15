@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { getUser } from '@/lib/auth';
+import { getAvatarUrl } from '@/lib/utils';
 import type { User, PaginationMeta } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -199,9 +200,9 @@ export default function UsersPage() {
                       <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
-                            <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-indigo-500 to-violet-600">
+                            <div className="h-9 w-9 rounded-full overflow-hidden flex-shrink-0">
                               <img
-                                src={user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.name)}`}
+                                src={getAvatarUrl(user.avatarUrl, user.name)}
                                 alt={user.name}
                                 className="h-full w-full object-cover"
                               />

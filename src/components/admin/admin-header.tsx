@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { api, setAuthToken } from '@/lib/api';
 import { getUser, removeToken } from '@/lib/auth';
+import { getAvatarUrl } from '@/lib/utils';
 import type { News } from '@/types';
 
 interface AdminHeaderProps {
@@ -233,10 +234,10 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
         <div className="hidden sm:flex items-center gap-3 ml-2 pl-3 border-l border-slate-200 dark:border-slate-700">
           <button
             onClick={() => router.push('/admin/profile')}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm overflow-hidden hover:ring-2 hover:ring-indigo-300 transition-all"
+            className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden hover:ring-2 hover:ring-indigo-300 transition-all"
           >
             <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.name || 'Admin')}`}
+              src={getAvatarUrl(null, user?.name || 'Admin')}
               alt={user?.name || 'Admin'}
               className="h-full w-full object-cover"
             />

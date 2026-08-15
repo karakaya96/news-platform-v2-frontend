@@ -4,21 +4,26 @@ import { useState, useRef } from 'react';
 import { Camera, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
+import { getAvatarUrl } from '@/lib/utils';
 
 const DEFAULT_AVATARS = [
-  { id: 'avataaars', label: 'Karakter', url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' },
-  { id: 'big-smile', label: 'Gülümseme', url: 'https://api.dicebear.com/7.x/big-smile/svg?seed=' },
-  { id: 'bottts', label: 'Robot', url: 'https://api.dicebear.com/7.x/bottts/svg?seed=' },
-  { id: 'fun-emoji', label: 'Emoji', url: 'https://api.dicebear.com/7.x/fun-emoji/svg?seed=' },
-  { id: 'lorelei', label: 'Lorelei', url: 'https://api.dicebear.com/7.x/lorelei/svg?seed=' },
-  { id: 'micah', label: 'Micah', url: 'https://api.dicebear.com/7.x/micah/svg?seed=' },
-  { id: 'notionists', label: 'Notion', url: 'https://api.dicebear.com/7.x/notionists/svg?seed=' },
-  { id: 'open-peeps', label: 'People', url: 'https://api.dicebear.com/7.x/open-peeps/svg?seed=' },
-  { id: 'personas', label: 'Persona', url: 'https://api.dicebear.com/7.x/personas/svg?seed=' },
-  { id: 'pixel-art', label: 'Pixel', url: 'https://api.dicebear.com/7.x/pixel-art/svg?seed=' },
-  { id: 'shapes', label: 'Şekil', url: 'https://api.dicebear.com/7.x/shapes/svg?seed=' },
-  {id: 'thumbs', label: 'Thumb', url: 'https://api.dicebear.com/7.x/thumbs/svg?seed=' },
+  { id: 'avataaars', label: 'Karakter' },
+  { id: 'big-smile', label: 'Gülümseme' },
+  { id: 'bottts', label: 'Robot' },
+  { id: 'fun-emoji', label: 'Emoji' },
+  { id: 'lorelei', label: 'Lorelei' },
+  { id: 'micah', label: 'Micah' },
+  { id: 'notionists', label: 'Notion' },
+  { id: 'open-peeps', label: 'People' },
+  { id: 'personas', label: 'Persona' },
+  { id: 'pixel-art', label: 'Pixel' },
+  { id: 'shapes', label: 'Şekil' },
+  { id: 'thumbs', label: 'Thumb' },
 ];
+
+function getStyleAvatarUrl(styleId: string, userName: string): string {
+  return `https://api.dicebear.com/7.x/${styleId}/svg?seed=${encodeURIComponent(userName || 'User')}`;
+}
 
 interface AvatarPickerProps {
   currentAvatar: string | null;
@@ -32,8 +37,8 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
   const [showPicker, setShowPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSelectDefault = (avatar: typeof DEFAULT_AVATARS[0]) => {
-    const url = `${avatar.url}${encodeURIComponent(userName)}`;
+  const handleSelectDefault = (styleId: string) => {
+    const url = getStyleAvatarUrl(styleId, userName);
     setSelectedAvatar(url);
     onAvatarChange(url);
     setShowPicker(false);
@@ -53,10 +58,11 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
       const formData = new FormData();
       formData.append('file', file);
 
+      const token = localStorage.getItem('admin_token');
       const res = await fetch(`${api.getBaseUrl()}/api/upload/avatar`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('admin_token')}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: formData,
       });
@@ -66,11 +72,15 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
         setSelectedAvatar(data.data.url);
         onAvatarChange(data.data.url);
         setShowPicker(false);
+      } else {
+        alert(data.error || 'Yükleme başarısız');
       }
     } catch (err) {
       console.error('Upload error:', err);
+      alert('Yükleme sırasında hata oluştu');
     }
     setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleRemove = () => {
@@ -79,22 +89,18 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
     setShowPicker(false);
   };
 
-  const getAvatarUrl = () => {
-    if (selectedAvatar) return selectedAvatar;
-    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName)}`;
-  };
-
   return (
     <div className="space-y-4">
       {/* Current Avatar */}
       <div className="flex items-center gap-4">
         <div className="relative group">
           <img
-            src={getAvatarUrl()}
+            src={getAvatarUrl(selectedAvatar, userName)}
             alt={userName}
             className="h-20 w-20 rounded-full object-cover ring-4 ring-slate-100 dark:ring-slate-800"
           />
           <button
+            type="button"
             onClick={() => setShowPicker(!showPicker)}
             className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
           >
@@ -142,13 +148,13 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Varsayılan Avatarlar</p>
             <div className="grid grid-cols-6 gap-2">
               {DEFAULT_AVATARS.map((avatar) => {
-                const url = `${avatar.url}${encodeURIComponent(userName)}`;
+                const url = getStyleAvatarUrl(avatar.id, userName);
                 const isSelected = selectedAvatar === url;
                 return (
                   <button
                     key={avatar.id}
                     type="button"
-                    onClick={() => handleSelectDefault(avatar)}
+                    onClick={() => handleSelectDefault(avatar.id)}
                     className={`relative rounded-full overflow-hidden ring-2 transition-all hover:scale-110 ${
                       isSelected
                         ? 'ring-indigo-500 ring-offset-2'

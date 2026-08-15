@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { getUser, setToken, removeToken } from '@/lib/auth';
+import { getAvatarUrl } from '@/lib/utils';
 import { setAuthToken } from '@/lib/api';
 import type { User } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -163,9 +164,9 @@ export default function ProfilePage() {
 
           {/* Role badge display */}
           <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
-            <div className="h-14 w-14 rounded-full overflow-hidden bg-gradient-to-br from-indigo-500 to-violet-600">
+            <div className="h-14 w-14 rounded-full overflow-hidden">
               <img
-                src={profile?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile?.name || 'User')}`}
+                src={getAvatarUrl(profile?.avatarUrl, profile?.name || 'User')}
                 alt={profile?.name || 'User'}
                 className="h-full w-full object-cover"
               />

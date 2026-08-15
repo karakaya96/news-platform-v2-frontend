@@ -77,3 +77,8 @@ export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trim()}...`;
 }
+
+export function getAvatarUrl(avatarUrl: string | null | undefined, userName: string): string {
+  if (avatarUrl) return avatarUrl;
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName || 'User')}`;
+}
