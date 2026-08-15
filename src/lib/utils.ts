@@ -79,6 +79,10 @@ export function truncateText(text: string, maxLength: number): string {
 }
 
 export function getAvatarUrl(avatarUrl: string | null | undefined, userName: string): string {
-  if (avatarUrl) return avatarUrl;
-  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName || 'User')}`;
+  if (!avatarUrl) {
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(userName || 'User')}`;
+  }
+  if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) return avatarUrl;
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+  return `${baseUrl}/api/media/${avatarUrl}`;
 }
