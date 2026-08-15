@@ -97,13 +97,7 @@
     "resultsCount": "results found",
     "startSearching": "Start searching for news",
     "startSearchingDetail": "Enter keywords or use filters.",
-    "suggestions": [
-      "election",
-      "economy",
-      "sports",
-      "technology",
-      "world"
-    ]
+    "suggestions": ["election", "economy", "sports", "technology", "world"]
   },
   "subscribe": {
     "title": "Notification Subscription",
@@ -711,9 +705,41 @@
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 6 characters",
       "dangerZone": "Danger Zone",
-      "logoutHint": "Are you sure you want to log out?"
+      "logoutHint": "Are you sure you want to log out?",
+      "tabs": {
+        "personal": "Personal Info",
+        "media": "Media Library",
+        "password": "Change Password",
+        "danger": "Danger Zone"
+      }
     },
     "users": "Users",
-    "profile": "My Profile"
-  }
+    "profile": "My Profile",
+    "mediaLibrary": {
+      "title": "Media Library",
+      "totalFiles": "Total files: {total}",
+      "loadError": "Failed to load files",
+      "fileTooLarge": "File size must be less than 10MB",
+      "uploadError": "Upload failed",
+      "uploadSuccess": "File uploaded",
+      "deleteError": "Delete failed",
+      "deleteSuccess": "File deleted",
+      "bulkDeleteSuccess": "{count} files deleted",
+      "selectedFiles": "{count} files selected",
+      "cancel": "Cancel",
+      "deleteSelected": "Delete Selected",
+      "confirmDelete": "Confirm Delete",
+      "confirmDeleteDesc": "Are you sure you want to permanently delete {count} files? This action cannot be undone.",
+      "delete": "Delete",
+      "deselect": "Deselect",
+      "select": "Select",
+      "emptyTitle": "No files yet",
+      "emptyDesc": "Upload your first file using the button above.",
+      "uploadFirst": "Upload First File",
+      "previous": "Previous",
+      "next": "Next",
+      "pageInfo": "Page {current} / {total}"
+    }
+  },
+  "profile": "My Profile"
 }

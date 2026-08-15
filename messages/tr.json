@@ -97,13 +97,7 @@
     "resultsCount": "sonuç bulundu",
     "startSearching": "Haber aramaya başlayın",
     "startSearchingDetail": "Anahtar kelimeler girin veya filtreleri kullanın.",
-    "suggestions": [
-      "seçim",
-      "ekonomi",
-      "spor",
-      "teknoloji",
-      "dünya"
-    ]
+    "suggestions": ["seçim", "ekonomi", "spor", "teknoloji", "dünya"]
   },
   "subscribe": {
     "title": "Bildirim Aboneliği",
@@ -711,9 +705,41 @@
       "passwordMismatch": "Şifreler eşleşmiyor",
       "passwordTooShort": "Şifre en az 6 karakter olmalıdır",
       "dangerZone": "Tehlikeli Bölge",
-      "logoutHint": "Oturumu kapatmak istediğinizden emin misiniz?"
+      "logoutHint": "Oturumu kapatmak istediğinizden emin misiniz?",
+      "tabs": {
+        "personal": "Kişisel Bilgiler",
+        "media": "Medya Kütüphanesi",
+        "password": "Şifre Değiştir",
+        "danger": "Tehlikeli Bölge"
+      }
     },
     "users": "Kullanıcılar",
-    "profile": "Profilim"
-  }
+    "profile": "Profilim",
+    "mediaLibrary": {
+      "title": "Medya Kütüphanesi",
+      "totalFiles": "Toplam dosya: {total}",
+      "loadError": "Dosyalar yüklenemedi",
+      "fileTooLarge": "Dosya boyutu 10MB'dan küçük olmalı",
+      "uploadError": "Yükleme başarısız",
+      "uploadSuccess": "Dosya yüklendi",
+      "deleteError": "Silme başarısız",
+      "deleteSuccess": "Dosya silindi",
+      "bulkDeleteSuccess": "{count} dosya silindi",
+      "selectedFiles": "{count} dosya seçili",
+      "cancel": "İptal",
+      "deleteSelected": "Seçilileri Sil",
+      "confirmDelete": "Silmeyi Onayla",
+      "confirmDeleteDesc": "{count} dosyayı kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "delete": "Sil",
+      "deselect": "Seçimi Kaldır",
+      "select": "Seç",
+      "emptyTitle": "Henüz dosya yok",
+      "emptyDesc": "İlk dosyanızı yüklemek için yukarıdaki butonu kullanın.",
+      "uploadFirst": "İlk Dosyayı Yükle",
+      "previous": "Önceki",
+      "next": "Sonraki",
+      "pageInfo": "Sayfa {current} / {total}"
+    }
+  },
+  "profile": "Profilim"
 }
