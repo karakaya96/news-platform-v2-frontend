@@ -174,11 +174,11 @@ export default function ProfilePage() {
       </div>
 
       <Tabs defaultValue="personal" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="personal">{t('profilePage.tabs.personal')}</TabsTrigger>
-          <TabsTrigger value="media">{t('profilePage.tabs.media')}</TabsTrigger>
-          <TabsTrigger value="password">{t('profilePage.tabs.password')}</TabsTrigger>
-          <TabsTrigger value="danger">{t('profilePage.tabs.danger')}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+          <TabsTrigger value="personal" className="text-xs sm:text-sm py-2">{t('profilePage.tabs.personal')}</TabsTrigger>
+          <TabsTrigger value="media" className="text-xs sm:text-sm py-2">{t('profilePage.tabs.media')}</TabsTrigger>
+          <TabsTrigger value="password" className="text-xs sm:text-sm py-2">{t('profilePage.tabs.password')}</TabsTrigger>
+          <TabsTrigger value="danger" className="text-xs sm:text-sm py-2">{t('profilePage.tabs.danger')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">

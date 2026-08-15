@@ -227,9 +227,9 @@ export default function NotificationsPage() {
       {/* Subscriptions List */}
       <Card className="border-0 shadow-sm rounded-2xl">
         <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <CardTitle className="text-lg">{t('subscriptions')}</CardTitle>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {['all', 'browser', 'email'].map((type) => (
                 <Button
                   key={type}
@@ -241,7 +241,7 @@ export default function NotificationsPage() {
                   {type === 'all' ? t('all') : type === 'browser' ? t('browser') : t('email')}
                 </Button>
               ))}
-              <div className="w-px bg-slate-200 dark:bg-slate-700 mx-1" />
+              <div className="w-px bg-slate-200 dark:bg-slate-700 mx-0.5 hidden sm:block" />
               {['all', 'active', 'inactive'].map((status) => (
                 <Button
                   key={status}
@@ -263,110 +263,183 @@ export default function NotificationsPage() {
               <p className="text-slate-500 dark:text-slate-400">{t('noSubscriptions')}</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      {t('tableType')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      {t('tableEmail')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      {t('tableCategories')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      {t('tableStatus')}
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      {t('tableDate')}
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      {t('tableAction')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredSubs.map((sub) => (
-                    <tr
-                      key={sub.id}
-                      className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
-                    >
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className="rounded-full text-xs">
-                          {sub.type === 'browser' ? t('browserBadge') : t('emailBadge')}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
-                        {sub.email || '—'}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {sub.categories.length === 0 ? (
-                            <span className="text-xs text-slate-400">Tümü</span>
-                          ) : (
-                            sub.categories.map((cat) => (
-                              <span
-                                key={cat}
-                                className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-600 dark:text-slate-300"
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/50 dark:border-slate-800 dark:bg-slate-800/50">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        {t('tableType')}
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        {t('tableEmail')}
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        {t('tableCategories')}
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        {t('tableStatus')}
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        {t('tableDate')}
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        {t('tableAction')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSubs.map((sub) => (
+                      <tr
+                        key={sub.id}
+                        className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30"
+                      >
+                        <td className="px-4 py-3">
+                          <Badge variant="outline" className="rounded-full text-xs">
+                            {sub.type === 'browser' ? t('browserBadge') : t('emailBadge')}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300">
+                          {sub.email || '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-1">
+                            {sub.categories.length === 0 ? (
+                              <span className="text-xs text-slate-400">Tümü</span>
+                            ) : (
+                              sub.categories.map((cat) => (
+                                <span
+                                  key={cat}
+                                  className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-600 dark:text-slate-300"
+                                >
+                                  {translateCategoryName(cat, cat)}
+                                </span>
+                              ))
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge
+                            variant={sub.is_active ? 'default' : 'secondary'}
+                            className="rounded-full text-xs"
+                          >
+                            {sub.is_active ? t('active') : t('inactive')}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                          {formatDateWithTime(sub.createdAt, locale)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            {sub.is_active ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 rounded-lg"
+                                onClick={() => handleToggleActive(sub.id, sub.is_active)}
                               >
-                                {translateCategoryName(cat, cat)}
-                              </span>
-                            ))
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge
-                          variant={sub.is_active ? 'default' : 'secondary'}
-                          className="rounded-full text-xs"
-                        >
-                          {sub.is_active ? t('activeBadge') : t('inactiveBadge')}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
+                                <BellOff className="h-3 w-3 mr-1" />
+                                {t('deactivateButton')}
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg"
+                                onClick={() => handleToggleActive(sub.id, sub.is_active)}
+                              >
+                                <Bell className="h-3 w-3 mr-1" />
+                                {t('activateButton')}
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 px-2 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg"
+                              onClick={() => handleDeleteSubscription(sub.id)}
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              {t('deleteButton')}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                {filteredSubs.map((sub) => (
+                  <div key={sub.id} className="px-4 py-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline" className="rounded-full text-xs">
+                        {sub.type === 'browser' ? t('browserBadge') : t('emailBadge')}
+                      </Badge>
+                      <Badge
+                        variant={sub.is_active ? 'default' : 'secondary'}
+                        className="rounded-full text-xs"
+                      >
+                        {sub.is_active ? t('active') : t('inactive')}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-slate-700 dark:text-slate-300 truncate">
+                      {sub.email || '—'}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {sub.categories.length === 0 ? (
+                        <span className="text-xs text-slate-400">Tümü</span>
+                      ) : (
+                        sub.categories.map((cat) => (
+                          <span
+                            key={cat}
+                            className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs text-slate-600 dark:text-slate-300"
+                          >
+                            {translateCategoryName(cat, cat)}
+                          </span>
+                        ))
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs text-slate-400">
                         {formatDateWithTime(sub.createdAt, locale)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          {sub.is_active ? (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 rounded-lg"
-                              onClick={() => handleToggleActive(sub.id, sub.is_active)}
-                            >
-                              <BellOff className="h-3 w-3 mr-1" />
-                              {t('deactivateButton')}
-                            </Button>
-                          ) : (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg"
-                              onClick={() => handleToggleActive(sub.id, sub.is_active)}
-                            >
-                              <Bell className="h-3 w-3 mr-1" />
-                              {t('activateButton')}
-                            </Button>
-                          )}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {sub.is_active ? (
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-7 px-2 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg"
-                            onClick={() => handleDeleteSubscription(sub.id)}
+                            className="h-7 px-2 text-xs text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 rounded-lg"
+                            onClick={() => handleToggleActive(sub.id, sub.is_active)}
                           >
-                            <Trash2 className="h-3 w-3 mr-1" />
-                            {t('deleteButton')}
+                            <BellOff className="h-3 w-3" />
                           </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded-lg"
+                            onClick={() => handleToggleActive(sub.id, sub.is_active)}
+                          >
+                            <Bell className="h-3 w-3" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg"
+                          onClick={() => handleDeleteSubscription(sub.id)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -385,9 +458,9 @@ export default function NotificationsPage() {
           ) : (
             <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {notifications.map((notif) => (
-                <div key={notif.id} className="px-4 py-3 flex items-center gap-3">
+                <div key={notif.id} className="px-4 py-3 flex items-start gap-3">
                   <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg ${
+                    className={`flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0 ${
                       notif.status === 'sent'
                         ? 'bg-emerald-100 dark:bg-emerald-900'
                         : notif.status === 'failed'
@@ -410,14 +483,14 @@ export default function NotificationsPage() {
                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       {notif.body}
                     </p>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <Badge variant="outline" className="rounded-full text-xs">
-                      {notif.type === 'browser' ? t('browserType') : t('emailType')}
-                    </Badge>
-                    <p className="text-xs text-slate-400 mt-1">
-                      {formatDateWithTime(notif.createdAt, locale)}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge variant="outline" className="rounded-full text-[10px]">
+                        {notif.type === 'browser' ? t('browserType') : t('emailType')}
+                      </Badge>
+                      <span className="text-[10px] text-slate-400">
+                        {formatDateWithTime(notif.createdAt, locale)}
+                      </span>
+                    </div>
                   </div>
                   <Button
                     variant="ghost"
