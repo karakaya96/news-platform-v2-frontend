@@ -88,7 +88,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 space-y-1.5 px-4 py-6">
+        <nav className="flex-1 overflow-y-auto space-y-1.5 px-4 py-6">
           <p className="px-3 mb-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {t('menu', { fallback: 'Menu' })}
           </p>
@@ -124,9 +124,10 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </nav>
 
         {/* View Site Link */}
-        <div className="px-4 pb-2 space-y-1">
+        <div className="px-4 pb-2 space-y-1 flex-shrink-0">
           <Link
             href="/admin/profile"
+            onClick={onClose}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white transition-all duration-200 group"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
@@ -137,6 +138,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           <Link
             href="/"
             target="_blank"
+            onClick={onClose}
             className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white transition-all duration-200 group"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
@@ -147,7 +149,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-white/10 p-4">
+        <div className="border-t border-white/10 p-4 flex-shrink-0">
           <div className="rounded-xl bg-gradient-to-r from-indigo-500/10 to-violet-500/10 border border-white/5 p-3">
             <p className="text-xs text-slate-400 dark:text-slate-300">NewsHaberGlobal v1.0</p>
             <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
