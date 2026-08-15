@@ -13,9 +13,9 @@ import { CategoryBadge } from '@/components/news/category-badge';
 import { CommentsSection } from '@/components/news/comments-section';
 import { RelatedArticles } from '@/components/news/related-articles';
 import { ShareButtons } from '@/components/news/share-buttons';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl } from '@/lib/settings';
+import { getLogoUrl, getPublicSettings, getSiteName, getSiteUrl } from '@/lib/settings';
 import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem, News } from '@/types';
 
@@ -23,8 +23,8 @@ interface ArticlePageProps {
   params: Promise<{ slug: string; locale: string }>;
 }
 
-interface ArticlePageProps {
-  params: Promise<{ slug: string; locale: string }>;
+interface NewsWithAuthor extends News {
+  authorAvatarUrl?: string | null;
 }
 
 const SANITIZE_OPTIONS = {
@@ -117,7 +117,7 @@ function sanitizeContent(content: string): string {
   return sanitizeHtml(content, SANITIZE_OPTIONS);
 }
 
-async function getArticle(slug: string): Promise<News | null> {
+async function getArticle(slug: string): Promise<NewsWithAuthor | null> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
   try {
     const res = await fetch(`${apiUrl}/api/news/${slug}`, { cache: 'no-store' });
@@ -138,7 +138,7 @@ async function getArticle(slug: string): Promise<News | null> {
   }
 }
 
-async function getRelatedArticles(categorySlug: string): Promise<News[]> {
+async function getRelatedArticles(categorySlug: string): Promise<NewsWithAuthor[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
   try {
     const res = await fetch(`${apiUrl}/api/news?category=${categorySlug}&limit=4`, {
@@ -325,6 +325,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {article.authorName && (
             <div className="flex items-center gap-2">
               <Avatar className="h-8 w-8">
+                <AvatarImage src={article.authorAvatarUrl || undefined} alt={article.authorName} />
                 <AvatarFallback>{article.authorName[0]}</AvatarFallback>
               </Avatar>
               <span>{article.authorName}</span>
@@ -338,7 +339,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
           <div className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
-            <span>{article.viewCount.toLocaleString()} {t('views')}</span>
+            <span>
+              {article.viewCount.toLocaleString()} {t('views')}
+            </span>
           </div>
         </div>
       </header>
@@ -387,6 +390,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         <div className="max-w-4xl mx-auto mb-12 p-6 bg-muted rounded-lg">
           <div className="flex items-start gap-4">
             <Avatar className="h-16 w-16">
+              <AvatarImage src={article.authorAvatarUrl || undefined} alt={article.authorName} />
               <AvatarFallback>{article.authorName[0]}</AvatarFallback>
             </Avatar>
             <div>
