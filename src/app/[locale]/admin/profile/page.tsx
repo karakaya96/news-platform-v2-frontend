@@ -42,18 +42,25 @@ export default function ProfilePage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await api.get<User>('/api/auth/profile');
-        if (res.success && res.data) {
-          setProfile(res.data);
-          setForm({ name: res.data.name, avatar_url: res.data.avatarUrl || '' });
-        }
-      } catch {}
-      setLoading(false);
-    }
     fetchProfile();
   }, []);
+
+  async function fetchProfile() {
+    try {
+      const res = await api.get<User>('/api/auth/profile');
+      if (res.success && res.data) {
+        setProfile(res.data);
+        setForm({ name: res.data.name, avatar_url: res.data.avatarUrl || '' });
+      }
+    } catch {}
+    setLoading(false);
+  }
+
+  const handleAvatarChange = (url: string) => {
+    setForm(prev => ({ ...prev, avatar_url: url }));
+    // Refresh profile to update header etc.
+    fetchProfile();
+  };
 
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,7 +165,7 @@ export default function ProfilePage() {
             <AvatarPicker
               currentAvatar={profile?.avatarUrl || null}
               userName={profile?.name || 'User'}
-              onAvatarChange={(url) => setForm({ ...form, avatar_url: url })}
+              onAvatarChange={handleAvatarChange}
             />
           </div>
 

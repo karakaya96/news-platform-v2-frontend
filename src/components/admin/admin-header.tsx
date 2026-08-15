@@ -1,14 +1,14 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User, Zap } from 'lucide-react';
+import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User as UserIcon, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { api, setAuthToken } from '@/lib/api';
 import { getUser, removeToken } from '@/lib/auth';
 import { getAvatarUrl } from '@/lib/utils';
-import type { News } from '@/types';
+import type { News, User } from '@/types';
 
 interface AdminHeaderProps {
   title: string;
@@ -50,7 +50,20 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   const [notifications, setNotifications] = useState<News[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [profile, setProfile] = useState<User | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      try {
+        const res = await api.get<User>('/api/auth/profile');
+        if (res.success && res.data) {
+          setProfile(res.data);
+        }
+      } catch {}
+    }
+    fetchProfile();
+  }, []);
 
   useEffect(() => {
     async function fetchRecentArticles() {
@@ -237,8 +250,8 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
             className="flex h-9 w-9 items-center justify-center rounded-full overflow-hidden hover:ring-2 hover:ring-indigo-300 transition-all"
           >
             <img
-              src={getAvatarUrl(null, user?.name || 'Admin')}
-              alt={user?.name || 'Admin'}
+              src={getAvatarUrl(profile?.avatarUrl, profile?.name || user?.name || 'Admin')}
+              alt={profile?.name || user?.name || 'Admin'}
               className="h-full w-full object-cover"
             />
           </button>

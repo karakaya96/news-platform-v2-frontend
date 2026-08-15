@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Camera, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { api } from '@/lib/api';
@@ -33,59 +33,38 @@ interface AvatarPickerProps {
 
 export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: AvatarPickerProps) {
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(currentAvatar);
-  const [uploading, setUploading] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [saving, setSaving] = useState(false);
 
-  const handleSelectDefault = (styleId: string) => {
+  const handleSelectDefault = async (styleId: string) => {
     const url = getStyleAvatarUrl(styleId, userName);
     setSelectedAvatar(url);
-    onAvatarChange(url);
+    setSaving(true);
+
+    try {
+      const res = await api.put('/api/users/profile/update', { avatar_url: url });
+      if (res.success) {
+        onAvatarChange(url);
+      }
+    } catch (err) {
+      console.error('Avatar save error:', err);
+    }
+    setSaving(false);
     setShowPicker(false);
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert('Dosya boyutu 2MB\'dan küçük olmalı');
-      return;
-    }
-
-    setUploading(true);
+  const handleRemove = async () => {
+    setSaving(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch(`${api.getBaseUrl()}/api/upload/avatar`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (data.success && data.data?.url) {
-        setSelectedAvatar(data.data.url);
-        onAvatarChange(data.data.url);
-        setShowPicker(false);
-      } else {
-        alert(data.error || 'Yükleme başarısız');
+      const res = await api.put('/api/users/profile/update', { avatar_url: '' });
+      if (res.success) {
+        setSelectedAvatar(null);
+        onAvatarChange('');
       }
     } catch (err) {
-      console.error('Upload error:', err);
-      alert('Yükleme sırasında hata oluştu');
+      console.error('Avatar remove error:', err);
     }
-    setUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
-  const handleRemove = () => {
-    setSelectedAvatar(null);
-    onAvatarChange('');
+    setSaving(false);
     setShowPicker(false);
   };
 
@@ -116,36 +95,16 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
           >
             {showPicker ? 'Kapat' : 'Avatar Değiştir'}
           </Button>
+          {saving && <span className="text-xs text-slate-500 ml-2">Kaydediliyor...</span>}
         </div>
       </div>
 
       {/* Avatar Picker Panel */}
       {showPicker && (
         <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-4 bg-slate-50 dark:bg-slate-800/50">
-          {/* Upload Button */}
-          <div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Fotoğraf Yükle</p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleUpload}
-              className="hidden"
-            />
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              {uploading ? 'Yükleniyor...' : 'Dosya Seç (max 2MB)'}
-            </Button>
-          </div>
-
           {/* Default Avatars */}
           <div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Varsayılan Avatarlar</p>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Avatar Seç</p>
             <div className="grid grid-cols-6 gap-2">
               {DEFAULT_AVATARS.map((avatar) => {
                 const url = getStyleAvatarUrl(avatar.id, userName);
@@ -155,6 +114,7 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
                     key={avatar.id}
                     type="button"
                     onClick={() => handleSelectDefault(avatar.id)}
+                    disabled={saving}
                     className={`relative rounded-full overflow-hidden ring-2 transition-all hover:scale-110 ${
                       isSelected
                         ? 'ring-indigo-500 ring-offset-2'
@@ -181,6 +141,7 @@ export function AvatarPicker({ currentAvatar, userName, onAvatarChange }: Avatar
               variant="ghost"
               size="sm"
               onClick={handleRemove}
+              disabled={saving}
               className="text-red-500 hover:text-red-600"
             >
               <X className="h-4 w-4 mr-1" />
