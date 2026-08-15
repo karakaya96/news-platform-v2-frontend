@@ -19,12 +19,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (path.endsWith('/admin/dashboard')) return t('dashboard');
     if (path.endsWith('/admin/news') || path.endsWith('/admin/news/')) return t('news');
     if (path.endsWith('/admin/news/new')) return t('newNews');
+    if (path.includes('/admin/news/fetch')) return t('fetchNews', { fallback: 'Haber Çek' });
+    if (path.includes('/admin/news/') && path.includes('/edit')) return t('editNews');
     if (path.endsWith('/admin/categories') || path.endsWith('/admin/categories/')) return t('categories');
     if (path.endsWith('/admin/categories/new')) return t('newCategory');
+    if (path.includes('/admin/categories/') && path.includes('/edit')) return t('editCategory');
     if (path.endsWith('/admin/comments')) return t('comments');
     if (path.endsWith('/admin/notifications')) return t('notifications');
     if (path.endsWith('/admin/settings')) return t('settings');
-    if (path.includes('/edit')) return t('editNews');
+    if (path.endsWith('/admin/users') || path.endsWith('/admin/users/')) return t('usersPage.title', { fallback: 'Kullanıcılar' });
+    if (path.endsWith('/admin/users/new')) return t('usersPage.createUser', { fallback: 'Yeni Kullanıcı' });
+    if (path.includes('/admin/users/') && path.includes('/edit')) return t('usersPage.editUser', { fallback: 'Kullanıcı Düzenle' });
+    if (path.endsWith('/admin/profile')) return t('profilePage.title', { fallback: 'Profilim' });
     return t('management');
   };
 

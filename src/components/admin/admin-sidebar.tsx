@@ -12,6 +12,8 @@ import {
   NewspaperIcon,
   Settings,
   Sparkles,
+  Users,
+  UserCircle,
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -35,6 +37,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     { name: t('categories'), href: '/admin/categories', icon: FolderOpen },
     { name: t('comments'), href: '/admin/comments', icon: MessageCircle },
     { name: t('notifications'), href: '/admin/notifications', icon: Bell },
+    { name: t('users', { fallback: 'Kullanıcılar' }), href: '/admin/users', icon: Users },
     { name: t('settings'), href: '/admin/settings', icon: Settings },
   ];
 
@@ -115,7 +118,16 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </nav>
 
         {/* View Site Link */}
-        <div className="px-4 pb-2">
+        <div className="px-4 pb-2 space-y-1">
+          <Link
+            href="/admin/profile"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/10 hover:text-white transition-all duration-200 group"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 group-hover:bg-white/10 transition-colors">
+              <UserCircle className="h-4 w-4" />
+            </div>
+            {t('profile', { fallback: 'Profilim' })}
+          </Link>
           <Link
             href="/"
             target="_blank"

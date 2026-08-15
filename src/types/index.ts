@@ -4,10 +4,40 @@ export interface User {
   id: number;
   email: string;
   name: string;
-  role: 'admin' | 'editor';
+  role: 'admin' | 'editor' | 'author' | 'viewer';
   avatarUrl: string | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export type UserRole = 'admin' | 'editor' | 'author' | 'viewer';
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  name: string;
+  role?: UserRole;
+  avatar_url?: string | null;
+}
+
+export interface UpdateUserRequest {
+  email?: string;
+  name?: string;
+  role?: UserRole;
+  avatar_url?: string | null;
+  password?: string;
+}
+
+export interface UpdateProfileRequest {
+  name?: string;
+  avatar_url?: string | null;
+  current_password?: string;
+  new_password?: string;
+}
+
+export interface UserStats {
+  total: number;
+  byRole: Record<string, number>;
 }
 
 export interface Category {
