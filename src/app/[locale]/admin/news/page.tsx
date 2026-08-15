@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DatePicker } from '@/components/ui/date-picker';
 import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
@@ -347,27 +348,23 @@ export default function NewsListPage() {
               </SelectContent>
             </Select>
 
-            <Input
-              type="date"
-              lang={locale}
+            <DatePicker
               value={dateFrom}
-              onChange={(e) => {
-                setDateFrom(e.target.value);
+              onChange={(val) => {
+                setDateFrom(val);
                 setPage(1);
               }}
-              className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
               placeholder={t('fromDate')}
+              className="w-[170px]"
             />
-            <Input
-              type="date"
-              lang={locale}
+            <DatePicker
               value={dateTo}
-              onChange={(e) => {
-                setDateTo(e.target.value);
+              onChange={(val) => {
+                setDateTo(val);
                 setPage(1);
               }}
-              className="w-[150px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
               placeholder={t('toDate')}
+              className="w-[170px]"
             />
 
             {activeFilterCount > 0 && (

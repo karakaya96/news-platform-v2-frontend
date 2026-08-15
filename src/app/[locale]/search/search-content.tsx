@@ -18,6 +18,7 @@ import { NewsCard } from '@/components/news/news-card';
 import { NewsGridSkeleton } from '@/components/shared/loading-skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { translateCategoryName } from '@/lib/constants';
 import type { Category, News } from '@/types';
@@ -308,24 +309,20 @@ function SearchContent() {
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> {t('fromDate')}
               </label>
-              <Input
-                type="date"
-                lang={locale}
-                className="h-9"
+              <DatePicker
                 value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
+                onChange={setDateFrom}
+                className="h-9"
               />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> {t('toDate')}
               </label>
-              <Input
-                type="date"
-                lang={locale}
-                className="h-9"
+              <DatePicker
                 value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
+                onChange={setDateTo}
+                className="h-9"
               />
             </div>
             <div className="space-y-2">
