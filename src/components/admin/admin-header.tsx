@@ -170,7 +170,13 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
 
           {/* Notification Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
+            <>
+              {/* Mobile backdrop */}
+              <div
+                className="fixed inset-0 z-40 bg-black/50 sm:hidden"
+                onClick={() => setShowNotifications(false)}
+              />
+              <div className="fixed inset-x-0 bottom-0 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-full rounded-t-2xl sm:rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden sm:max-w-[calc(100vw-2rem)]">
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {t('recentNews')}
@@ -246,6 +252,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                 </button>
               </div>
             </div>
+            </>
           )}
         </div>
         )}
