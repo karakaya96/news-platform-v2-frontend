@@ -178,7 +178,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                 className="fixed inset-0 z-40 bg-black/50 sm:hidden"
                 onClick={() => setShowNotifications(false)}
               />
-              <div className="fixed inset-x-0 bottom-0 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-full rounded-t-3xl sm:rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden sm:max-w-[calc(100vw-2rem)] max-h-[70vh] sm:max-h-[80vh] flex flex-col">
+              <div className="fixed top-16 inset-x-0 bottom-0 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-full rounded-t-3xl sm:rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden sm:max-w-[calc(100vw-2rem)] max-h-[calc(100vh-4rem)] sm:max-h-[80vh] flex flex-col">
               {/* Mobile drag handle */}
               <div className="flex justify-center pt-2 pb-1 sm:hidden">
                 <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
