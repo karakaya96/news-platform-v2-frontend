@@ -2,11 +2,33 @@
 
 import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
-import { getAuthToken, setAuthToken } from '@/lib/api';
+import { NotificationDropdown } from '@/components/admin/notification-dropdown';
+import { api, getAuthToken, setAuthToken } from '@/lib/api';
 import { isAuthenticated } from '@/lib/auth';
+import type { News } from '@/types';
+
+const VIEWED_KEY = 'admin_viewed_articles';
+const MAX_VISIBLE = 10;
+
+function getViewedIds(): Set<number> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = localStorage.getItem(VIEWED_KEY);
+    if (!raw) return new Set();
+    return new Set(JSON.parse(raw));
+  } catch {
+    return new Set();
+  }
+}
+
+function saveViewedIds(ids: Set<number>) {
+  if (typeof window === 'undefined') return;
+  const arr = Array.from(ids).slice(-200);
+  localStorage.setItem(VIEWED_KEY, JSON.stringify(arr));
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations('admin');
@@ -14,6 +36,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [checking, setChecking] = useState(true);
+
+  // Notification state
+  const [notifications, setNotifications] = useState<News[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [buttonPosition, setButtonPosition] = useState<{ top: number; right: number } | null>(null);
 
   const getPageTitle = (path: string): string => {
     if (path.endsWith('/admin/dashboard')) return t('dashboard');
@@ -37,23 +66,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const isLoginPage = pathname.endsWith('/admin/login');
 
   useEffect(() => {
-    // Don't check auth on login page
     if (isLoginPage) {
       setChecking(false);
       return;
     }
 
-    // Check auth but don't block rendering - let children handle their own loading
     const authenticated = isAuthenticated();
     if (!authenticated) {
-      // Small delay to allow hydration, then redirect
       const timer = setTimeout(() => {
         router.push('/admin/login');
       }, 100);
       return () => clearTimeout(timer);
     }
 
-    // Set auth token for API calls
     const token = getAuthToken() || localStorage.getItem('admin_token');
     if (token) {
       setAuthToken(token);
@@ -62,13 +87,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     setChecking(false);
   }, [isLoginPage, router]);
 
-  // Login page doesn't need the admin layout
+  // Fetch notifications
+  useEffect(() => {
+    if (isLoginPage || !isAuthenticated()) return;
+    async function fetchRecentArticles() {
+      try {
+        const res = await api.get<News[]>('/api/news?status=published&limit=50');
+        if (res.success && res.data) {
+          const articles = Array.isArray(res.data) ? res.data : [];
+          setNotifications(articles);
+          const viewed = getViewedIds();
+          const unread = articles.filter(a => !viewed.has(a.id)).length;
+          setUnreadCount(unread);
+        }
+      } catch {}
+    }
+    fetchRecentArticles();
+  }, [isLoginPage]);
+
+  const handleNotificationToggle = useCallback((rect: DOMRect) => {
+    if (!showNotifications) {
+      // Mark all as viewed
+      const viewed = getViewedIds();
+      for (const a of notifications) {
+        viewed.add(a.id);
+      }
+      saveViewedIds(viewed);
+      setUnreadCount(0);
+      setButtonPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    }
+    setShowNotifications(!showNotifications);
+    setShowAll(false);
+  }, [showNotifications, notifications]);
+
+  const handleCloseNotifications = useCallback(() => {
+    setShowNotifications(false);
+  }, []);
+
+  const visibleNotifications = showAll ? notifications : notifications.slice(0, MAX_VISIBLE);
+  const hasMore = notifications.length > MAX_VISIBLE && !showAll;
+
   if (isLoginPage) {
     return <>{children}</>;
   }
 
-  // Render children immediately - they handle their own loading/auth states
-  // Only show full-screen spinner during initial hydration check
   if (checking) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -84,9 +146,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <AdminHeader
           title={getPageTitle(pathname)}
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
+          onNotificationToggle={handleNotificationToggle}
+          unreadCount={unreadCount}
         />
         <main className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</main>
       </div>
+      <NotificationDropdown
+        isOpen={showNotifications}
+        onClose={handleCloseNotifications}
+        notifications={notifications}
+        visibleNotifications={visibleNotifications}
+        hasMore={hasMore}
+        showAll={showAll}
+        onShowAll={() => setShowAll(true)}
+        buttonPosition={buttonPosition}
+      />
     </div>
   );
 }
