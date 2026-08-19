@@ -1,9 +1,9 @@
 'use client';
 
 import { useTranslations, useLocale } from 'next-intl';
-import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, User as UserIcon, Zap } from 'lucide-react';
+import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { api, setAuthToken } from '@/lib/api';
 import { getUser, removeToken } from '@/lib/auth';
@@ -110,7 +110,9 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
     if (!showNotifications) {
       // Mark all as viewed
       const viewed = getViewedIds();
-      notifications.forEach(a => viewed.add(a.id));
+      for (const a of notifications) {
+        viewed.add(a.id);
+      }
       saveViewedIds(viewed);
       setUnreadCount(0);
     }
@@ -176,13 +178,17 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                 className="fixed inset-0 z-40 bg-black/50 sm:hidden"
                 onClick={() => setShowNotifications(false)}
               />
-              <div className="fixed inset-x-0 bottom-0 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-full rounded-t-2xl sm:rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden sm:max-w-[calc(100vw-2rem)]">
-              <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+              <div className="fixed inset-x-0 bottom-0 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-full rounded-t-3xl sm:rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden sm:max-w-[calc(100vw-2rem)] max-h-[70vh] sm:max-h-[80vh] flex flex-col">
+              {/* Mobile drag handle */}
+              <div className="flex justify-center pt-2 pb-1 sm:hidden">
+                <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+              </div>
+              <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex-shrink-0">
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   {t('recentNews')}
                 </h3>
               </div>
-              <div className="max-h-96 overflow-y-auto">
+              <div className="overflow-y-auto flex-1 min-h-0">
                 {visibleNotifications.length > 0 ? (
                   visibleNotifications.map((article) => (
                     <button
@@ -191,16 +197,16 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                         router.push(`/admin/news/${article.id}/edit`);
                         setShowNotifications(false);
                       }}
-                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-colors text-left"
+                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 active:bg-indigo-100 dark:active:bg-indigo-950/50 transition-colors text-left"
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex-shrink-0">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 shrink-0">
                         <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 line-clamp-2">
                           {article.title}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
                           {article.isFeatured && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
                               <Star className="h-2.5 w-2.5" />
@@ -232,7 +238,7 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
                   </div>
                 )}
               </div>
-              <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
+              <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between flex-shrink-0">
                 {hasMore && (
                   <button
                     onClick={() => setShowAll(true)}
