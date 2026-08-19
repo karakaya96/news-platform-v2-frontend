@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Bell, Clock, FileText, LogOut, Menu, Settings, Star, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { api, setAuthToken } from '@/lib/api';
 import { getUser, removeToken } from '@/lib/auth';
@@ -31,7 +32,6 @@ function getViewedIds(): Set<number> {
 
 function saveViewedIds(ids: Set<number>) {
   if (typeof window === 'undefined') return;
-  // Keep only last 200 IDs to prevent localStorage bloat
   const arr = Array.from(ids).slice(-200);
   localStorage.setItem(VIEWED_KEY, JSON.stringify(arr));
 }
@@ -53,7 +53,9 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showAll, setShowAll] = useState(false);
   const [profile, setProfile] = useState<User | null>(null);
+  const [buttonPosition, setButtonPosition] = useState<{ top: number; right: number } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const bellButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -76,14 +78,11 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
           const articles = Array.isArray(res.data) ? res.data : [];
           setNotifications(articles);
 
-          // Count unread (not viewed before)
           const viewed = getViewedIds();
           const unread = articles.filter(a => !viewed.has(a.id)).length;
           setUnreadCount(unread);
         }
-      } catch {
-        // silently fail
-      }
+      } catch {}
     }
     fetchRecentArticles();
   }, []);
@@ -98,6 +97,13 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (showNotifications && bellButtonRef.current) {
+      const rect = bellButtonRef.current.getBoundingClientRect();
+      setButtonPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    }
+  }, [showNotifications]);
+
   const handleLogout = () => {
     removeToken();
     setAuthToken(null);
@@ -108,7 +114,6 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
     setShowNotifications(!showNotifications);
     setShowAll(false);
     if (!showNotifications) {
-      // Mark all as viewed
       const viewed = getViewedIds();
       for (const a of notifications) {
         viewed.add(a.id);
@@ -120,6 +125,105 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
 
   const visibleNotifications = showAll ? notifications : notifications.slice(0, MAX_VISIBLE);
   const hasMore = notifications.length > MAX_VISIBLE && !showAll;
+
+  const dropdownContent = showNotifications && typeof window !== 'undefined' && createPortal(
+    <>
+      {/* Mobile backdrop */}
+      <div
+        className="fixed inset-0 z-[9998] bg-black/50 sm:hidden"
+        onClick={() => setShowNotifications(false)}
+      />
+      {/* Dropdown panel */}
+      <div
+        ref={dropdownRef}
+        className="fixed inset-x-0 bottom-0 z-[9999] sm:shadow-xl sm:border sm:border-slate-200 sm:dark:border-slate-700 bg-white dark:bg-slate-900 shadow-slate-200/50 dark:shadow-black/30 overflow-hidden flex flex-col rounded-t-3xl sm:rounded-xl sm:max-w-[calc(100vw-2rem)] max-h-[calc(100vh-4rem)] sm:max-h-[80vh] sm:w-96"
+        style={window.innerWidth >= 640 && buttonPosition
+          ? { position: 'fixed' as const, top: buttonPosition.top, right: buttonPosition.right, bottom: 'auto', left: 'auto', width: '24rem', maxHeight: '80vh', borderRadius: '0.75rem' }
+          : undefined
+        }
+      >
+        {/* Mobile drag handle */}
+        <div className="flex justify-center pt-2 pb-1 sm:hidden">
+          <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+        </div>
+        <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex-shrink-0">
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {t('recentNews')}
+          </h3>
+        </div>
+        <div className="overflow-y-auto flex-1 min-h-0">
+          {visibleNotifications.length > 0 ? (
+            visibleNotifications.map((article) => (
+              <button
+                key={article.id}
+                onClick={() => {
+                  router.push(`/admin/news/${article.id}/edit`);
+                  setShowNotifications(false);
+                }}
+                className="w-full flex items-start gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 active:bg-indigo-100 dark:active:bg-indigo-950/50 transition-colors text-left"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 shrink-0">
+                  <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100 line-clamp-2">
+                    {article.title}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    {article.isFeatured && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
+                        <Star className="h-2.5 w-2.5" />
+                        {t('newsPage.featured', { fallback: 'Öne Çıkan' })}
+                      </span>
+                    )}
+                    {article.isBreaking && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
+                        <Zap className="h-2.5 w-2.5" />
+                        {t('newsPage.breakingNews', { fallback: 'Son Dakika' })}
+                      </span>
+                    )}
+                    <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
+                      <Clock className="h-2.5 w-2.5" />
+                      {article.publishedAt
+                        ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
+                            timeZone: 'Europe/Istanbul',
+                          })
+                        : '-'}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="px-4 py-8 text-center">
+              <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">{t('newsPage.noNews', { fallback: 'Henüz haber yok' })}</p>
+            </div>
+          )}
+        </div>
+        <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between flex-shrink-0">
+          {hasMore && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+            >
+              {t('showMore', { fallback: 'Daha Fazla Göster' })} ({notifications.length - MAX_VISIBLE})
+            </button>
+          )}
+          <button
+            onClick={() => {
+              router.push('/admin/news');
+              setShowNotifications(false);
+            }}
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors ml-auto"
+          >
+            {t('newsPage.seeAll', { fallback: 'Tümünü Gör →' })}
+          </button>
+        </div>
+      </div>
+    </>,
+    document.body
+  );
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/80 dark:bg-slate-900/80 dark:border-slate-700/80 backdrop-blur-xl px-4 lg:px-8">
@@ -155,112 +259,23 @@ export function AdminHeader({ title, onMenuToggle }: AdminHeaderProps) {
 
         {/* Notifications - admin only */}
         {isAdmin && (
-          <div className="relative" ref={dropdownRef}>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
-            onClick={handleNotificationClick}
-          >
-            <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900 px-1">
-                {formatCount(unreadCount)}
-              </span>
-            )}
-          </Button>
-
-          {/* Notification Dropdown */}
-          {showNotifications && (
-            <>
-              {/* Mobile backdrop */}
-              <div
-                className="fixed inset-0 z-40 bg-black/50 sm:hidden"
-                onClick={() => setShowNotifications(false)}
-              />
-              <div className="fixed top-16 inset-x-0 bottom-0 z-50 sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 max-w-full rounded-t-3xl sm:rounded-xl bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/30 border border-slate-200 dark:border-slate-700 overflow-hidden sm:max-w-[calc(100vw-2rem)] max-h-[calc(100vh-4rem)] sm:max-h-[80vh] flex flex-col">
-              {/* Mobile drag handle */}
-              <div className="flex justify-center pt-2 pb-1 sm:hidden">
-                <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-              </div>
-              <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex-shrink-0">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                  {t('recentNews')}
-                </h3>
-              </div>
-              <div className="overflow-y-auto flex-1 min-h-0">
-                {visibleNotifications.length > 0 ? (
-                  visibleNotifications.map((article) => (
-                    <button
-                      key={article.id}
-                      onClick={() => {
-                        router.push(`/admin/news/${article.id}/edit`);
-                        setShowNotifications(false);
-                      }}
-                      className="w-full flex items-start gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 active:bg-indigo-100 dark:active:bg-indigo-950/50 transition-colors text-left"
-                    >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 shrink-0">
-                        <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100 line-clamp-2">
-                          {article.title}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                          {article.isFeatured && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
-                              <Star className="h-2.5 w-2.5" />
-                              {t('newsPage.featured', { fallback: 'Öne Çıkan' })}
-                            </span>
-                          )}
-                          {article.isBreaking && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
-                              <Zap className="h-2.5 w-2.5" />
-                              {t('newsPage.breakingNews', { fallback: 'Son Dakika' })}
-                            </span>
-                          )}
-                          <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
-                            <Clock className="h-2.5 w-2.5" />
-                            {article.publishedAt
-                              ? new Date(article.publishedAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
-                                  timeZone: 'Europe/Istanbul',
-                                })
-                              : '-'}
-                          </span>
-                        </div>
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-8 text-center">
-                    <Bell className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-                    <p className="text-sm text-slate-500 dark:text-slate-400">{t('newsPage.noNews', { fallback: 'Henüz haber yok' })}</p>
-                  </div>
-                )}
-              </div>
-              <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between flex-shrink-0">
-                {hasMore && (
-                  <button
-                    onClick={() => setShowAll(true)}
-                    className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-                  >
-                    {t('showMore', { fallback: 'Daha Fazla Göster' })} ({notifications.length - MAX_VISIBLE})
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    router.push('/admin/news');
-                    setShowNotifications(false);
-                  }}
-                  className="text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors ml-auto"
-                >
-                  {t('newsPage.seeAll', { fallback: 'Tümünü Gör →' })}
-                </button>
-              </div>
-            </div>
-            </>
-          )}
-        </div>
+          <div className="relative">
+            <Button
+              ref={bellButtonRef}
+              variant="ghost"
+              size="icon"
+              className="relative text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
+              onClick={handleNotificationClick}
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900 px-1">
+                  {formatCount(unreadCount)}
+                </span>
+              )}
+            </Button>
+            {dropdownContent}
+          </div>
         )}
 
         {/* User Info */}
