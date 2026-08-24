@@ -155,6 +155,31 @@ const VideoEmbed = Node.create<VideoEmbedAttrs>({
           };
         },
       },
+      // Recover raw <iframe> embeds (e.g. from older scraped content)
+      {
+        tag: 'iframe[src]',
+        getAttrs: (element) => {
+          const el = element as HTMLIFrameElement;
+          const rawSrc = el.getAttribute('src') || '';
+          let type: VideoEmbedAttrs['type'] = 'iframe';
+          if (/youtube|youtu\.be/.test(rawSrc)) type = 'youtube';
+          else if (/vimeo/.test(rawSrc)) type = 'vimeo';
+          else if (/dailymotion/.test(rawSrc)) type = 'dailymotion';
+          // Normalize to the ID the render step expects for provider types
+          const src = type === 'iframe' ? rawSrc : extractVideoId(rawSrc, type);
+          return { src, type, title: el.getAttribute('title') || '' };
+        },
+      },
+      // Recover raw <video><source src=mp4> tags
+      {
+        tag: 'video',
+        getAttrs: (element) => {
+          const el = element as HTMLVideoElement;
+          const sourceEl = el.querySelector('source');
+          const src = el.getAttribute('src') || sourceEl?.getAttribute('src') || '';
+          return { src, type: 'mp4' as const, title: '' };
+        },
+      },
     ];
   },
 
