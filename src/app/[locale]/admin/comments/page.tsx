@@ -210,7 +210,7 @@ export default function CommentsPage() {
       </div>
 
       {/* Filters & Bulk Actions */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <Select
           value={statusFilter}
           onValueChange={(val) => {
@@ -218,7 +218,7 @@ export default function CommentsPage() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[180px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+          <SelectTrigger className="w-full sm:w-[180px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
             <SelectValue placeholder={t('allStatus')} />
           </SelectTrigger>
           <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
@@ -231,12 +231,12 @@ export default function CommentsPage() {
         </Select>
 
         {bulkIds.length > 0 && (
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex flex-wrap items-center gap-2 bg-indigo-50/70 dark:bg-indigo-950/30 rounded-xl p-3 sm:p-0 sm:bg-transparent sm:dark:bg-transparent w-full sm:w-auto">
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-300 whitespace-nowrap">
               {bulkIds.length} {t('selected')}
             </span>
             <Select value={bulkAction} onValueChange={setBulkAction}>
-              <SelectTrigger className="w-[160px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
+              <SelectTrigger className="flex-1 min-w-[130px] sm:w-[160px] rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                 <SelectValue placeholder={t('bulkPlaceholder')} />
               </SelectTrigger>
               <SelectContent className="rounded-xl dark:bg-slate-800 dark:border-slate-700">
@@ -282,24 +282,24 @@ export default function CommentsPage() {
               {comments.map((comment) => (
                 <div
                   key={comment.id}
-                  className={`p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors ${
+                  className={`px-4 py-4 sm:p-5 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors ${
                     comment.parentId
-                      ? 'pl-12 border-l-2 border-indigo-200 dark:border-indigo-800 ml-6'
+                      ? 'border-l-2 border-indigo-200 dark:border-indigo-800 ml-3 sm:ml-6 sm:pl-12'
                       : ''
                   }`}
                 >
-                  <div className="flex items-start gap-4">
+                  <div className="flex items-start gap-2.5 sm:gap-4">
                     {/* Checkbox */}
                     <input
                       type="checkbox"
                       checked={bulkIds.includes(comment.id)}
                       onChange={() => toggleBulkId(comment.id)}
-                      className="mt-1.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      className="mt-1.5 h-4 w-4 shrink-0 rounded border-slate-300 accent-indigo-600 focus:ring-indigo-500"
                     />
 
                     {/* Avatar */}
                     <div
-                      className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${avatarGradients[comment.id % avatarGradients.length]}`}
+                      className={`flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${avatarGradients[comment.id % avatarGradients.length]}`}
                     >
                       {(comment.authorName || '?').charAt(0).toUpperCase()}
                     </div>
@@ -331,14 +331,14 @@ export default function CommentsPage() {
                             )}
                           </div>
                           {/* Meta row: email · date · IP */}
-                          <div className="flex items-center gap-3 flex-wrap mt-1 text-xs text-slate-400 dark:text-slate-500">
+                          <div className="flex items-center gap-x-2 gap-y-1 flex-wrap mt-1 text-[11px] sm:text-xs text-slate-400 dark:text-slate-500">
                             {comment.authorEmail && (
                               <a
                                 href={`mailto:${comment.authorEmail}`}
-                                className="flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                className="flex items-center gap-1 max-w-full truncate hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                               >
-                                <Mail className="h-3 w-3" />
-                                {comment.authorEmail}
+                                <Mail className="h-3 w-3 shrink-0" />
+                                <span className="truncate">{comment.authorEmail}</span>
                               </a>
                             )}
                             <span className="flex items-center gap-1">
@@ -365,7 +365,7 @@ export default function CommentsPage() {
                         <Link
                           href={`/news/${comment.newsSlug}`}
                           target="_blank"
-                          className="inline-flex items-center gap-2 max-w-md mb-3 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors"
+                          className="flex items-center gap-2 w-fit max-w-full mb-3 px-3 py-2 sm:py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors"
                         >
                           <Newspaper className="h-3.5 w-3.5 flex-shrink-0" />
                           <span className="truncate">{comment.newsTitle}</span>
@@ -374,12 +374,12 @@ export default function CommentsPage() {
                       )}
 
                       {/* Actions */}
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap -mx-1">
                         {comment.status !== 'approved' && (
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2.5 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 rounded-lg"
+                            className="h-8 sm:h-7 px-2.5 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950 rounded-lg"
                             onClick={() => handleStatusChange(comment.id, 'approved')}
                           >
                             <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -390,7 +390,7 @@ export default function CommentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2.5 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950 rounded-lg"
+                            className="h-8 sm:h-7 px-2.5 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950 rounded-lg"
                             onClick={() => handleStatusChange(comment.id, 'rejected')}
                           >
                             <XCircle className="h-3 w-3 mr-1" />
@@ -401,7 +401,7 @@ export default function CommentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-lg"
+                            className="h-8 sm:h-7 px-2.5 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-lg"
                             onClick={() => handleStatusChange(comment.id, 'spam')}
                           >
                             <AlertTriangle className="h-3 w-3 mr-1" />
@@ -412,7 +412,7 @@ export default function CommentsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-7 px-2.5 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950 rounded-lg"
+                            className="h-8 sm:h-7 px-2.5 text-xs text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950 rounded-lg"
                             onClick={() => setReplyId(comment.id)}
                           >
                             <MessageCircle className="h-3 w-3 mr-1" />
@@ -422,7 +422,7 @@ export default function CommentsPage() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          className="h-7 px-2.5 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400 dark:hover:bg-red-950 rounded-lg"
+                          className="h-8 sm:h-7 px-2.5 text-xs text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-400 dark:hover:bg-red-950 rounded-lg"
                           onClick={() => setDeleteId(comment.id)}
                         >
                           <Trash2 className="h-3 w-3 mr-1" />
@@ -440,8 +440,8 @@ export default function CommentsPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">
             {t('page')}{' '}
             <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
             <span className="font-semibold text-slate-700 dark:text-slate-300">{totalPages}</span>
@@ -473,7 +473,7 @@ export default function CommentsPage() {
 
       {/* Delete Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
+        <DialogContent className="rounded-2xl max-w-[calc(100vw-2rem)] sm:max-w-lg dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
             <DialogTitle className="text-lg dark:text-slate-100">
               {t('deleteDialog.title')}
@@ -510,7 +510,7 @@ export default function CommentsPage() {
           setReplyContent('');
         }}
       >
-        <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
+        <DialogContent className="rounded-2xl max-w-[calc(100vw-2rem)] sm:max-w-lg dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
             <DialogTitle className="text-lg dark:text-slate-100">
               {t('replyDialog.title')}
