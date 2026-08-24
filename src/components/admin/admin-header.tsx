@@ -1,8 +1,8 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { Bell, LogOut, Menu, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { api, setAuthToken } from '@/lib/api';
@@ -13,11 +13,16 @@ import type { User } from '@/types';
 interface AdminHeaderProps {
   title: string;
   onMenuToggle: () => void;
-  onNotificationToggle: (rect: DOMRect) => void;
+  onNotificationToggle: () => void;
   unreadCount: number;
 }
 
-export function AdminHeader({ title, onMenuToggle, onNotificationToggle, unreadCount }: AdminHeaderProps) {
+export function AdminHeader({
+  title,
+  onMenuToggle,
+  onNotificationToggle,
+  unreadCount,
+}: AdminHeaderProps) {
   const t = useTranslations('admin');
   const router = useRouter();
   const user = getUser();
@@ -84,10 +89,7 @@ export function AdminHeader({ title, onMenuToggle, onNotificationToggle, unreadC
             variant="ghost"
             size="icon"
             className="relative text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
-            onClick={(e) => {
-              const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-              onNotificationToggle(rect);
-            }}
+            onClick={onNotificationToggle}
           >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
@@ -113,7 +115,9 @@ export function AdminHeader({ title, onMenuToggle, onNotificationToggle, unreadC
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
               {user?.name || 'Admin'}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('admin', { fallback: 'Yönetici' })}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              {t('admin', { fallback: 'Yönetici' })}
+            </p>
           </div>
         </div>
 

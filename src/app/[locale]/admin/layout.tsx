@@ -1,7 +1,7 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
@@ -42,7 +42,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [buttonPosition, setButtonPosition] = useState<{ top: number; right: number } | null>(null);
 
   const getPageTitle = (path: string): string => {
     if (path.endsWith('/admin/dashboard')) return t('dashboard');
@@ -50,15 +49,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (path.endsWith('/admin/news/new')) return t('newNews');
     if (path.includes('/admin/news/fetch')) return t('fetchNews', { fallback: 'Haber Çek' });
     if (path.includes('/admin/news/') && path.includes('/edit')) return t('editNews');
-    if (path.endsWith('/admin/categories') || path.endsWith('/admin/categories/')) return t('categories');
+    if (path.endsWith('/admin/categories') || path.endsWith('/admin/categories/'))
+      return t('categories');
     if (path.endsWith('/admin/categories/new')) return t('newCategory');
     if (path.includes('/admin/categories/') && path.includes('/edit')) return t('editCategory');
     if (path.endsWith('/admin/comments')) return t('comments');
     if (path.endsWith('/admin/notifications')) return t('notifications');
     if (path.endsWith('/admin/settings')) return t('settings');
-    if (path.endsWith('/admin/users') || path.endsWith('/admin/users/')) return t('usersPage.title', { fallback: 'Kullanıcılar' });
-    if (path.endsWith('/admin/users/new')) return t('usersPage.createUser', { fallback: 'Yeni Kullanıcı' });
-    if (path.includes('/admin/users/') && path.includes('/edit')) return t('usersPage.editUser', { fallback: 'Kullanıcı Düzenle' });
+    if (path.endsWith('/admin/users') || path.endsWith('/admin/users/'))
+      return t('usersPage.title', { fallback: 'Kullanıcılar' });
+    if (path.endsWith('/admin/users/new'))
+      return t('usersPage.createUser', { fallback: 'Yeni Kullanıcı' });
+    if (path.includes('/admin/users/') && path.includes('/edit'))
+      return t('usersPage.editUser', { fallback: 'Kullanıcı Düzenle' });
     if (path.endsWith('/admin/profile')) return t('profilePage.title', { fallback: 'Profilim' });
     return t('management');
   };
@@ -97,7 +100,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           const articles = Array.isArray(res.data) ? res.data : [];
           setNotifications(articles);
           const viewed = getViewedIds();
-          const unread = articles.filter(a => !viewed.has(a.id)).length;
+          const unread = articles.filter((a) => !viewed.has(a.id)).length;
           setUnreadCount(unread);
         }
       } catch {}
@@ -105,7 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     fetchRecentArticles();
   }, [isLoginPage]);
 
-  const handleNotificationToggle = useCallback((rect: DOMRect) => {
+  const handleNotificationToggle = useCallback(() => {
     if (!showNotifications) {
       // Mark all as viewed
       const viewed = getViewedIds();
@@ -114,7 +117,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
       saveViewedIds(viewed);
       setUnreadCount(0);
-      setButtonPosition({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
     }
     setShowNotifications(!showNotifications);
     setShowAll(false);
@@ -159,7 +161,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         hasMore={hasMore}
         showAll={showAll}
         onShowAll={() => setShowAll(true)}
-        buttonPosition={buttonPosition}
       />
     </div>
   );
