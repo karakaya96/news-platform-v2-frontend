@@ -77,6 +77,15 @@ function SearchContent() {
       setSearched(true);
       setShowSuggestions(false);
 
+      // Keep URL in sync so results are shareable and back/forward work
+      const urlParams = new URLSearchParams();
+      if (q) urlParams.set('q', q);
+      if (p > 1) urlParams.set('page', String(p));
+      if (cat) urlParams.set('category', cat);
+      if (sort !== 'relevance') urlParams.set('sort', sort);
+      const newUrl = `${window.location.pathname}${urlParams.toString() ? `?${urlParams.toString()}` : ''}`;
+      window.history.replaceState(null, '', newUrl);
+
       try {
         const params = new URLSearchParams();
         if (q) params.set('q', q);
@@ -144,7 +153,7 @@ function SearchContent() {
 
   const handleSearch = () => {
     const q = searchQuery.trim();
-    if (q || selectedCategory || dateFrom || dateTo) {
+    if ((q.length >= 2 || q.length === 0) && (q || selectedCategory || dateFrom || dateTo)) {
       doSearch(q, 1, selectedCategory, dateFrom, dateTo, sortBy);
     }
   };
