@@ -9,15 +9,17 @@ import {
   ChevronRight,
   Clock,
   ExternalLink,
+  Globe,
   Mail,
   MessageCircle,
+  Newspaper,
   Trash2,
   XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,19 +54,20 @@ const commentStatusColors: Record<string, string> = {
   spam: 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700',
 };
 
-const commentStatusLabels = {
-  pending: 'pending',
-  approved: 'approved',
-  rejected: 'rejected',
-  spam: 'spam',
-};
-
 const commentStatusDots: Record<string, string> = {
   pending: 'bg-amber-500',
   approved: 'bg-emerald-500',
   rejected: 'bg-red-500',
   spam: 'bg-slate-400',
 };
+
+const avatarGradients = [
+  'bg-gradient-to-br from-indigo-400 to-violet-500',
+  'bg-gradient-to-br from-emerald-400 to-teal-500',
+  'bg-gradient-to-br from-rose-400 to-pink-500',
+  'bg-gradient-to-br from-amber-400 to-orange-500',
+  'bg-gradient-to-br from-sky-400 to-blue-500',
+];
 
 export default function CommentsPage() {
   const t = useTranslations('admin.commentsPage');
@@ -200,7 +203,9 @@ export default function CommentsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{total} {t('count')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {total} {t('count')}
+          </p>
         </div>
       </div>
 
@@ -259,10 +264,7 @@ export default function CommentsPage() {
           {loading ? (
             <div className="p-6 space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton
-                  key={`skeleton-comment-${i}`}
-                  className="h-24 w-full rounded-xl"
-                />
+                <Skeleton key={`skeleton-comment-${i}`} className="h-24 w-full rounded-xl" />
               ))}
             </div>
           ) : comments.length === 0 ? (
@@ -286,7 +288,7 @@ export default function CommentsPage() {
                       : ''
                   }`}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-4">
                     {/* Checkbox */}
                     <input
                       type="checkbox"
@@ -295,48 +297,80 @@ export default function CommentsPage() {
                       className="mt-1.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                     />
 
+                    {/* Avatar */}
+                    <div
+                      className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${avatarGradients[comment.id % avatarGradients.length]}`}
+                    >
+                      {(comment.authorName || '?').charAt(0).toUpperCase()}
+                    </div>
+
                     <div className="flex-1 min-w-0">
-                      {/* Header */}
-                      <div className="flex items-center gap-2 flex-wrap mb-2">
-                        <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
-                          {comment.authorName}
-                        </span>
-                        <span className="text-xs text-slate-400 flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          {comment.authorEmail}
-                        </span>
-                        <span className="text-xs text-slate-400 flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {formatDateWithTime(comment.createdAt, locale)}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`${commentStatusColors[comment.status]} text-xs font-medium rounded-full px-2 py-0.5`}
-                        >
-                          <span
-                            className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${commentStatusDots[comment.status]}`}
-                          />
-                          {t(`status.${comment.status}`)}
-                        </Badge>
+                      {/* Author row */}
+                      <div className="flex items-start justify-between gap-3 flex-wrap mb-1.5">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-sm text-slate-900 dark:text-slate-100">
+                              {comment.authorName || t('anonymous')}
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className={`${commentStatusColors[comment.status]} text-xs font-medium rounded-full px-2 py-0.5`}
+                            >
+                              <span
+                                className={`mr-1.5 h-1.5 w-1.5 rounded-full inline-block ${commentStatusDots[comment.status]}`}
+                              />
+                              {t(`status.${comment.status}`)}
+                            </Badge>
+                            {comment.parentId && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs font-medium rounded-full px-2 py-0.5 bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-400 dark:border-indigo-800"
+                              >
+                                {t('isReply')}
+                              </Badge>
+                            )}
+                          </div>
+                          {/* Meta row: email · date · IP */}
+                          <div className="flex items-center gap-3 flex-wrap mt-1 text-xs text-slate-400 dark:text-slate-500">
+                            {comment.authorEmail && (
+                              <a
+                                href={`mailto:${comment.authorEmail}`}
+                                className="flex items-center gap-1 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                              >
+                                <Mail className="h-3 w-3" />
+                                {comment.authorEmail}
+                              </a>
+                            )}
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {formatDateWithTime(comment.createdAt, locale)}
+                            </span>
+                            {comment.ipAddress && (
+                              <span className="hidden sm:flex items-center gap-1 font-mono">
+                                <Globe className="h-3 w-3" />
+                                {comment.ipAddress}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Content */}
-                      <p className="text-sm text-slate-700 dark:text-slate-300 mb-2 whitespace-pre-wrap">
+                      <p className="text-sm text-slate-700 dark:text-slate-300 mb-3 whitespace-pre-wrap leading-relaxed bg-slate-50/70 dark:bg-slate-800/40 rounded-xl p-3 border border-slate-100 dark:border-slate-700/50">
                         {comment.content}
                       </p>
 
-                      {/* News reference */}
+                      {/* News reference card */}
                       {comment.newsTitle && (
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-3">
-                          <ExternalLink className="h-3 w-3" />
-                          <Link
-                            href={`/news/${comment.newsSlug}`}
-                            target="_blank"
-                            className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate max-w-[300px]"
-                          >
-                            {comment.newsTitle}
-                          </Link>
-                        </div>
+                        <Link
+                          href={`/news/${comment.newsSlug}`}
+                          target="_blank"
+                          className="inline-flex items-center gap-2 max-w-md mb-3 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-900 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors"
+                        >
+                          <Newspaper className="h-3.5 w-3.5 flex-shrink-0" />
+                          <span className="truncate">{comment.newsTitle}</span>
+                          <ExternalLink className="h-3 w-3 flex-shrink-0 opacity-60" />
+                        </Link>
                       )}
 
                       {/* Actions */}
@@ -408,7 +442,8 @@ export default function CommentsPage() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('page')} <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
+            {t('page')}{' '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
             <span className="font-semibold text-slate-700 dark:text-slate-300">{totalPages}</span>
           </p>
           <div className="flex gap-2">
@@ -440,7 +475,9 @@ export default function CommentsPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="text-lg dark:text-slate-100">{t('deleteDialog.title')}</DialogTitle>
+            <DialogTitle className="text-lg dark:text-slate-100">
+              {t('deleteDialog.title')}
+            </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
               {t('deleteDialog.description')}
             </DialogDescription>
@@ -475,7 +512,9 @@ export default function CommentsPage() {
       >
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="text-lg dark:text-slate-100">{t('replyDialog.title')}</DialogTitle>
+            <DialogTitle className="text-lg dark:text-slate-100">
+              {t('replyDialog.title')}
+            </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
               {t('replyDialog.description')}
             </DialogDescription>

@@ -165,7 +165,7 @@ export interface CommentItem {
   authorEmail: string;
   content: string;
   status: 'pending' | 'approved' | 'rejected' | 'spam';
-  ip_address: string | null;
+  ipAddress: string | null;
   createdAt: string;
   updatedAt: string;
   newsTitle?: string;

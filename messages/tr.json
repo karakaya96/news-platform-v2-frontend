@@ -508,7 +508,9 @@
         "cancel": "İptal",
         "sending": "Gönderiliyor...",
         "reply": "Yanıtla"
-      }
+      },
+      "anonymous": "Anonim",
+      "isReply": "Yanıt"
     },
     "notificationsPage": {
       "loadError": "Veriler yüklenemedi",
