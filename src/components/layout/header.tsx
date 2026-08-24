@@ -1,14 +1,13 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
 import { Menu, Search, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import type React from 'react';
 import { useCallback, useRef, useState } from 'react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter } from '@/i18n/navigation';
 import type { PublicSettings } from '@/lib/settings';
 import { getSiteName } from '@/lib/settings';
 import { ThemeToggle } from './theme-toggle';

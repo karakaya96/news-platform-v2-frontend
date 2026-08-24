@@ -1,11 +1,11 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useRouter } from '@/i18n/navigation';
 
 interface SearchBarProps {
   placeholder?: string;
