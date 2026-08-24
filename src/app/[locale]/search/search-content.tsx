@@ -5,15 +5,16 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Loader2,
   Search,
   SlidersHorizontal,
   Tag,
   X,
 } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import type React from 'react';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
 import { NewsCard } from '@/components/news/news-card';
 import { NewsGridSkeleton } from '@/components/shared/loading-skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,7 @@ interface SearchSuggestion {
 function SearchContent() {
   const t = useTranslations('search');
   const locale = useLocale();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const initialPage = Number.parseInt(searchParams.get('page') || '1', 10);
@@ -155,7 +157,7 @@ function SearchContent() {
   const handleSuggestionClick = (slug: string, title: string) => {
     setSearchQuery(title);
     setShowSuggestions(false);
-    window.location.href = `/news/${slug}`;
+    router.push(`/${locale}/news/${slug}`);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -235,8 +237,8 @@ function SearchContent() {
               </button>
             )}
           </div>
-          <Button onClick={handleSearch} className="h-12 px-6">
-            {t('filterButton')}
+          <Button onClick={handleSearch} className="h-12 px-6" disabled={loading}>
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : t('filterButton')}
           </Button>
           <Button
             type="button"
@@ -309,21 +311,13 @@ function SearchContent() {
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> {t('fromDate')}
               </label>
-              <DatePicker
-                value={dateFrom}
-                onChange={setDateFrom}
-                className="h-9"
-              />
+              <DatePicker value={dateFrom} onChange={setDateFrom} className="h-9" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                 <Calendar className="h-3 w-3" /> {t('toDate')}
               </label>
-              <DatePicker
-                value={dateTo}
-                onChange={setDateTo}
-                className="h-9"
-              />
+              <DatePicker value={dateTo} onChange={setDateTo} className="h-9" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-muted-foreground flex items-center gap-1">
@@ -360,7 +354,8 @@ function SearchContent() {
         <>
           <div className="flex items-center justify-between mb-6">
             <p className="text-muted-foreground">
-              <span className="font-semibold text-foreground">{totalResults}</span> {t('resultsCount')}
+              <span className="font-semibold text-foreground">{totalResults}</span>{' '}
+              {t('resultsCount')}
               {searchQuery && <span> — &quot;{searchQuery}&quot;</span>}
             </p>
           </div>
@@ -399,7 +394,10 @@ function SearchContent() {
           <p className="text-xl font-medium mb-2">{t('startSearching')}</p>
           <p className="text-sm">{t('startSearchingDetail')}</p>
           <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {(locale === 'en' ? ['election', 'economy', 'sports', 'technology', 'world'] : ['seçim', 'ekonomi', 'spor', 'teknoloji', 'dünya']).map((term) => (
+            {(locale === 'en'
+              ? ['election', 'economy', 'sports', 'technology', 'world']
+              : ['seçim', 'ekonomi', 'spor', 'teknoloji', 'dünya']
+            ).map((term) => (
               <Button
                 key={term}
                 variant="outline"
