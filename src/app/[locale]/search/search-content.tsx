@@ -14,7 +14,7 @@ import {
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import type React from 'react';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { NewsCard } from '@/components/news/news-card';
 import { NewsGridSkeleton } from '@/components/shared/loading-skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -71,51 +71,46 @@ function SearchContent() {
       .catch(() => {});
   }, []);
 
-  const doSearch = async (
-    q: string,
-    p: number,
-    cat: string,
-    from: string,
-    to: string,
-    sort: string
-  ) => {
-    setLoading(true);
-    setSearched(true);
-    setShowSuggestions(false);
+  const doSearch = useCallback(
+    async (q: string, p: number, cat: string, from: string, to: string, sort: string) => {
+      setLoading(true);
+      setSearched(true);
+      setShowSuggestions(false);
 
-    try {
-      const params = new URLSearchParams();
-      if (q) params.set('q', q);
-      params.set('page', String(p));
-      params.set('limit', '12');
-      if (cat) params.set('category', cat);
-      if (from) params.set('from', from);
-      if (to) params.set('to', to);
-      if (sort) params.set('sort', sort);
+      try {
+        const params = new URLSearchParams();
+        if (q) params.set('q', q);
+        params.set('page', String(p));
+        params.set('limit', '12');
+        if (cat) params.set('category', cat);
+        if (from) params.set('from', from);
+        if (to) params.set('to', to);
+        if (sort) params.set('sort', sort);
 
-      const res = await fetch(`${API_URL}/api/search?${params.toString()}`);
-      const data = await res.json();
-      if (data.success) {
-        setArticles(data.data || []);
-        setTotalResults(data.pagination?.total || 0);
-        setTotalPages(data.pagination?.totalPages || 1);
-        setCurrentPage(p);
+        const res = await fetch(`${API_URL}/api/search?${params.toString()}`);
+        const data = await res.json();
+        if (data.success) {
+          setArticles(data.data || []);
+          setTotalResults(data.pagination?.total || 0);
+          setTotalPages(data.pagination?.totalPages || 1);
+          setCurrentPage(p);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        setArticles([]);
+        setTotalResults(0);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Search error:', error);
-      setArticles([]);
-      setTotalResults(0);
-      setTotalPages(1);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    []
+  );
 
   useEffect(() => {
     if (initialQuery) {
       doSearch(initialQuery, initialPage, initialCategory, '', '', initialSort);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCategory, initialSort, initialQuery, initialPage, doSearch]);
 
   const fetchSuggestions = async (q: string) => {
