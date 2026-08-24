@@ -1,8 +1,9 @@
 'use client';
 
-import { CATEGORY_COLORS, translateCategoryName } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import { useLocale } from 'next-intl';
+import { translateCategoryName } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 
 interface CategoryBadgeProps {
   category: {
@@ -15,17 +16,18 @@ interface CategoryBadgeProps {
 
 export function CategoryBadge({ category, className }: CategoryBadgeProps) {
   const locale = useLocale();
-  const colorClass = category.color || CATEGORY_COLORS[category.slug] || 'bg-gray-500';
+  const backgroundColor = category.color || '#6366f1';
 
   return (
-    <span
+    <Link
+      href={`/categories/${category.slug}`}
       className={cn(
-        'inline-block px-2.5 py-1 text-xs font-semibold text-white rounded-full shadow-sm',
-        colorClass,
+        'inline-block px-2.5 py-1 text-xs font-semibold text-white rounded-full shadow-sm hover:opacity-85 transition-opacity',
         className
       )}
+      style={{ backgroundColor }}
     >
       {translateCategoryName(category.slug, category.name, locale)}
-    </span>
+    </Link>
   );
 }
