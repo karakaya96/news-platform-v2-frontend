@@ -310,7 +310,7 @@ export function CommentsSection({
             >
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white font-bold text-sm">
-                  {comment.authorName.charAt(0).toUpperCase()}
+                  {(comment.authorName || '?').charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
