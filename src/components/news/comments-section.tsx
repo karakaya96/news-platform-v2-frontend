@@ -1,7 +1,7 @@
 'use client';
 
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
 import type { CommentItem } from '@/types';
 
 interface Comment {
@@ -80,12 +80,12 @@ export function CommentsSection({
       const data = await res.json();
 
       if (data.success) {
-        setSuccess(t('submitted'));
+        setSuccess(t('pending'));
         setContent('');
         setParentId(null);
         setReplyingTo(null);
       } else {
-        setError(data.error || t('submitError'));
+        setError(data.error || t('submitFailed'));
       }
     } catch {
       setError(t('connectionError'));
@@ -153,7 +153,9 @@ export function CommentsSection({
         </div>
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{t('title')}</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{count} {t('count')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {count} {t('count')}
+          </p>
         </div>
       </div>
 
@@ -165,7 +167,7 @@ export function CommentsSection({
           className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8 shadow-sm"
         >
           <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">
-            {replyingTo ? t('replyToComment') : t('writeComment')}
+            {replyingTo ? t('reply') : t('writeComment')}
           </h3>
 
           {error && (
@@ -232,7 +234,9 @@ export function CommentsSection({
               maxLength={commentsMaxLength}
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
             />
-            <p className="text-xs text-slate-400 mt-1">{content.length}/{commentsMaxLength}</p>
+            <p className="text-xs text-slate-400 mt-1">
+              {content.length}/{commentsMaxLength}
+            </p>
           </div>
 
           <div className="flex items-center justify-between">
@@ -254,7 +258,7 @@ export function CommentsSection({
               disabled={submitting}
               className="ml-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {submitting ? t('sending') : t('submitButton')}
+              {submitting ? t('submitting') : t('submitButton')}
             </button>
           </div>
         </form>
@@ -273,8 +277,8 @@ export function CommentsSection({
               d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
             />
           </svg>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">{t('disabled')}</p>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{t('disabledDetail')}</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">{t('closed')}</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{t('closedDetail')}</p>
         </div>
       )}
 
