@@ -1,21 +1,33 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
-import Script from 'next/script';
 import { VercelAnalytics } from '@/components/analytics/vercel-analytics';
 import { LayoutShell } from '@/components/layout/layout-shell';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-import { GOOGLE_SITE_VERIFICATION, NAVIGATION } from '@/lib/constants';
-import { getPublicSettings, getSiteName, getSiteUrl, getLogoUrl, getFaviconUrl, getSiteDescription, getSocialLinks } from '@/lib/settings';
-import { inter } from '@/lib/fonts';
 import { routing } from '@/i18n/routing';
+import { GOOGLE_SITE_VERIFICATION, NAVIGATION } from '@/lib/constants';
+import { inter } from '@/lib/fonts';
+import {
+  getFaviconUrl,
+  getLogoUrl,
+  getPublicSettings,
+  getSiteDescription,
+  getSiteName,
+  getSiteUrl,
+  getSocialLinks,
+} from '@/lib/settings';
 import '../globals.css';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
   const { locale } = await params;
   const settings = await getPublicSettings();
   const siteName = getSiteName(settings);
@@ -23,7 +35,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const siteDescription = getSiteDescription(settings);
   const logoUrl = getLogoUrl(settings);
   const socialLinks = getSocialLinks(settings);
-  const seoKeywords = settings.seo_keywords || 'haber, son dakika, güncel haberler, Türkiye haberleri, dünya haberleri';
+  const seoKeywords =
+    settings.seo_keywords ||
+    'haber, son dakika, güncel haberler, Türkiye haberleri, dünya haberleri';
 
   const title = settings.seo_title || `${siteName} - Güvenilir Haber Kaynağınız`;
 
@@ -80,8 +94,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     alternates: {
       canonical: siteUrl,
       languages: {
-        'tr': `${siteUrl}/tr`,
-        'en': `${siteUrl}/en`,
+        tr: `${siteUrl}/tr`,
+        en: `${siteUrl}/en`,
+      },
+      types: {
+        'application/rss+xml': 'https://news-v2-api.karakaya-mk96.workers.dev/api/rss',
       },
     },
     icons: {

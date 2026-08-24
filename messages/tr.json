@@ -743,5 +743,11 @@
       "pageInfo": "Sayfa {current} / {total}"
     }
   },
-  "profile": "Profilim"
+  "profile": "Profilim",
+  "notFound": {
+    "title": "Sayfa bulunamadı",
+    "description": "Aradığınız sayfa {siteName} üzerinde mevcut değil ya da taşınmış olabilir.",
+    "backHome": "Ana Sayfaya Dön",
+    "browseNews": "Haberlere Göz At"
+  }
 }
