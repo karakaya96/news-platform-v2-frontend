@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Copy, Image as ImageIcon, Loader2, Trash2, Upload, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +33,7 @@ interface PaginatedResponse {
 
 export function MediaLibrary() {
   const t = useTranslations('admin');
+  const locale = useLocale();
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -325,7 +326,7 @@ export function MediaLibrary() {
                   </div>
                   <div className="flex items-center justify-between mt-1 opacity-80">
                     <span>{formatBytes(file.size)}</span>
-                    <span>{formatDateWithTime(file.createdAt, 'tr')}</span>
+                    <span>{formatDateWithTime(file.createdAt, locale)}</span>
                   </div>
                 </div>
 
@@ -438,7 +439,7 @@ export function MediaLibrary() {
                     </div>
                     <div>
                       <span className="text-slate-400 dark:text-slate-500">Yüklenme:</span>{' '}
-                      {formatDateWithTime(previewFile.createdAt, 'tr')}
+                      {formatDateWithTime(previewFile.createdAt, locale)}
                     </div>
                     <div>
                       <span className="text-slate-400 dark:text-slate-500">Key:</span>{' '}

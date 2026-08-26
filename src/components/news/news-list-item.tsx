@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 import { translateCategoryName } from '@/lib/constants';
 import { formatRelativeDate } from '@/lib/utils';
-import { useLocale } from 'next-intl';
 import type { News } from '@/types';
 
 interface NewsListItemProps {
@@ -53,7 +53,7 @@ export function NewsListItem({ article, showImage = true }: NewsListItemProps) {
             </span>
           )}
           <time dateTime={article.publishedAt || undefined}>
-            {formatRelativeDate(article.publishedAt)}
+            {formatRelativeDate(article.publishedAt, locale)}
           </time>
         </div>
       </div>
