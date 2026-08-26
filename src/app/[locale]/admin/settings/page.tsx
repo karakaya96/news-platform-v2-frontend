@@ -183,8 +183,7 @@ export default function SettingsPage() {
         }
 
         if (data.site_timezone) {
-          document.cookie = `SITE_TIMEZONE=${data.site_timezone}; path=/; max-age=31536000; SameSite=Lax`;
-          // Sayfayı yenile ki layout yeni timezone'ı okusun
+          // Sayfayı yenile ki layout yeni timezone'ı settings'ten okusun
           window.location.reload();
         }
 
