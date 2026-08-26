@@ -101,9 +101,9 @@ export function NotificationDropdown({
 
   return (
     <>
-      {/* Backdrop — all screen sizes; lighter on desktop since dropdown is anchored */}
+      {/* Backdrop — mobile only (bottom sheet needs it), desktop has no backdrop so bell stays clickable */}
       <div
-        className="fixed inset-0 z-[9998] bg-black/40 sm:bg-transparent"
+        className="fixed inset-0 z-[9998] bg-black/40 sm:hidden"
         onClick={onClose}
         aria-hidden="true"
       />

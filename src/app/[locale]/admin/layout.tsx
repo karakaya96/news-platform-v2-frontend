@@ -150,6 +150,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
           onNotificationToggle={handleNotificationToggle}
           unreadCount={unreadCount}
+          isNotificationOpen={showNotifications}
         />
         <main className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</main>
       </div>

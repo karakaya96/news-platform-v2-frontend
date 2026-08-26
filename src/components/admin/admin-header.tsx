@@ -15,6 +15,7 @@ interface AdminHeaderProps {
   onMenuToggle: () => void;
   onNotificationToggle: () => void;
   unreadCount: number;
+  isNotificationOpen: boolean;
 }
 
 export function AdminHeader({
@@ -22,6 +23,7 @@ export function AdminHeader({
   onMenuToggle,
   onNotificationToggle,
   unreadCount,
+  isNotificationOpen,
 }: AdminHeaderProps) {
   const t = useTranslations('admin');
   const router = useRouter();
@@ -88,8 +90,14 @@ export function AdminHeader({
           <Button
             variant="ghost"
             size="icon"
-            className="relative text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-xl"
+            className={`relative rounded-xl transition-colors ${
+              isNotificationOpen
+                ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400'
+                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800'
+            }`}
             onClick={onNotificationToggle}
+            aria-expanded={isNotificationOpen}
+            aria-label="Bildirimler"
           >
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
