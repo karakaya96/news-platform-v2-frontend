@@ -91,6 +91,7 @@ const SANITIZE_OPTIONS = {
       'type',
       'datetime',
       'cite',
+      'data-video-embed',
       'data-video-src',
       'data-video-type',
       'data-video-title',
