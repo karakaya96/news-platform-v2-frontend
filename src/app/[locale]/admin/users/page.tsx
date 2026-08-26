@@ -101,15 +101,12 @@ export default function UsersPage() {
       try {
         const params = new URLSearchParams({ page: String(page), limit: '20' });
         if (search) params.set('search', search);
+        if (roleFilter !== 'all') params.set('role', roleFilter);
         const res = await api.get<{ users: User[]; pagination: PaginationMeta }>(
           `/api/users?${params}`
         );
         if (res.success && res.data) {
-          let filteredUsers = res.data.users || [];
-          if (roleFilter !== 'all') {
-            filteredUsers = filteredUsers.filter((u) => u.role === roleFilter);
-          }
-          setUsers(filteredUsers);
+          setUsers(res.data.users || []);
           setPagination(res.data.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 });
         }
       } catch {}
