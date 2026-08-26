@@ -5,9 +5,23 @@ import { Link } from '@/i18n/navigation';
 import { getPublicSettings, getSiteName } from '@/lib/settings';
 
 export default async function NotFound() {
-  const t = await getTranslations('notFound');
-  const settings = await getPublicSettings();
-  const siteName = getSiteName(settings);
+  let t: (key: string, params?: Record<string, string>) => string;
+  let siteName = 'NewsHaberGlobal';
+  try {
+    t = await getTranslations('notFound');
+    const settings = await getPublicSettings();
+    siteName = getSiteName(settings);
+  } catch {
+    t = (key: string, _params?: Record<string, string>) => {
+      const defaults: Record<string, string> = {
+        title: 'Sayfa bulunamadı',
+        description: `Aradığınız sayfa ${siteName} üzerinde mevcut değil ya da taşınmış olabilir.`,
+        backHome: 'Ana Sayfaya Dön',
+        browseNews: 'Haberlere Göz At',
+      };
+      return defaults[key] || key;
+    };
+  }
 
   return (
     <div className="container mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-4 py-16 text-center">
