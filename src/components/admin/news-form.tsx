@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronUp, Eye, Loader2, Star, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { RichTextEditor } from '@/components/admin/rich-text-editor';
@@ -24,6 +24,7 @@ import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
 import { sanitizeArticleContent } from '@/lib/sanitize';
 import { cn } from '@/lib/utils';
+import { processVideoEmbeds } from '@/lib/video-embed';
 import type { Category, News } from '@/types';
 
 interface NewsFormProps {
@@ -96,6 +97,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
   const status = watch('status');
   const isFeatured = watch('isFeatured');
   const isBreaking = watch('isBreaking');
+  const previewContentRef = useRef<HTMLDivElement>(null);
 
   // Auto-generate slug from title
   const generateSlug = useCallback(() => {
@@ -108,6 +110,13 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
     const timer = setTimeout(generateSlug, 500);
     return () => clearTimeout(timer);
   }, [generateSlug]);
+
+  // Process video embeds in preview modal
+  useEffect(() => {
+    if (showPreview && previewContentRef.current && content) {
+      previewContentRef.current.innerHTML = processVideoEmbeds(sanitizeArticleContent(content));
+    }
+  }, [showPreview, content]);
 
   // Load categories
   useEffect(() => {
@@ -477,10 +486,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   />
                 </div>
               )}
-              <div
-                className="prose max-w-none dark:prose-invert"
-                dangerouslySetInnerHTML={{ __html: sanitizeArticleContent(content) }}
-              />
+              <div ref={previewContentRef} className="prose max-w-none dark:prose-invert" />
             </div>
           </div>
         </div>
