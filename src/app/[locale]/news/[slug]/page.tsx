@@ -236,6 +236,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const siteName = getSiteName(publicSettings);
   const siteUrl = getSiteUrl(publicSettings);
   const logoUrl = getLogoUrl(publicSettings);
+  const timezone = publicSettings.site_timezone || 'Europe/Istanbul';
 
   return (
     <article className="container mx-auto px-4 py-8">
@@ -335,7 +336,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             <time dateTime={article.publishedAt || undefined}>
-              {formatDateWithTime(article.publishedAt || '', locale)}
+              {formatDateWithTime(article.publishedAt || '', locale, timezone)}
             </time>
           </div>
           <div className="flex items-center gap-1">

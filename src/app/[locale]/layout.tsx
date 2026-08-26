@@ -17,6 +17,7 @@ import {
   getSiteUrl,
   getSocialLinks,
 } from '@/lib/settings';
+import { TimezoneProvider } from '@/lib/timezone';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -181,12 +182,14 @@ export default async function LocaleLayout({
           }}
         />
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider>
-            <LayoutShell settings={settings} navigation={NAVIGATION}>
-              {children}
-            </LayoutShell>
-            <VercelAnalytics />
-          </ThemeProvider>
+          <TimezoneProvider timezone={settings.site_timezone || 'Europe/Istanbul'}>
+            <ThemeProvider>
+              <LayoutShell settings={settings} navigation={NAVIGATION}>
+                {children}
+              </LayoutShell>
+              <VercelAnalytics />
+            </ThemeProvider>
+          </TimezoneProvider>
         </NextIntlClientProvider>
       </body>
     </html>

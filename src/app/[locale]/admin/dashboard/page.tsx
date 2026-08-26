@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Link } from '@/i18n/navigation';
 import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
 
@@ -92,6 +93,7 @@ function AnimatedNumber({ value }: { value: number }) {
 export default function DashboardPage() {
   const t = useTranslations('admin.dashboardPage');
   const locale = useLocale();
+  const timezone = useTimezone();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -328,7 +330,11 @@ export default function DashboardPage() {
                       </Badge>
                       <span className="text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {formatDateWithTime(article.publishedAt || article.createdAt, locale)}
+                        {formatDateWithTime(
+                          article.publishedAt || article.createdAt,
+                          locale,
+                          timezone
+                        )}
                       </span>
                       {article.authorName && (
                         <span className="text-xs text-slate-400 dark:text-slate-500">
@@ -437,7 +443,11 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-6 py-4 hidden lg:table-cell">
                       <span className="text-sm text-slate-500 dark:text-slate-400">
-                        {formatDateWithTime(article.publishedAt || article.createdAt, locale)}
+                        {formatDateWithTime(
+                          article.publishedAt || article.createdAt,
+                          locale,
+                          timezone
+                        )}
                       </span>
                     </td>
                   </tr>

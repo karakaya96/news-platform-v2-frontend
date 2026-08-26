@@ -1,7 +1,7 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { BreakingTicker } from '@/components/news/breaking-ticker';
 import { FeaturedArticle } from '@/components/news/featured-article';
@@ -9,6 +9,7 @@ import { NewsGrid } from '@/components/news/news-grid';
 import { TrendingWidget } from '@/components/news/trending-widget';
 import { Link } from '@/i18n/navigation';
 import { ARTICLE_LIMITS, translateCategoryName } from '@/lib/constants';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 import type { Category, News } from '@/types';
 
@@ -29,6 +30,7 @@ export default function HomePageClient({
 }: HomePageClientProps) {
   const t = useTranslations('home');
   const locale = useLocale();
+  const timezone = useTimezone();
   const [heroIndex, setHeroIndex] = useState(0);
 
   // Auto-rotate featured hero every 5 seconds
@@ -122,10 +124,13 @@ export default function HomePageClient({
                         </h3>
                         <div className="flex items-center text-gray-300 text-xs mt-2">
                           {article.authorName && (
-                            <span className="mr-3">{t('writtenBy')}{article.authorName}</span>
+                            <span className="mr-3">
+                              {t('writtenBy')}
+                              {article.authorName}
+                            </span>
                           )}
                           <time dateTime={article.publishedAt || undefined}>
-                            {formatDateWithTime(article.publishedAt, locale)}
+                            {formatDateWithTime(article.publishedAt, locale, timezone)}
                           </time>
                         </div>
                       </div>

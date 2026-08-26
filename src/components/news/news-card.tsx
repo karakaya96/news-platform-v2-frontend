@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslations, useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
 import { CategoryBadge } from './category-badge';
@@ -12,6 +13,7 @@ interface NewsCardProps {
 export function NewsCard({ article }: NewsCardProps) {
   const t = useTranslations('news');
   const locale = useLocale();
+  const timezone = useTimezone();
   return (
     <Link href={`/news/${article.slug}`} className="group block">
       <div className="rounded-xl border bg-card overflow-hidden card-hover">
@@ -58,7 +60,7 @@ export function NewsCard({ article }: NewsCardProps) {
           <div className="flex items-center text-xs text-muted-foreground">
             {article.authorName && <span className="mr-3 font-medium">{article.authorName}</span>}
             <time dateTime={article.publishedAt || undefined}>
-              {formatDateWithTime(article.publishedAt, locale)}
+              {formatDateWithTime(article.publishedAt, locale, timezone)}
             </time>
           </div>
         </div>

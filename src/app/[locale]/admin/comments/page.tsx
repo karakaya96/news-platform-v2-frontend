@@ -41,6 +41,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/lib/api';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 import type { CommentItem } from '@/types';
 
@@ -72,6 +73,7 @@ const avatarGradients = [
 export default function CommentsPage() {
   const t = useTranslations('admin.commentsPage');
   const locale = useLocale();
+  const timezone = useTimezone();
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
@@ -343,7 +345,7 @@ export default function CommentsPage() {
                             )}
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {formatDateWithTime(comment.createdAt, locale)}
+                              {formatDateWithTime(comment.createdAt, locale, timezone)}
                             </span>
                             {comment.ipAddress && (
                               <span className="hidden sm:flex items-center gap-1 font-mono">

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/lib/api';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 
 interface MediaFile {
@@ -34,6 +35,7 @@ interface PaginatedResponse {
 export function MediaLibrary() {
   const t = useTranslations('admin');
   const locale = useLocale();
+  const timezone = useTimezone();
   const [files, setFiles] = useState<MediaFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -326,7 +328,7 @@ export function MediaLibrary() {
                   </div>
                   <div className="flex items-center justify-between mt-1 opacity-80">
                     <span>{formatBytes(file.size)}</span>
-                    <span>{formatDateWithTime(file.createdAt, locale)}</span>
+                    <span>{formatDateWithTime(file.createdAt, locale, timezone)}</span>
                   </div>
                 </div>
 
@@ -439,7 +441,7 @@ export function MediaLibrary() {
                     </div>
                     <div>
                       <span className="text-slate-400 dark:text-slate-500">Yüklenme:</span>{' '}
-                      {formatDateWithTime(previewFile.createdAt, locale)}
+                      {formatDateWithTime(previewFile.createdAt, locale, timezone)}
                     </div>
                     <div>
                       <span className="text-slate-400 dark:text-slate-500">Key:</span>{' '}

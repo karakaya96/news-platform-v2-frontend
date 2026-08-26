@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 
 interface SubscriptionStats {
@@ -54,6 +55,7 @@ interface NotificationLog {
 export default function NotificationsPage() {
   const t = useTranslations('admin.notificationsPage');
   const locale = useLocale();
+  const timezone = useTimezone();
   const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [notifications, setNotifications] = useState<NotificationLog[]>([]);
@@ -335,7 +337,7 @@ export default function NotificationsPage() {
                           </Badge>
                         </td>
                         <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">
-                          {formatDateWithTime(sub.createdAt, locale)}
+                          {formatDateWithTime(sub.createdAt, locale, timezone)}
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-1">
@@ -411,7 +413,7 @@ export default function NotificationsPage() {
                     </div>
                     <div className="flex items-center justify-between pt-1">
                       <span className="text-xs text-slate-400">
-                        {formatDateWithTime(sub.createdAt, locale)}
+                        {formatDateWithTime(sub.createdAt, locale, timezone)}
                       </span>
                       <div className="flex items-center gap-1">
                         {sub.is_active ? (
@@ -503,7 +505,7 @@ export default function NotificationsPage() {
                         {notif.type === 'browser' ? t('browserType') : t('emailType')}
                       </Badge>
                       <span className="text-[10px] text-slate-400">
-                        {formatDateWithTime(notif.created_at, locale)}
+                        {formatDateWithTime(notif.created_at, locale, timezone)}
                       </span>
                     </div>
                   </div>

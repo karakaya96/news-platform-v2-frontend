@@ -2,10 +2,11 @@
 
 import { Edit, Eye } from 'lucide-react';
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
-import { useTranslations, useLocale } from 'next-intl';
 import type { News } from '@/types';
 
 interface RecentArticlesTableProps {
@@ -21,13 +22,10 @@ const statusColors: Record<string, string> = {
 export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
   const t = useTranslations('admin.recentArticlesTable');
   const locale = useLocale();
+  const timezone = useTimezone();
 
   if (articles.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        {t('noNews')}
-      </div>
-    );
+    return <div className="text-center py-8 text-muted-foreground">{t('noNews')}</div>;
   }
 
   return (
@@ -59,7 +57,7 @@ export function RecentArticlesTable({ articles }: RecentArticlesTableProps) {
               </td>
               <td className="py-3 pr-4 hidden md:table-cell">
                 <span className="text-sm text-muted-foreground">
-                  {formatDateWithTime(article.publishedAt || article.updatedAt, locale)}
+                  {formatDateWithTime(article.publishedAt || article.updatedAt, locale, timezone)}
                 </span>
               </td>
               <td className="py-3 text-right">

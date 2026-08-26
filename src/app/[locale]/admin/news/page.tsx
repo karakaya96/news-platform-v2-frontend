@@ -20,11 +20,13 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DatePicker } from '@/components/ui/date-picker';
 import {
   Dialog,
   DialogContent,
@@ -42,13 +44,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DatePicker } from '@/components/ui/date-picker';
 import { api } from '@/lib/api';
 import { getUser } from '@/lib/auth';
 import { translateCategoryName } from '@/lib/constants';
+import { useTimezone } from '@/lib/timezone';
 import { formatDateWithTime } from '@/lib/utils';
 import type { News } from '@/types';
-import { useTranslations, useLocale } from 'next-intl';
 
 const statusColors: Record<string, string> = {
   published:
@@ -74,6 +75,7 @@ interface CategoryOption {
 export default function NewsListPage() {
   const t = useTranslations('admin.newsPage');
   const locale = useLocale();
+  const timezone = useTimezone();
   const searchParams = useSearchParams();
   const currentUser = getUser();
   const userRole = currentUser?.role || 'viewer';
@@ -239,7 +241,9 @@ export default function NewsListPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">{total} {t('totalNews')}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {total} {t('totalNews')}
+          </p>
         </div>
         <Link href="/admin/news/new">
           <Button className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-600 text-white shadow-md shadow-indigo-500/25 hover:shadow-lg transition-all duration-200 rounded-xl px-5">
@@ -407,9 +411,7 @@ export default function NewsListPage() {
               <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
                 {t('noNews')}
               </p>
-              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                {t('noNewsDetail')}
-              </p>
+              <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">{t('noNewsDetail')}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -510,7 +512,11 @@ export default function NewsListPage() {
                       </td>
                       <td className="px-4 py-3 hidden lg:table-cell">
                         <span className="text-sm text-slate-500 dark:text-slate-400">
-                          {formatDateWithTime(article.publishedAt || article.updatedAt, locale)}
+                          {formatDateWithTime(
+                            article.publishedAt || article.updatedAt,
+                            locale,
+                            timezone
+                          )}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -551,7 +557,8 @@ export default function NewsListPage() {
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('page')} <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
+            {t('page')}{' '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{page}</span> /{' '}
             <span className="font-semibold text-slate-700 dark:text-slate-300">{totalPages}</span> (
             {total} {t('newsCount')})
           </p>
@@ -658,7 +665,9 @@ export default function NewsListPage() {
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent className="rounded-2xl dark:bg-slate-900 dark:border-slate-700">
           <DialogHeader>
-            <DialogTitle className="text-lg dark:text-slate-100">{t('deleteDialog.title')}</DialogTitle>
+            <DialogTitle className="text-lg dark:text-slate-100">
+              {t('deleteDialog.title')}
+            </DialogTitle>
             <DialogDescription className="text-slate-500 dark:text-slate-400">
               {t('deleteDialog.description')}
             </DialogDescription>
