@@ -1,19 +1,48 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import api from '@/lib/api';
+import { getPublicSettings, getSiteName } from '@/lib/settings';
 import type { Category, News } from '@/types';
 import HomePageClient from './home-page';
 
 export const revalidate = 60;
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
   const { locale } = await params;
-  return {
-    title: locale === 'tr' ? 'NewsHaberGlobal - Güvenilir Haber Kaynağınız' : 'NewsHaberGlobal - Your Trusted News Source',
-    description: locale === 'tr'
+  const settings = await getPublicSettings();
+  const siteName = getSiteName(settings);
+
+  const title =
+    settings.seo_title ||
+    (locale === 'tr'
+      ? `${siteName} - Güvenilir Haber Kaynağınız`
+      : `${siteName} - Your Trusted News Source`);
+
+  const description =
+    settings.seo_description ||
+    (locale === 'tr'
       ? 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.'
-      : 'Your trusted source for breaking news, analysis, and in-depth reporting.',
+      : 'Your trusted source for breaking news, analysis, and in-depth reporting.');
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      siteName,
+    },
+    twitter: {
+      title,
+      description,
+      card: 'summary_large_image',
+    },
   };
 }
 
