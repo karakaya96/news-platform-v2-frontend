@@ -1,15 +1,12 @@
 'use client';
 
 import DOMPurify from 'isomorphic-dompurify';
-import { useEffect, useRef } from 'react';
 
 interface ArticleContentProps {
   content: string;
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const sanitizedContent = DOMPurify.sanitize(content, {
     ADD_TAGS: ['iframe', 'video', 'source', 'div', 'span'],
     ADD_ATTR: [
@@ -26,25 +23,6 @@ export function ArticleContent({ content }: ArticleContentProps) {
       'preload',
     ],
   });
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    containerRef.current.querySelectorAll<HTMLElement>('div[data-video-embed]').forEach((el) => {
-      if (el.querySelector('video, iframe')) return;
-      const src = el.getAttribute('data-video-src');
-      if (!src) return;
-      const video = document.createElement('video');
-      video.controls = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.className = 'w-full h-full object-contain';
-      const source = document.createElement('source');
-      source.src = src;
-      source.type = 'video/mp4';
-      video.appendChild(source);
-      el.appendChild(video);
-    });
-  }, [sanitizedContent]);
 
   return (
     <>
@@ -85,7 +63,6 @@ export function ArticleContent({ content }: ArticleContentProps) {
         }
       `}</style>
       <div
-        ref={containerRef}
         className="article-content-wrapper prose prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
