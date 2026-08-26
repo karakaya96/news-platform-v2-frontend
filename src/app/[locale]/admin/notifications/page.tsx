@@ -12,9 +12,9 @@ import {
   Trash2,
   XCircle,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { useTranslations, useLocale } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,7 +47,8 @@ interface NotificationLog {
   body: string;
   url: string | null;
   status: 'pending' | 'sent' | 'failed';
-  createdAt: string;
+  error_message: string | null;
+  created_at: string;
 }
 
 export default function NotificationsPage() {
@@ -72,9 +73,9 @@ export default function NotificationsPage() {
       if (statsRes.success && statsRes.data) setStats(statsRes.data);
       if (subRes.success && subRes.data) setSubscriptions(subRes.data);
       if (notifRes.success && notifRes.data) setNotifications(notifRes.data);
-} catch {
-        toast.error(t('loadError'));
-      } finally {
+    } catch {
+      toast.error(t('loadError'));
+    } finally {
       setLoading(false);
     }
   }, []);
@@ -153,9 +154,7 @@ export default function NotificationsPage() {
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
           {t('title')}
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          {t('description')}
-        </p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('description')}</p>
       </div>
 
       {/* Stats */}
@@ -168,7 +167,9 @@ export default function NotificationsPage() {
                   <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('totalSubscriptions')}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {t('totalSubscriptions')}
+                  </p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {stats.totalSubscriptions}
                   </p>
@@ -198,7 +199,9 @@ export default function NotificationsPage() {
                   <Mail className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">{t('emailSubscribers')}</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {t('emailSubscribers')}
+                  </p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                     {stats.emailSubscriptions}
                   </p>
@@ -250,7 +253,11 @@ export default function NotificationsPage() {
                   onClick={() => setStatusFilter(status)}
                   className="rounded-xl text-xs"
                 >
-                  {status === 'all' ? t('allStatus') : status === 'active' ? t('active') : t('inactive')}
+                  {status === 'all'
+                    ? t('allStatus')
+                    : status === 'active'
+                      ? t('active')
+                      : t('inactive')}
                 </Button>
               ))}
             </div>
@@ -483,12 +490,20 @@ export default function NotificationsPage() {
                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       {notif.body}
                     </p>
+                    {notif.status === 'failed' && notif.error_message && (
+                      <p
+                        className="text-xs text-red-500 dark:text-red-400 mt-1 truncate"
+                        title={notif.error_message}
+                      >
+                        ⚠ {notif.error_message}
+                      </p>
+                    )}
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline" className="rounded-full text-[10px]">
                         {notif.type === 'browser' ? t('browserType') : t('emailType')}
                       </Badge>
                       <span className="text-[10px] text-slate-400">
-                        {formatDateWithTime(notif.createdAt, locale)}
+                        {formatDateWithTime(notif.created_at, locale)}
                       </span>
                     </div>
                   </div>
