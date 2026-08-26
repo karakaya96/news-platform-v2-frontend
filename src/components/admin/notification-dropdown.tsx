@@ -1,8 +1,8 @@
 'use client';
 
-import { BellOff, Clock, FileText, Newspaper, Star, Zap } from 'lucide-react';
+import { BellOff, Clock, FileText, Loader2, Newspaper, Star, Zap } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
 import type { News } from '@/types';
 
@@ -12,8 +12,7 @@ interface NotificationDropdownProps {
   notifications: News[];
   visibleNotifications: News[];
   hasMore: boolean;
-  showAll: boolean;
-  onShowAll: () => void;
+  onLoadMore: () => void;
 }
 
 const VIEWED_KEY = 'admin_viewed_articles';
@@ -35,13 +34,14 @@ export function NotificationDropdown({
   notifications,
   visibleNotifications,
   hasMore,
-  showAll: _showAll,
-  onShowAll,
+  onLoadMore,
 }: NotificationDropdownProps) {
   const t = useTranslations('admin');
   const locale = useLocale();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Track viewed ids at open time so we can highlight "new" items
   const [viewedAtOpen, setViewedAtOpen] = useState<Set<number>>(new Set());
@@ -79,6 +79,32 @@ export function NotificationDropdown({
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [isOpen, onClose]);
+
+  // Infinite scroll handler
+  const handleScroll = useCallback(() => {
+    const list = listRef.current;
+    if (!list || !hasMore || loadingMore) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = list;
+    // Load more when scrolled to 80% of the list
+    if (scrollTop + clientHeight >= scrollHeight * 0.8) {
+      setLoadingMore(true);
+      // Simulate a short delay for smooth UX
+      setTimeout(() => {
+        onLoadMore();
+        setLoadingMore(false);
+      }, 300);
+    }
+  }, [hasMore, loadingMore, onLoadMore]);
+
+  // Attach scroll listener
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list || !isOpen) return;
+
+    list.addEventListener('scroll', handleScroll, { passive: true });
+    return () => list.removeEventListener('scroll', handleScroll);
+  }, [isOpen, handleScroll]);
 
   if (!isOpen) return null;
 
@@ -167,54 +193,75 @@ export function NotificationDropdown({
           </button>
         </div>
 
-        {/* List */}
-        <div className="overflow-y-auto flex-1 min-h-0 overscroll-contain">
+        {/* List with infinite scroll */}
+        <div ref={listRef} className="overflow-y-auto flex-1 min-h-0 overscroll-contain">
           {visibleNotifications.length > 0 ? (
-            visibleNotifications.map((article) => {
-              const isNew = !viewedAtOpen.has(article.id);
-              return (
-                <button
-                  key={article.id}
-                  onClick={() => {
-                    router.push(`/admin/news/${article.id}/edit`);
-                    onClose();
-                  }}
-                  className={`w-full flex items-start gap-3 px-4 py-3 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/30 active:bg-indigo-100 dark:active:bg-indigo-950/50 transition-colors text-left border-b border-slate-50 dark:border-slate-800/50 last:border-b-0 ${
-                    isNew ? 'bg-indigo-50/40 dark:bg-indigo-950/20' : ''
-                  }`}
-                >
-                  <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 shrink-0">
-                    <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
-                    {isNew && (
-                      <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-900" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium leading-snug text-slate-900 dark:text-slate-100 line-clamp-2">
-                      {article.title}
-                    </p>
-                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                      {article.isBreaking && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
-                          <Zap className="h-2.5 w-2.5" />
-                          {t('newsPage.breakingNews', { fallback: 'Son Dakika' })}
-                        </span>
+            <>
+              {visibleNotifications.map((article) => {
+                const isNew = !viewedAtOpen.has(article.id);
+                return (
+                  <button
+                    key={article.id}
+                    onClick={() => {
+                      router.push(`/admin/news/${article.id}/edit`);
+                      onClose();
+                    }}
+                    className={`w-full flex items-start gap-3 px-4 py-3 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/30 active:bg-indigo-100 dark:active:bg-indigo-950/50 transition-colors text-left border-b border-slate-50 dark:border-slate-800/50 last:border-b-0 ${
+                      isNew ? 'bg-indigo-50/40 dark:bg-indigo-950/20' : ''
+                    }`}
+                  >
+                    <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/40 shrink-0">
+                      <FileText className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                      {isNew && (
+                        <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-900" />
                       )}
-                      {article.isFeatured && !article.isBreaking && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
-                          <Star className="h-2.5 w-2.5" />
-                          {t('newsPage.featured', { fallback: 'Öne Çıkan' })}
-                        </span>
-                      )}
-                      <span className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 ml-auto">
-                        <Clock className="h-3 w-3" />
-                        {relativeTime(article.publishedAt ?? undefined)}
-                      </span>
                     </div>
-                  </div>
-                </button>
-              );
-            })
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-snug text-slate-900 dark:text-slate-100 line-clamp-2">
+                        {article.title}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                        {article.isBreaking && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-950 px-1.5 py-0.5 rounded-full">
+                            <Zap className="h-2.5 w-2.5" />
+                            {t('newsPage.breakingNews', { fallback: 'Son Dakika' })}
+                          </span>
+                        )}
+                        {article.isFeatured && !article.isBreaking && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950 px-1.5 py-0.5 rounded-full">
+                            <Star className="h-2.5 w-2.5" />
+                            {t('newsPage.featured', { fallback: 'Öne Çıkan' })}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 ml-auto">
+                          <Clock className="h-3 w-3" />
+                          {relativeTime(article.publishedAt ?? undefined)}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+
+              {/* Loading more indicator */}
+              {loadingMore && (
+                <div className="flex items-center justify-center py-3 gap-2">
+                  <Loader2 className="h-4 w-4 text-indigo-500 animate-spin" />
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
+                    {locale === 'en' ? 'Loading...' : 'Yükleniyor...'}
+                  </span>
+                </div>
+              )}
+
+              {/* Scroll to load more hint */}
+              {hasMore && !loadingMore && (
+                <div className="flex items-center justify-center py-2">
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                    {locale === 'en' ? 'Scroll for more' : 'Daha fazlası için kaydır'}
+                  </span>
+                </div>
+              )}
+            </>
           ) : (
             <div className="px-6 py-12 text-center">
               <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 mb-3">
@@ -233,19 +280,8 @@ export function NotificationDropdown({
         </div>
 
         {/* Footer */}
-        {(hasMore || notifications.length > 0) && (
-          <div className="px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 flex items-center justify-between flex-shrink-0">
-            {hasMore ? (
-              <button
-                onClick={onShowAll}
-                className="text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-              >
-                {t('showMore', { fallback: 'Daha Fazla Göster' })} (
-                {notifications.length - visibleNotifications.length})
-              </button>
-            ) : (
-              <span />
-            )}
+        {notifications.length > 0 && (
+          <div className="px-4 py-2.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/50 flex items-center justify-end flex-shrink-0">
             <button
               onClick={() => {
                 router.push('/admin/news');

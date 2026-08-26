@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AdminHeader } from '@/components/admin/admin-header';
 import { AdminSidebar } from '@/components/admin/admin-sidebar';
 import { NotificationDropdown } from '@/components/admin/notification-dropdown';
@@ -11,7 +11,8 @@ import { isAuthenticated } from '@/lib/auth';
 import type { News } from '@/types';
 
 const VIEWED_KEY = 'admin_viewed_articles';
-const MAX_VISIBLE = 10;
+const INITIAL_VISIBLE = 10;
+const LOAD_MORE_COUNT = 10;
 
 function getViewedIds(): Set<number> {
   if (typeof window === 'undefined') return new Set();
@@ -41,7 +42,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [notifications, setNotifications] = useState<News[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
+  const justClosedRef = useRef(false);
 
   const getPageTitle = (path: string): string => {
     if (path.endsWith('/admin/dashboard')) return t('dashboard');
@@ -109,6 +111,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [isLoginPage]);
 
   const handleNotificationToggle = useCallback(() => {
+    // Prevent bell click from reopening dropdown immediately after close
+    if (justClosedRef.current) {
+      justClosedRef.current = false;
+      return;
+    }
     if (!showNotifications) {
       // Mark all as viewed
       const viewed = getViewedIds();
@@ -118,16 +125,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       saveViewedIds(viewed);
       setUnreadCount(0);
     }
-    setShowNotifications(!showNotifications);
-    setShowAll(false);
+    setShowNotifications((prev) => !prev);
+    setVisibleCount(INITIAL_VISIBLE);
   }, [showNotifications, notifications]);
 
   const handleCloseNotifications = useCallback(() => {
+    justClosedRef.current = true;
     setShowNotifications(false);
+    setVisibleCount(INITIAL_VISIBLE);
+    // Reset the flag after a short delay so future bell clicks work normally
+    setTimeout(() => {
+      justClosedRef.current = false;
+    }, 200);
   }, []);
 
-  const visibleNotifications = showAll ? notifications : notifications.slice(0, MAX_VISIBLE);
-  const hasMore = notifications.length > MAX_VISIBLE && !showAll;
+  const handleLoadMore = useCallback(() => {
+    setVisibleCount((prev) => prev + LOAD_MORE_COUNT);
+  }, []);
+
+  const visibleNotifications = notifications.slice(0, visibleCount);
+  const hasMore = notifications.length > visibleCount;
 
   if (isLoginPage) {
     return <>{children}</>;
@@ -160,8 +177,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         notifications={notifications}
         visibleNotifications={visibleNotifications}
         hasMore={hasMore}
-        showAll={showAll}
-        onShowAll={() => setShowAll(true)}
+        onLoadMore={handleLoadMore}
       />
     </div>
   );
