@@ -10,8 +10,8 @@ function parseDate(dateString: string): Date {
   if (!dateString) return new Date(Number.NaN);
 
   // Handle SQLite datetime format: '2026-06-27 15:04:13' (no T, no Z)
-  // Convert to ISO format: '2026-06-27T15:04:13'
-  const isoString = dateString.includes('T') ? dateString : dateString.replace(' ', 'T');
+  // Convert to ISO format with Z suffix so it's parsed as UTC
+  const isoString = dateString.includes('T') ? dateString : dateString.replace(' ', 'T') + 'Z';
 
   return new Date(isoString);
 }

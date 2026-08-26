@@ -108,7 +108,9 @@ export function CommentsSection({
 
   const formatDate = (dateStr: string) => {
     try {
-      const d = new Date(dateStr);
+      // Handle SQLite datetime format: '2026-06-27 15:04:13' → parse as UTC
+      const isoStr = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T') + 'Z';
+      const d = new Date(isoStr);
       return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
         year: 'numeric',
         month: 'long',

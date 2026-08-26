@@ -110,7 +110,9 @@ export function NotificationDropdown({
 
   const relativeTime = (dateStr?: string) => {
     if (!dateStr) return '-';
-    const diff = Date.now() - new Date(dateStr).getTime();
+    // Handle SQLite datetime format: parse as UTC
+    const isoStr = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T') + 'Z';
+    const diff = Date.now() - new Date(isoStr).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return locale === 'en' ? 'now' : 'şimdi';
     if (mins < 60) return locale === 'en' ? `${mins}m` : `${mins} dk`;
