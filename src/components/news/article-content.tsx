@@ -43,9 +43,8 @@ export function ArticleContent({ content }: ArticleContentProps) {
           border-radius: 12px !important;
           overflow: hidden !important;
           background: #000 !important;
-          padding-bottom: 56.25% !important;
-          height: 0 !important;
-          max-width: 100% !important;
+          aspect-ratio: 16 / 9 !important;
+          width: 100% !important;
         }
         .article-content-wrapper .video-embed iframe {
           position: absolute !important;
@@ -78,14 +77,12 @@ export function ArticleContent({ content }: ArticleContentProps) {
           border-radius: 12px !important;
           margin: 24px 0 !important;
         }
-        /* Override prose typography styles for video */
         .article-content-wrapper.prose .video-embed {
           margin: 24px 0 !important;
         }
         .article-content-wrapper.prose .video-embed video {
           margin: 0 !important;
         }
-        /* Ensure prose doesn't override video dimensions */
         .article-content-wrapper.prose .video-embed,
         .article-content-wrapper.prose .video-embed * {
           max-width: none !important;

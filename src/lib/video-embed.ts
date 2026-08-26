@@ -19,7 +19,7 @@ export function processVideoEmbeds(html: string): string {
     }
 
     const wrapperStyle =
-      'position:relative;margin:24px 0;border-radius:12px;overflow:hidden;background:#000;padding-bottom:56.25%;height:0;';
+      'position:relative;margin:24px 0;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;width:100%;';
     const mediaStyle =
       'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;';
     const iframeStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;';
