@@ -1,9 +1,9 @@
 'use client';
 
 import { BellOff, Clock, FileText, Newspaper, Star, Zap } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from '@/i18n/navigation';
 import type { News } from '@/types';
 
 interface NotificationDropdownProps {

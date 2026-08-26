@@ -3,9 +3,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronDown, ChevronUp, Eye, Loader2, Star, Zap } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslations } from 'next-intl';
 import { z } from 'zod';
 import { RichTextEditor } from '@/components/admin/rich-text-editor';
 import { Button } from '@/components/ui/button';
@@ -187,9 +187,9 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
 
           {/* SEO Section */}
           <Card>
-<CardHeader className="cursor-pointer" onClick={() => setShowSeo(!showSeo)}>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">{t('seoCard')}</CardTitle>
+            <CardHeader className="cursor-pointer" onClick={() => setShowSeo(!showSeo)}>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">{t('seoCard')}</CardTitle>
                 {showSeo ? (
                   <ChevronUp className="h-5 w-5 text-muted-foreground" />
                 ) : (
@@ -225,41 +225,43 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
         <div className="space-y-6">
           {/* Publish */}
           <Card>
-<CardHeader>
-            <CardTitle className="text-lg">{t('publishCard')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>{t('statusLabel')}</Label>
-              <Select
-                value={status}
-                onValueChange={(val) => setValue('status', val as 'draft' | 'published')}
-              >
-                <SelectTrigger className="dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
-                  <SelectValue placeholder={t('statusPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
-                  <SelectItem
-                    value="draft"
-                    className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                  >
-                    {t('draft')}
-                  </SelectItem>
-                  <SelectItem
-                    value="published"
-                    className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                  >
-                    {t('published')}
-                  </SelectItem>
-                  <SelectItem
-                    value="archived"
-                    className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                  >
-                    {t('archived')}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <CardHeader>
+              <CardTitle className="text-lg">{t('publishCard')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t('statusLabel')}</Label>
+                <Select
+                  value={status}
+                  onValueChange={(val) =>
+                    setValue('status', val as 'draft' | 'published' | 'archived')
+                  }
+                >
+                  <SelectTrigger className="dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100">
+                    <SelectValue placeholder={t('statusPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
+                    <SelectItem
+                      value="draft"
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      {t('draft')}
+                    </SelectItem>
+                    <SelectItem
+                      value="published"
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      {t('published')}
+                    </SelectItem>
+                    <SelectItem
+                      value="archived"
+                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                    >
+                      {t('archived')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div
                 className={cn(
@@ -325,7 +327,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                   >
                     <Zap className="h-4 w-4" />
                   </div>
-<div>
+                  <div>
                     <Label className="cursor-pointer font-medium text-sm dark:text-slate-100">
                       {t('breakingLabel')}
                     </Label>
@@ -367,61 +369,61 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
 
           {/* Category */}
           <Card>
-<CardHeader>
-            <CardTitle className="text-lg">{t('categoryCard')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loadingCategories ? (
-              <div className="h-10 bg-muted animate-pulse rounded" />
-            ) : (
-              <Select
-                value={watch('categoryId')}
-                onValueChange={(val) => setValue('categoryId', val)}
-              >
-                <SelectTrigger
-                  className={cn(
-                    errors.categoryId && 'border-red-500',
-                    'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100'
-                  )}
+            <CardHeader>
+              <CardTitle className="text-lg">{t('categoryCard')}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingCategories ? (
+                <div className="h-10 bg-muted animate-pulse rounded" />
+              ) : (
+                <Select
+                  value={watch('categoryId')}
+                  onValueChange={(val) => setValue('categoryId', val)}
                 >
-                  <SelectValue placeholder={t('categoryPlaceholder')} />
-                </SelectTrigger>
-                <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
-                  {categories.map((cat) => (
-                    <SelectItem
-                      key={cat.id}
-                      value={String(cat.id)}
-                      className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
-                    >
-                      {translateCategoryName(cat.slug, cat.name)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-            {errors.categoryId && (
-              <p className="text-sm text-red-500 mt-1">{errors.categoryId.message}</p>
-            )}
-          </CardContent>
+                  <SelectTrigger
+                    className={cn(
+                      errors.categoryId && 'border-red-500',
+                      'dark:bg-slate-800 dark:border-slate-600 dark:text-slate-100'
+                    )}
+                  >
+                    <SelectValue placeholder={t('categoryPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-600">
+                    {categories.map((cat) => (
+                      <SelectItem
+                        key={cat.id}
+                        value={String(cat.id)}
+                        className="dark:text-slate-100 dark:focus:bg-slate-700 dark:focus:text-white"
+                      >
+                        {translateCategoryName(cat.slug, cat.name)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              {errors.categoryId && (
+                <p className="text-sm text-red-500 mt-1">{errors.categoryId.message}</p>
+              )}
+            </CardContent>
           </Card>
 
           {/* Image */}
           <Card>
-<CardHeader>
-            <CardTitle className="text-lg">{t('imageCard')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="imageUrl">{t('imageUrl')}</Label>
-              <Input
-                id="imageUrl"
-                placeholder={t('imagePlaceholder')}
-                {...register('imageUrl')}
-              />
-              {errors.imageUrl && (
-                <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
-              )}
-            </div>
+            <CardHeader>
+              <CardTitle className="text-lg">{t('imageCard')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="imageUrl">{t('imageUrl')}</Label>
+                <Input
+                  id="imageUrl"
+                  placeholder={t('imagePlaceholder')}
+                  {...register('imageUrl')}
+                />
+                {errors.imageUrl && (
+                  <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
+                )}
+              </div>
               {imageUrl && (
                 <div className="aspect-video rounded-lg overflow-hidden bg-muted relative">
                   <Image
@@ -443,12 +445,12 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
       {showPreview && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto">
-<div className="flex items-center justify-between p-4 border-b">
-            <h3 className="font-semibold">{t('previewTitle')}</h3>
-            <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
-              {t('previewClose')}
-            </Button>
-          </div>
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="font-semibold">{t('previewTitle')}</h3>
+              <Button variant="ghost" size="sm" onClick={() => setShowPreview(false)}>
+                {t('previewClose')}
+              </Button>
+            </div>
             <div className="p-6">
               <h1 className="text-3xl font-bold mb-4 dark:text-slate-100">{title}</h1>
               {imageUrl && (

@@ -84,6 +84,8 @@ export function CommentsSection({
         setContent('');
         setParentId(null);
         setReplyingTo(null);
+        // Note: New comment is pending approval, so we don't add it to the list yet
+        // It will appear after admin approves it
       } else {
         setError(data.error || t('submitFailed'));
       }

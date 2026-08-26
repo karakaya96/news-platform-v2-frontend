@@ -1,10 +1,10 @@
 'use client';
 
 import { Bell, LogOut, Menu, Settings } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from '@/i18n/navigation';
 import { api, setAuthToken } from '@/lib/api';
 import { getUser, removeToken } from '@/lib/auth';
 import { getAvatarUrl } from '@/lib/utils';

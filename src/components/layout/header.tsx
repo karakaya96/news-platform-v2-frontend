@@ -3,7 +3,7 @@
 import { Menu, Search, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import type React from 'react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +38,15 @@ export function Header({ settings, navigation }: HeaderProps) {
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   const siteName = getSiteName(settings);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (suggestionTimeoutRef.current) {
+        clearTimeout(suggestionTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const fetchSuggestions = useCallback(async (q: string) => {
     if (q.length < 2) {

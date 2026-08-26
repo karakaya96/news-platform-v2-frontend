@@ -1,10 +1,10 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from '@/i18n/navigation';
+import type { NAVIGATION } from '@/lib/constants';
+import type { PublicSettings } from '@/lib/settings';
 import { Footer } from './footer';
 import { Header } from './header';
-import type { PublicSettings } from '@/lib/settings';
-import { NAVIGATION } from '@/lib/constants';
 
 interface LayoutShellProps {
   settings: PublicSettings;

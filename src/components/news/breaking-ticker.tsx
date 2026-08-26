@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 import type { News } from '@/types';
 
 interface BreakingTickerProps {
@@ -16,15 +16,20 @@ export function BreakingTicker({ articles }: BreakingTickerProps) {
   useEffect(() => {
     if (articles.length <= 1) return;
 
+    let innerTimeout: ReturnType<typeof setTimeout> | null = null;
+
     const interval = setInterval(() => {
       setIsFading(true);
-      setTimeout(() => {
+      innerTimeout = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % articles.length);
         setIsFading(false);
       }, 400);
     }, 4000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (innerTimeout) clearTimeout(innerTimeout);
+    };
   }, [articles.length]);
 
   if (articles.length === 0) return null;
