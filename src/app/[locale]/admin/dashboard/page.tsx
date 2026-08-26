@@ -17,15 +17,15 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
-import { useTranslations, useLocale } from 'next-intl';
 import Image from 'next/image';
-import { Link } from '@/i18n/navigation';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Link } from '@/i18n/navigation';
 import { api } from '@/lib/api';
 import { translateCategoryName } from '@/lib/constants';
 import { formatDateWithTime } from '@/lib/utils';
@@ -135,10 +135,7 @@ export default function DashboardPage() {
       <div className="space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {Array.from({ length: 7 }).map((_, i) => (
-            <Card
-              key={`skeleton-statcard-${i}`}
-              className="border-0 shadow-md rounded-2xl"
-            >
+            <Card key={`skeleton-statcard-${i}`} className="border-0 shadow-md rounded-2xl">
               <CardContent className="p-6">
                 <Skeleton className="h-4 w-24 mb-3" />
                 <Skeleton className="h-9 w-16 mb-2" />
@@ -151,10 +148,7 @@ export default function DashboardPage() {
           <CardContent className="p-6">
             <Skeleton className="h-6 w-40 mb-6" />
             {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton
-                key={`skeleton-stat-${i}`}
-                className="h-14 w-full mb-3 rounded-xl"
-              />
+              <Skeleton key={`skeleton-stat-${i}`} className="h-14 w-full mb-3 rounded-xl" />
             ))}
           </CardContent>
         </Card>
@@ -398,7 +392,7 @@ export default function DashboardPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {article.imageUrl ? (
-                          <div className="h-10 w-10 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
+                          <div className="relative h-10 w-10 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex-shrink-0 ring-1 ring-slate-200 dark:ring-slate-700">
                             <Image
                               src={article.imageUrl}
                               alt=""
