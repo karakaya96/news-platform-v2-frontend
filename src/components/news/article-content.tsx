@@ -28,31 +28,23 @@ export function ArticleContent({ content }: ArticleContentProps) {
     <>
       <style>{`
         .article-content-wrapper .video-embed-wrapper {
-          position: relative !important;
           margin: 24px 0 !important;
           border-radius: 12px !important;
           overflow: hidden !important;
           background: #000 !important;
-          aspect-ratio: 16 / 9 !important;
-          width: 100% !important;
-        }
-        .article-content-wrapper .video-embed-wrapper iframe {
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-          border: 0 !important;
-          border-radius: 12px !important;
         }
         .article-content-wrapper .video-embed-wrapper video {
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
+          display: block !important;
           width: 100% !important;
-          height: 100% !important;
-          object-fit: contain !important;
+          max-height: 500px !important;
           background: #000 !important;
+        }
+        .article-content-wrapper .video-embed-wrapper iframe {
+          display: block !important;
+          width: 100% !important;
+          aspect-ratio: 16 / 9 !important;
+          border: 0 !important;
+          border-radius: 12px !important;
         }
         .article-content-wrapper iframe:not(.video-embed-wrapper iframe) {
           width: 100% !important;
