@@ -1,10 +1,29 @@
 'use client';
 
+import DOMPurify from 'isomorphic-dompurify';
+
 interface ArticleContentProps {
   content: string;
 }
 
 export function ArticleContent({ content }: ArticleContentProps) {
+  const sanitizedContent = DOMPurify.sanitize(content, {
+    ADD_TAGS: ['iframe', 'video', 'source', 'div', 'span'],
+    ADD_ATTR: [
+      'allow',
+      'allowfullscreen',
+      'frameborder',
+      'scrolling',
+      'data-video-embed',
+      'data-video-src',
+      'data-video-type',
+      'data-video-title',
+      'controls',
+      'playsinline',
+      'preload',
+    ],
+  });
+
   return (
     <>
       <style>{` 
@@ -46,7 +65,7 @@ export function ArticleContent({ content }: ArticleContentProps) {
       `}</style>
       <div
         className="article-content-wrapper prose prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
-        dangerouslySetInnerHTML={{ __html: content }}
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
       />
     </>
   );

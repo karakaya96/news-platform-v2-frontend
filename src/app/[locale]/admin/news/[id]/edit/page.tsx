@@ -1,17 +1,16 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
-export const runtime = 'edge';
+// NOT: Bu sayfa client-side'da çalışır ('use client' var).
+// 'runtime = edge' kaldırıldı çünkü localStorage ve document API'leri edge'de çalışmaz.
 
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { NewsForm } from '@/components/admin/news-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/lib/api';
 import type { News } from '@/types';
-import { useTranslations } from 'next-intl';
 
 export default function EditArticlePage() {
   const t = useTranslations('admin.editNewsPage');

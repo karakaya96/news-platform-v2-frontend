@@ -54,7 +54,9 @@ export function getUser(): AdminUser | null {
       id: String(payload.sub || payload.id || ''),
       name: String(payload.name || payload.email || 'Admin'),
       email: String(payload.email || ''),
-      role: (['admin', 'editor', 'author', 'viewer'].includes(String(payload.role)) ? payload.role : 'viewer') as AdminUser['role'],
+      role: (['admin', 'editor', 'author', 'viewer'].includes(String(payload.role))
+        ? payload.role
+        : 'viewer') as AdminUser['role'],
     };
     localStorage.setItem(USER_KEY, JSON.stringify(user));
     return user;
@@ -63,6 +65,11 @@ export function getUser(): AdminUser | null {
   }
 }
 
+/**
+ * Client-side JWT decode (imza doğrulaması YAPILMAZ).
+ * İmza doğrulaması server-side'da (backend auth middleware) yapılmalıdır.
+ * Bu fonksiyon sadece token payload'ını okumak için kullanılır.
+ */
 function decodeJwtPayload(token: string): Record<string, unknown> {
   const parts = token.split('.');
   if (parts.length !== 3) throw new Error('Invalid JWT');

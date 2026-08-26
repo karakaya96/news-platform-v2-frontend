@@ -6,6 +6,7 @@ const _env =
     : {};
 const BASE_URL = _env.NEXT_PUBLIC_API_URL || 'https://news-v2-api.karakaya-mk96.workers.dev';
 
+// Client-side token storage (SSR'da paylaşılmaz)
 let authToken: string | null = null;
 
 export function setAuthToken(token: string | null) {
@@ -13,6 +14,8 @@ export function setAuthToken(token: string | null) {
 }
 
 export function getAuthToken(): string | null {
+  // Server-side'da token kullanılmamalı
+  if (typeof window === 'undefined') return null;
   return authToken;
 }
 
