@@ -54,6 +54,7 @@ export default function EditArticlePage() {
     isBreaking: boolean;
     seoTitle?: string;
     seoDescription?: string;
+    seoKeywords?: string;
   }) => {
     if (!data.content) {
       toast.error(t('contentRequired'));
@@ -74,6 +75,7 @@ export default function EditArticlePage() {
         is_breaking: data.isBreaking,
         seo_title: data.seoTitle || '',
         seo_description: data.seoDescription || '',
+        seo_keywords: data.seoKeywords || '',
       });
 
       if (res.success) {

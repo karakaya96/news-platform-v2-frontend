@@ -24,6 +24,7 @@ export default function NewArticlePage() {
     isBreaking: boolean;
     seoTitle?: string;
     seoDescription?: string;
+    seoKeywords?: string;
   }) => {
     if (!data.content) {
       toast.error('İçerik zorunludur');
@@ -44,6 +45,7 @@ export default function NewArticlePage() {
         is_breaking: data.isBreaking,
         seo_title: data.seoTitle || '',
         seo_description: data.seoDescription || '',
+        seo_keywords: data.seoKeywords || '',
       });
 
       if (res.success) {

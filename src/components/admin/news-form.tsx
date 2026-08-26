@@ -52,6 +52,7 @@ function createNewsSchema(t: ReturnType<typeof useTranslations>) {
     isBreaking: z.boolean(),
     seoTitle: z.string().max(70).optional(),
     seoDescription: z.string().max(160).optional(),
+    seoKeywords: z.string().max(500).optional(),
   });
 }
 
@@ -86,6 +87,7 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
       isBreaking: Boolean(article?.isBreaking),
       seoTitle: article?.seoTitle || '',
       seoDescription: article?.seoDescription || '',
+      seoKeywords: article?.seoKeywords || '',
     },
   });
 
@@ -215,6 +217,16 @@ export function NewsForm({ article, onSubmit, isSubmitting }: NewsFormProps) {
                     rows={3}
                     {...register('seoDescription')}
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="seoKeywords">{t('seoKeywords')}</Label>
+                  <Textarea
+                    id="seoKeywords"
+                    placeholder={t('seoKeywordsPlaceholder')}
+                    rows={2}
+                    {...register('seoKeywords')}
+                  />
+                  <p className="text-xs text-muted-foreground">{t('seoKeywordsHint')}</p>
                 </div>
               </CardContent>
             )}
