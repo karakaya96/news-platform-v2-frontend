@@ -1,46 +1,61 @@
-export default function NotFound() {
+import { FileQuestion, Home, Newspaper } from 'lucide-react';
+import { getTranslations } from 'next-intl/server';
+import { Button } from '@/components/ui/button';
+import { Link } from '@/i18n/navigation';
+import { getPublicSettings, getSiteName } from '@/lib/settings';
+
+export default async function NotFound() {
+  let t: (key: string, params?: Record<string, string>) => string;
+  let siteName = 'NewsHaberGlobal';
+  try {
+    t = await getTranslations('notFound');
+    const settings = await getPublicSettings();
+    siteName = getSiteName(settings);
+  } catch {
+    t = (key: string, _params?: Record<string, string>) => {
+      const defaults: Record<string, string> = {
+        title: 'Sayfa bulunamadı',
+        description: `Aradığınız sayfa ${siteName} üzerinde mevcut değil ya da taşınmış olabilir.`,
+        backHome: 'Ana Sayfaya Dön',
+        browseNews: 'Haberlere Göz At',
+      };
+      return defaults[key] || key;
+    };
+  }
+
   return (
     <div className="container mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-4 py-16 text-center">
       <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950/50">
-        <svg
-          className="h-10 w-10 text-indigo-500 dark:text-indigo-400"
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-          <path d="M12 17h.01" />
-        </svg>
+        <FileQuestion className="h-10 w-10 text-indigo-500 dark:text-indigo-400" />
       </div>
+
       <p className="text-sm font-semibold uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
         404
       </p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 sm:text-4xl">
-        Sayfa bulunamadı
+        {t('title')}
       </h1>
       <p className="mt-3 text-base text-slate-500 dark:text-slate-400">
-        Aradığınız sayfa mevcut değil ya da taşınmış olabilir.
+        {t('description', { siteName })}
       </p>
+
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <a
-          href="/"
-          className="inline-flex items-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-md hover:bg-indigo-700 transition-colors"
+        <Button asChild className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white">
+          <Link href="/">
+            <Home className="mr-2 h-4 w-4" />
+            {t('backHome')}
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          className="rounded-xl border-slate-200 dark:border-slate-700"
         >
-          Ana Sayfaya Dön
-        </a>
-        <a
-          href="/tr/categories"
-          className="inline-flex items-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-        >
-          Haberlere Göz At
-        </a>
+          <Link href="/categories">
+            <Newspaper className="mr-2 h-4 w-4" />
+            {t('browseNews')}
+          </Link>
+        </Button>
       </div>
     </div>
   );
