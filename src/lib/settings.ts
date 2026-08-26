@@ -57,7 +57,7 @@ const DEFAULTS: PublicSettings = {
 export async function getPublicSettings(): Promise<PublicSettings> {
   try {
     const res = await fetch(`${API_URL}/api/settings/public/all`, {
-      next: { revalidate: 300 },
+      cache: 'no-store',
     });
     if (!res.ok) return DEFAULTS;
     const data = await res.json();
