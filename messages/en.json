@@ -595,6 +595,7 @@
       "logoUrl": "Logo URL",
       "faviconUrl": "Favicon URL",
       "language": "Language",
+      "timezone": "Timezone",
       "turkish": "Türkçe",
       "english": "English",
       "seoSettings": "SEO Settings",

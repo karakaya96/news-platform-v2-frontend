@@ -7,6 +7,7 @@ export interface PublicSettings {
   site_logo: string;
   site_favicon: string;
   site_language: string;
+  site_timezone: string;
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
@@ -28,11 +29,13 @@ export interface PublicSettings {
 
 const DEFAULTS: PublicSettings = {
   site_name: 'NewsHaberGlobal',
-  site_description: 'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.',
+  site_description:
+    'Son dakika haberleri, analizler ve derinlemesine raporlama için güvenilir kaynağınız.',
   site_url: 'https://newshaberglobal.vercel.app',
   site_logo: '',
   site_favicon: '',
   site_language: 'tr',
+  site_timezone: 'Europe/Istanbul',
   seo_title: '',
   seo_description: '',
   seo_keywords: 'haber, son dakika, güncel haberler, Türkiye haberleri, dünya haberleri',

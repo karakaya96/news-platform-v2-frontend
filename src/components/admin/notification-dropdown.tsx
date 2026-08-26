@@ -4,6 +4,7 @@ import { BellOff, Clock, FileText, Loader2, Newspaper, Star, Zap } from 'lucide-
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from '@/i18n/navigation';
+import { useTimezone } from '@/lib/timezone';
 import type { News } from '@/types';
 
 interface NotificationDropdownProps {
@@ -38,6 +39,7 @@ export function NotificationDropdown({
 }: NotificationDropdownProps) {
   const t = useTranslations('admin');
   const locale = useLocale();
+  const timezone = useTimezone();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -111,7 +113,7 @@ export function NotificationDropdown({
   const relativeTime = (dateStr?: string) => {
     if (!dateStr) return '-';
     // Handle SQLite datetime format: parse as UTC
-    const isoStr = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T') + 'Z';
+    const isoStr = dateStr.includes('T') ? dateStr : `${dateStr.replace(' ', 'T')}Z`;
     const diff = Date.now() - new Date(isoStr).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return locale === 'en' ? 'now' : 'şimdi';
@@ -123,7 +125,7 @@ export function NotificationDropdown({
     return new Date(dateStr).toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
       day: 'numeric',
       month: 'short',
-      timeZone: 'Europe/Istanbul',
+      timeZone: timezone,
     });
   };
 

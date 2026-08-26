@@ -3,18 +3,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Bell,
+  CheckCircle2,
   Globe,
+  Loader2,
   Mail,
   MessageCircle,
   Save,
   Search,
   Settings,
   Share2,
-  Loader2,
-  CheckCircle2,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -25,10 +26,9 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { useTranslations, useLocale } from 'next-intl';
-import { useRouter, usePathname } from '@/i18n/navigation';
 
 const settingsSchema = z.object({
   site_name: z.string().min(1, 'Site adı zorunludur'),
@@ -37,6 +37,7 @@ const settingsSchema = z.object({
   site_logo: z.string().url().optional().or(z.literal('')),
   site_favicon: z.string().url().optional().or(z.literal('')),
   site_language: z.string(),
+  site_timezone: z.string(),
   seo_title: z.string().max(70).optional(),
   seo_description: z.string().max(160).optional(),
   seo_keywords: z.string().optional(),
@@ -80,7 +81,6 @@ export default function SettingsPage() {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     reset,
     control,
@@ -129,6 +129,7 @@ export default function SettingsPage() {
           site_logo: data.site_logo || '',
           site_favicon: data.site_favicon || '',
           site_language: data.site_language || 'tr',
+          site_timezone: data.site_timezone || 'Europe/Istanbul',
           seo_title: data.seo_title || '',
           seo_description: data.seo_description || '',
           seo_keywords: data.seo_keywords || '',
@@ -172,15 +173,19 @@ export default function SettingsPage() {
         toast.success(t('saved'));
         setSaved(true);
         reset(data);
-        
+
         if (data.site_language) {
           document.cookie = `SITE_DEFAULT_LOCALE=${data.site_language}; path=/; max-age=31536000; SameSite=Lax`;
-          
+
           if (data.site_language !== locale) {
             router.replace(pathname, { locale: data.site_language });
           }
         }
-        
+
+        if (data.site_timezone) {
+          document.cookie = `SITE_TIMEZONE=${data.site_timezone}; path=/; max-age=31536000; SameSite=Lax`;
+        }
+
         setTimeout(() => setSaved(false), 2000);
       } else {
         toast.error(res.error || t('saveFailed'));
@@ -196,9 +201,7 @@ export default function SettingsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('description')}
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('description')}</p>
         </div>
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -214,9 +217,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('description')}
-          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('description')}</p>
         </div>
         <div className="flex items-center gap-2">
           {saved && (
@@ -256,9 +257,7 @@ export default function SettingsPage() {
                   <Globe className="h-5 w-5 text-primary" />
                   {t('siteInfo')}
                 </CardTitle>
-                <CardDescription>
-                  {t('siteInfoDescription')}
-                </CardDescription>
+                <CardDescription>{t('siteInfoDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,6 +320,36 @@ export default function SettingsPage() {
                     <option value="en">{t('english')}</option>
                   </select>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="site_timezone">{t('timezone')}</Label>
+                  <select
+                    id="site_timezone"
+                    {...register('site_timezone')}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  >
+                    <optgroup label="Avrupa">
+                      <option value="Europe/Istanbul">Türkiye (UTC+3)</option>
+                      <option value="Europe/London">Londra (UTC+0/+1)</option>
+                      <option value="Europe/Berlin">Berlin (UTC+1/+2)</option>
+                      <option value="Europe/Paris">Paris (UTC+1/+2)</option>
+                      <option value="Europe/Moscow">Moskova (UTC+3)</option>
+                    </optgroup>
+                    <optgroup label="Amerika">
+                      <option value="America/New_York">New York (UTC-5/-4)</option>
+                      <option value="America/Los_Angeles">Los Angeles (UTC-8/-7)</option>
+                      <option value="America/Chicago">Chicago (UTC-6/-5)</option>
+                    </optgroup>
+                    <optgroup label="Asya">
+                      <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                      <option value="Asia/Shanghai">Şanghay (UTC+8)</option>
+                      <option value="Asia/Dubai">Dubai (UTC+4)</option>
+                    </optgroup>
+                    <optgroup label="Diğer">
+                      <option value="UTC">UTC</option>
+                      <option value="Australia/Sydney">Sydney (UTC+10/+11)</option>
+                    </optgroup>
+                  </select>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
@@ -333,9 +362,7 @@ export default function SettingsPage() {
                   <Search className="h-5 w-5 text-primary" />
                   {t('seoSettings')}
                 </CardTitle>
-                <CardDescription>
-                  {t('seoDescription')}
-                </CardDescription>
+                <CardDescription>{t('seoDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -368,9 +395,7 @@ export default function SettingsPage() {
                     placeholder={t('keywordsPlaceholder')}
                     {...register('seo_keywords')}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    {t('keywordsHelp')}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{t('keywordsHelp')}</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="seo_og_image">{t('ogImage')}</Label>
@@ -392,9 +417,7 @@ export default function SettingsPage() {
                   <Share2 className="h-5 w-5 text-primary" />
                   {t('socialMedia')}
                 </CardTitle>
-                <CardDescription>
-                  {t('socialDescription')}
-                </CardDescription>
+                <CardDescription>{t('socialDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -451,9 +474,7 @@ export default function SettingsPage() {
                   <Mail className="h-5 w-5 text-primary" />
                   {t('emailSettings')}
                 </CardTitle>
-                <CardDescription>
-                  {t('emailDescription')}
-                </CardDescription>
+                <CardDescription>{t('emailDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -494,26 +515,19 @@ export default function SettingsPage() {
                   <MessageCircle className="h-5 w-5 text-primary" />
                   {t('commentSettings')}
                 </CardTitle>
-                <CardDescription>
-                  {t('commentDescription')}
-                </CardDescription>
+                <CardDescription>{t('commentDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                   <div className="space-y-0.5">
                     <Label className="text-base">{t('enableComments')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('enableCommentsDesc')}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{t('enableCommentsDesc')}</p>
                   </div>
                   <Controller
                     control={control}
                     name="comments_enabled"
                     render={({ field }) => (
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     )}
                   />
                 </div>
@@ -522,18 +536,13 @@ export default function SettingsPage() {
                     <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                       <div className="space-y-0.5">
                         <Label className="text-base">{t('moderationRequired')}</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {t('moderationDesc')}
-                        </p>
+                        <p className="text-sm text-muted-foreground">{t('moderationDesc')}</p>
                       </div>
                       <Controller
                         control={control}
                         name="comments_moderation"
                         render={({ field }) => (
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
                         )}
                       />
                     </div>
@@ -561,26 +570,19 @@ export default function SettingsPage() {
                   <Bell className="h-5 w-5 text-primary" />
                   {t('notificationSettings')}
                 </CardTitle>
-                <CardDescription>
-                  {t('notificationDescription')}
-                </CardDescription>
+                <CardDescription>{t('notificationDescription')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                   <div className="space-y-0.5">
                     <Label className="text-base">{t('enableNotifications')}</Label>
-                    <p className="text-sm text-muted-foreground">
-                      {t('enableNotificationsDesc')}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{t('enableNotificationsDesc')}</p>
                   </div>
                   <Controller
                     control={control}
                     name="notifications_enabled"
                     render={({ field }) => (
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
                     )}
                   />
                 </div>
@@ -588,18 +590,13 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                     <div className="space-y-0.5">
                       <Label className="text-base">{t('emailNotifications')}</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {t('emailNotificationsDesc')}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t('emailNotificationsDesc')}</p>
                     </div>
                     <Controller
                       control={control}
                       name="notifications_email_enabled"
                       render={({ field }) => (
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
+                        <Switch checked={field.value} onCheckedChange={field.onChange} />
                       )}
                     />
                   </div>

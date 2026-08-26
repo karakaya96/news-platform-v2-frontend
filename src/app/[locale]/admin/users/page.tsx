@@ -39,6 +39,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/lib/api';
 import { getUser } from '@/lib/auth';
+import { useTimezone } from '@/lib/timezone';
 import { getAvatarUrl } from '@/lib/utils';
 import type { PaginationMeta, User } from '@/types';
 
@@ -73,6 +74,7 @@ const ROLE_CONFIG: Record<string, { color: string; icon: typeof Shield; tr: stri
 export default function UsersPage() {
   const t = useTranslations('admin');
   const locale = useLocale();
+  const timezone = useTimezone();
   const router = useRouter();
   const currentUser = getUser();
   const isAdmin = currentUser?.role === 'admin';
@@ -139,12 +141,12 @@ export default function UsersPage() {
 
   const formatDate = (date: string) => {
     // Handle SQLite datetime format: parse as UTC
-    const isoStr = date.includes('T') ? date : date.replace(' ', 'T') + 'Z';
+    const isoStr = date.includes('T') ? date : `${date.replace(' ', 'T')}Z`;
     return new Date(isoStr).toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
-      timeZone: 'Europe/Istanbul',
+      timeZone: timezone,
     });
   };
 

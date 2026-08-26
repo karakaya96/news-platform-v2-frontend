@@ -595,6 +595,7 @@
       "logoUrl": "Logo URL",
       "faviconUrl": "Favicon URL",
       "language": "Dil",
+      "timezone": "Zaman Dilimi",
       "turkish": "Türkçe",
       "english": "English",
       "seoSettings": "SEO Ayarları",

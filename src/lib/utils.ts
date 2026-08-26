@@ -11,12 +11,16 @@ function parseDate(dateString: string): Date {
 
   // Handle SQLite datetime format: '2026-06-27 15:04:13' (no T, no Z)
   // Convert to ISO format with Z suffix so it's parsed as UTC
-  const isoString = dateString.includes('T') ? dateString : dateString.replace(' ', 'T') + 'Z';
+  const isoString = dateString.includes('T') ? dateString : `${dateString.replace(' ', 'T')}Z`;
 
   return new Date(isoString);
 }
 
-export function formatDate(dateString: string | null | undefined, locale = 'tr'): string {
+export function formatDate(
+  dateString: string | null | undefined,
+  locale = 'tr',
+  timezone = 'Europe/Istanbul'
+): string {
   if (!dateString) return '';
   const date = parseDate(dateString);
   if (Number.isNaN(date.getTime())) return '';
@@ -24,11 +28,15 @@ export function formatDate(dateString: string | null | undefined, locale = 'tr')
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    timeZone: 'Europe/Istanbul',
+    timeZone: timezone,
   });
 }
 
-export function formatDateWithTime(dateString: string | null | undefined, locale = 'tr'): string {
+export function formatDateWithTime(
+  dateString: string | null | undefined,
+  locale = 'tr',
+  timezone = 'Europe/Istanbul'
+): string {
   if (!dateString) return '';
   const date = parseDate(dateString);
   if (Number.isNaN(date.getTime())) return '';
@@ -36,17 +44,21 @@ export function formatDateWithTime(dateString: string | null | undefined, locale
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    timeZone: 'Europe/Istanbul',
+    timeZone: timezone,
   });
   const time = date.toLocaleTimeString(locale, {
     hour: '2-digit',
     minute: '2-digit',
-    timeZone: 'Europe/Istanbul',
+    timeZone: timezone,
   });
   return `${day} ${time}`;
 }
 
-export function formatRelativeDate(dateString: string | null | undefined, locale = 'tr'): string {
+export function formatRelativeDate(
+  dateString: string | null | undefined,
+  locale = 'tr',
+  timezone = 'Europe/Istanbul'
+): string {
   if (!dateString) return '';
   const date = parseDate(dateString);
   if (Number.isNaN(date.getTime())) return '';
@@ -67,7 +79,7 @@ export function formatRelativeDate(dateString: string | null | undefined, locale
     const days = Math.floor(diffInSeconds / 86400);
     return isTr ? `${days} gün önce` : `${days}d ago`;
   }
-  return formatDate(dateString, locale);
+  return formatDate(dateString, locale, timezone);
 }
 
 export function stripHtml(html: string): string {

@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
+import { useTimezone } from '@/lib/timezone';
 import type { CommentItem } from '@/types';
 
 interface Comment {
@@ -32,6 +33,7 @@ export function CommentsSection({
 }: CommentsSectionProps) {
   const t = useTranslations('comments');
   const locale = useLocale();
+  const timezone = useTimezone();
   const [comments, _setComments] = useState<Comment[]>(initialComments);
   const [count, _setCount] = useState(initialCount);
   const [authorName, setAuthorName] = useState('');
@@ -109,7 +111,7 @@ export function CommentsSection({
   const formatDate = (dateStr: string) => {
     try {
       // Handle SQLite datetime format: '2026-06-27 15:04:13' → parse as UTC
-      const isoStr = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T') + 'Z';
+      const isoStr = dateStr.includes('T') ? dateStr : `${dateStr.replace(' ', 'T')}Z`;
       const d = new Date(isoStr);
       return d.toLocaleDateString(locale === 'en' ? 'en-US' : 'tr-TR', {
         year: 'numeric',
@@ -117,7 +119,7 @@ export function CommentsSection({
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        timeZone: 'Europe/Istanbul',
+        timeZone: timezone,
       });
     } catch {
       return dateStr;
