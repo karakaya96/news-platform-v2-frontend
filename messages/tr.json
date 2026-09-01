@@ -65,7 +65,8 @@
     "notFound": "Haber Bulunamadı",
     "loading": "Haber Yükleniyor...",
     "noImage": "Görsel yok",
-    "writtenBy": "yazan: "
+    "writtenBy": "yazan: ",
+    "noNews": "Haber bulunamadı"
   },
   "categories": {
     "title": "Kategoriler",

@@ -65,7 +65,8 @@
     "notFound": "Article Not Found",
     "loading": "Loading Article...",
     "noImage": "No image",
-    "writtenBy": "by "
+    "writtenBy": "by ",
+    "noNews": "No news found"
   },
   "categories": {
     "title": "Categories",
